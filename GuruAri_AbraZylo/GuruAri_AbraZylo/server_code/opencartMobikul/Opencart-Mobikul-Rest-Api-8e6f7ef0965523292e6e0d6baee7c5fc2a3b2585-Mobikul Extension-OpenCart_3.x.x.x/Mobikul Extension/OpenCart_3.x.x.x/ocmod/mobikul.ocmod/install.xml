@@ -1,0 +1,794 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+    <name>Mobikul</name>
+    <version>2.3.0.1</version>
+    <code>Webkul Mobikul</code>
+    <author>Webkul</author>
+    <link>http://webkul.com</link>
+
+      <file path="admin/controller/common/column_left.php">
+                <operation>
+                        <search><![CDATA[
+              // Catalog
+                        ]]></search>
+          <add position="before"><![CDATA[
+            // Mobikul code starts here
+
+            $this->load->language('extension/module/mobikul');
+
+            if ($this->config->get('module_mobikul_status')) {
+
+                $mobikul = array();
+
+                if ($this->user->hasPermission('access', 'mobikul/banner')) {
+                    $mobikul[] = array(
+                        'name'     => $this->language->get('text_banner'),
+                        'href'     => $this->url->link('mobikul/banner', 'user_token=' . $this->session->data['user_token'], true),
+                        'children' => array()
+                    );
+                }
+
+                if ($this->user->hasPermission('access', 'mobikul/notification')) {
+                    $mobikul[] = array(
+                        'name'     => $this->language->get('text_notification'),
+                        'href'     => $this->url->link('mobikul/notification', 'user_token=' . $this->session->data['user_token'], true),
+                        'children' => array()
+                    );
+                }
+             
+			
+                if ($this->user->hasPermission('access', 'mobikul/category')) {
+                    $mobikul[] = array(
+                        'name'     => $this->language->get('text_appcategory'),
+                        'href'     => $this->url->link('mobikul/category', 'user_token=' . $this->session->data['user_token'], true),
+                        'children' => array()
+                    );
+                }
+
+
+                $mobikul[] = array(
+                    'name' => $this->language->get('text_order_history'),
+                    'href' => $this->url->link('sale/order', 'user_token=' . $this->session->data['user_token'], true),
+                    'children' => array(),
+                );
+                
+
+                if ($this->user->hasPermission('access', 'mobikul/customcollection')) {
+                    $mobikul[] = array(
+                        'name'     => $this->language->get('text_customcollection'),
+                        'href'     => $this->url->link('mobikul/customcollection', 'user_token=' . $this->session->data['user_token'], true),
+                        'children' => array()
+                    );
+                }
+
+                if ($this->user->hasPermission('access', 'mobikul/ar')) {
+                    $mobikul[] = array(
+                        'name'     => $this->language->get('text_ar'),
+                        'href'     => $this->url->link('mobikul/ar', 'user_token=' . $this->session->data['user_token'], true),
+                        'children' => array()
+                    );
+                }
+
+				        if ($this->user->hasPermission('access', 'mobikul/carousels')) {
+                    $mobikul[] = array(
+                        'name'     => $this->language->get('text_carousels'),
+                        'href'     => $this->url->link('mobikul/carousels', 'user_token=' . $this->session->data['user_token'], true),
+                        'children' => array()
+                    );
+                }
+			
+				        if ($this->user->hasPermission('access', 'mobikul/walkthrough')) {
+                    $mobikul[] = array(
+                        'name'     => $this->language->get('text_walkthrough'),
+                        'href'     => $this->url->link('mobikul/walkthrough', 'user_token=' . $this->session->data['user_token'], true),
+                        'children' => array()
+                    );
+                }
+
+                if ($this->user->hasPermission('access', 'mobikul/theme')) {
+				            $mobikul[] = array(
+				                'name' => $this->language->get('text_theme'),
+				                'href' => $this->url->link('mobikul/theme', 'user_token=' . $this->session->data['user_token'], true),
+				                'children' => array(),
+				            );
+				        }
+
+                if ($mobikul) {
+                    $data['menus'][] = array(
+                        'id'       => 'menu-mobikul',
+                        'icon'     => 'fa-mobile',
+                        'name'     => $this->language->get('text_mobikul'),
+                        'href'     => '',
+                        'children' => $mobikul
+                    );
+                }
+            }
+
+            // Mobikul code ends here
+                        ]]></add>
+                </operation>
+        </file>
+
+        <file path="catalog/controller/startup/session.php">
+          <operation>
+            <search><![CDATA[
+            <?php
+            ]]></search>
+            <add position="after"><![CDATA[
+              /**
+          		 * wkrestapi code
+          		 */
+               if (!function_exists('getallheaders')) {
+               	function getallheaders() {
+               		$headers = [];
+               		foreach ($_SERVER as $name => $value) {
+               			if (substr($name, 0, 5) == 'HTTP_') {
+               				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+               			}
+               		}
+               		return $headers;
+               	}
+               }
+          		/**
+          		 * ends here
+          		 */
+            ]]></add>
+          </operation>
+
+          <operation>
+            <search><![CDATA[
+                $this->session->start($session_id);
+              ]]></search>
+            <add position="before"><![CDATA[
+              if (isset($wk_token) && $wk_token && $wk_token != 'Session_Not_Loggin' && preg_match('/^[a-zA-Z0-9,\-]{22,52}$/', $wk_token)) {
+                $session_id = $wk_token;
+              }
+            ]]></add>
+          </operation>
+
+          <operation>
+            <search><![CDATA[
+              public function index() {
+            ]]></search>
+            <add position="after"><![CDATA[
+              if(isset($this->request->post['wk_token']) && $this->request->post['wk_token'])
+                $wk_token = $this->request->post['wk_token'];
+
+              //Accepting data in json format / raw data
+
+              $raw_data = json_decode(file_get_contents("php://input"),true);
+
+              if (isset($raw_data['wk_token']) && $raw_data['wk_token']) {
+                $wk_token = $raw_data['wk_token'];
+              }
+
+              //Get wk_token from header
+              if (isset(getallheaders()['wk_token'])) {
+                $wk_token = getallheaders()['wk_token'];
+              } elseif (isset(getallheaders()['Wk-Token'])) {
+                $wk_token = getallheaders()['Wk-Token'];
+              }
+            ]]></add>
+          </operation>
+
+          <operation>
+            <search><![CDATA[
+                if (isset($this->request->get['route']) && substr($this->request->get['route'], 0, 4) == 'api/') {
+            ]]></search>
+            <add position="replace"><![CDATA[
+              if (isset($this->request->get['route']) && substr($this->request->get['route'], 0, 4) == 'api/' && !isset($wk_token) && substr($this->request->get['route'], 0, 14) != 'api/wkrestapi/') {
+            ]]></add>
+          </operation>
+        </file>
+
+        <file path="catalog/controller/startup/startup.php">
+          <operation>
+            <search><![CDATA[
+              $customer = new Cart\Customer($this->registry);
+            ]]></search>
+            <add position="before"><![CDATA[
+              /**
+               * wkrestapi code
+               */
+               if (isset($this->request->post['customer_id']) && $this->request->post['customer_id']) {
+                 $this->session->data['customer_id'] = $this->request->post['customer_id'];
+               } else {
+                 $raw_data = json_decode(file_get_contents("php://input"),true);
+
+                 if (isset($raw_data['customer_id']) && $raw_data['customer_id']) {
+                   $this->session->data['customer_id'] = $raw_data['customer_id'];
+                 }
+               }
+              /**
+               * ends here
+               */
+
+            ]]></add>
+          </operation>
+        </file>
+
+        <file path="system/library/session.php">
+          <operation>
+            <search><![CDATA[
+            <?php
+            ]]></search>
+            <add position="after"><![CDATA[
+              /**
+          		 * wkrestapi code
+          		 */
+               if (!function_exists('getallheaders')) {
+               	function getallheaders() {
+               		$headers = [];
+               		foreach ($_SERVER as $name => $value) {
+               			if (substr($name, 0, 5) == 'HTTP_') {
+               				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+               			}
+               		}
+               		return $headers;
+               	}
+               }
+          		/**
+          		 * ends here
+          		 */
+            ]]></add>
+          </operation>
+
+
+          <operation>
+            <search><![CDATA[
+              public function start($session_id = '') {
+            ]]></search>
+            <add position="after"><![CDATA[
+              /**
+               * wkrestapi code
+               */
+               $token_array = json_decode(file_get_contents("php://input"),true);
+
+               if (isset($token_array['wk_token'])) {
+                $wk_token = $token_array['wk_token'];
+               } elseif(isset($_POST['wk_token'])){
+                $wk_token = $_POST['wk_token'];
+               }
+
+               if (isset(getallheaders()['wk_token'])) {
+                 $wk_token = getallheaders()['wk_token'];
+               } elseif (isset(getallheaders()['Wk-Token'])) {
+                 $wk_token = getallheaders()['Wk-Token'];
+               }
+
+               if (isset($wk_token) && $wk_token != 'Session_Not_Loggin' && preg_match('/^[a-zA-Z0-9,\-]{22,52}$/', $wk_token)) {
+                $session_id = $wk_token;
+               }
+              /**
+               * ends here
+               */
+            ]]></add>
+          </operation>
+        </file>
+        <file path="catalog/controller/common/footer.php">
+          <operation>
+            <search><![CDATA[
+              $data['informations'] = array();
+            ]]></search>
+            <add position="before"><![CDATA[
+              if($this->config->get('mobikul_status') && $this->config->get('mobikul_footer_status')) {
+                $data['front_text'] = $this->config->get('mobikul_front_text');
+                $this->load->model('tool/image');
+                if($this->config->get('mobikul_applestore_link_status')) {
+                  $data['appstore_link'] = $this->config->get('mobikul_applestore_link');
+                  $data['appstore_icon'] = $this->model_tool_image->resize('appstore.png',70,30);
+                }
+                if($this->config->get('mobikul_playstore_link_status')) {
+                  $data['playstore_link'] = $this->config->get('mobikul_playstore_link');
+                  $data['playstore_icon'] = $this->model_tool_image->resize('playstore.png',70,30);
+                }
+              }
+            ]]></add>
+          </operation>
+        </file>
+        <file path="catalog/controller/common/header.php">
+          <operation>
+            <search><![CDATA[
+              $data['logged'] = $this->customer->isLogged();
+            ]]></search>
+            <add position="before"><![CDATA[
+              if($this->config->get('mobikul_status') && $this->config->get('mobikul_header_status')) {
+                $data['front_text'] = $this->config->get('mobikul_front_text');
+                $this->load->model('tool/image');
+                if($this->config->get('mobikul_applestore_link_status')) {
+                  $data['appstore_link'] = $this->config->get('mobikul_applestore_link');
+                  $data['appstore_icon'] = $this->model_tool_image->resize('appstore.png',70,30);
+                }
+                if($this->config->get('mobikul_playstore_link_status')) {
+                  $data['playstore_link'] = $this->config->get('mobikul_playstore_link');
+                  $data['playstore_icon'] = $this->model_tool_image->resize('playstore.png',70,30);
+                }
+              }
+            ]]></add>
+          </operation>
+        </file>
+        <file path="catalog/view/theme/*/template/common/header.twig">
+          <operation>
+            <search><![CDATA[
+              <body
+            ]]></search>
+            <add position="after" offset="0"><![CDATA[
+            <!-- Mobikul code -->
+            {% if playstore_link is defined or appstore_link is defined %}
+            <div class="app-link text-center">
+            {{ front_text }}
+            {% if playstore_link %}<a href="{{ playstore_link }}"><img src="{{ playstore_icon }}"></a>{% endif %}
+            {% if appstore_link %}<a href="{{ appstore_link }}"><img src="{{ appstore_icon }}"></a>{% endif %}
+            </div>
+            {% endif %}
+            ]]></add>
+          </operation>
+        </file>
+        <file path="catalog/view/theme/*/template/common/footer.twig">
+          <operation>
+            <search><![CDATA[
+              </footer>
+            ]]></search>
+            <add position="after"><![CDATA[
+            <!-- Mobikul code -->
+            {% if playstore_link is defined or appstore_link is defined %}
+            <div class="app-link text-center">
+            {{ front_text }}
+            {% if playstore_link %}<a href="{{ playstore_link }}"><img src="{{ playstore_icon }}"></a>{% endif %}
+            {% if appstore_link %}<a href="{{ appstore_link }}"><img src="{{ appstore_icon }}"></a>{% endif %}
+            </div>
+            {% endif %}
+            ]]></add>
+          </operation>
+      </file>
+
+      <file path="admin/controller/sale/order.php">
+                <operation>
+                        <search><![CDATA[
+                          $url .= '&filter_date_modified=' . $this->request->get['filter_date_modified'];
+                        ]]></search>
+                        <add position="before" offset="1"><![CDATA[
+                          //Mobikul code
+                          if (isset($this->request->get['filter_order_type'])) {
+                            $url .= '&filter_order_type=' . $this->request->get['filter_order_type'];
+                          }
+                          //Mobikul code ends
+                        ]]></add>
+                </operation>
+
+                <operation>
+                        <search><![CDATA[
+                          $filter_date_modified = $this->request->get['filter_date_modified'];
+                        ]]></search>
+                        <add position="before" offset="1"><![CDATA[
+                          //Mobikul code
+                          if (isset($this->request->get['filter_order_type'])) {
+                            $filter_order_type = $this->request->get['filter_order_type'];
+                          } else {
+                            $filter_order_type = null;
+                          }
+                          //Mobikul code ends
+                        ]]></add>
+                </operation>
+
+                <operation>
+                        <search><![CDATA[
+                          'filter_date_modified'   => $filter_date_modified,
+                        ]]></search>
+                        <add position="after"><![CDATA[
+                          //Mobikul code
+                          'filter_order_type'    => $filter_order_type,
+                          //Mobikul code ends
+                        ]]></add>
+                </operation>
+
+                <operation>
+                        <search><![CDATA[
+                          $data['filter_date_modified'] = $filter_date_modified;
+                        ]]></search>
+                        <add position="after"><![CDATA[
+
+                          //Mobikul code
+                          $data['filter_order_type'] = $filter_order_type;
+                          //Mobikul code ends
+                        ]]></add>
+                </operation>
+
+                <operation>
+                        <search><![CDATA[
+                          => $result['order_id'],
+                        ]]></search>
+                        <add position="after"><![CDATA[
+                          //Mobikul code
+                          'order_type'    => isset($result['mobikul']) ? ($result['mobikul'] ? $this->language->get('mobikul_mobile') : $this->language->get('mobikul_web')) : $this->language->get('mobikul_web'),
+                          //Mobikul code ends
+                        ]]></add>
+                </operation>
+
+                <operation>
+                        <search><![CDATA[
+                          $data['sort_date_modified']
+                        ]]></search>
+                        <add position="before"><![CDATA[
+                          //Mobikul code
+                            $data['sort_mobikul'] = $this->url->link('sale/order', 'user_token=' . $this->session->data['user_token'] . '&sort=o.mobikul' . $url, true);
+                            $data['column_mobikul'] = $this->language->get('column_mobikul');
+                            $data['entry_order_type'] = $this->language->get('entry_order_type');
+                            $data['mobikul_web'] = $this->language->get('mobikul_web');
+                            $data['mobikul_mobile'] = $this->language->get('mobikul_mobile');
+                          //MObikul code ends
+                        ]]></add>
+                </operation>
+
+                <operation>
+                        <search><![CDATA[
+                          $data['store_name'] = $order_info['store_name'];
+                        ]]></search>
+                        <add position="after"><![CDATA[
+                          //Mobikul code
+                          $data['entry_order_type'] = $this->language->get('entry_order_type');
+                          if ($this->model_sale_order->isMobileOrder($data['order_id'])) {
+                            $data['mobikul_order_type'] = $this->language->get('mobikul_mobile');
+                          } else {
+                            $data['mobikul_order_type'] = $this->language->get('mobikul_web');
+                          }
+                          //MObikul code ends
+                        ]]></add>
+                </operation>
+
+
+
+                 <operation>
+                        <search><![CDATA[
+                          $extensions = $this->model_setting_extension->getInstalled('fraud');
+                        ]]></search>
+                        <add position="after"><![CDATA[
+                          //mobikul code
+			$this->load->model('localisation/language');
+			$data['languages'] = $this->model_localisation_language->getLanguages();
+            //mobikul code end
+                        ]]></add>
+                </operation>
+        </file>
+
+        <file path="admin/model/sale/order.php">
+                  <operation>
+                          <search><![CDATA[
+                            $sql = "SELECT o.order_id,
+                          ]]></search>
+                          <add position="replace"><![CDATA[
+                            $sql = "SELECT o.mobikul, o.order_id,
+                          ]]></add>
+                  </operation>
+
+                  <operation>
+                          <search index="0"><![CDATA[
+                            if (!empty($data['filter_date_modified'])) {
+                          ]]></search>
+                          <add position="before"><![CDATA[
+                            // Mobikul code
+                            if (isset($data['filter_order_type'])) {
+                              $sql .= " AND o.mobikul = '" . (int)$this->db->escape($data['filter_order_type']) . "'";
+                            }
+                            // Mobikul code ends
+                          ]]></add>
+                  </operation>
+
+                  <operation>
+                          <search index="1"><![CDATA[
+                            if (!empty($data['filter_date_modified'])) {
+                          ]]></search>
+                          <add position="before"><![CDATA[
+                            // Mobikul code
+                            if (isset($data['filter_order_type'])) {
+                              $sql .= " AND mobikul = '" . (int)$this->db->escape($data['filter_order_type']) . "'";
+                            }
+                            // Mobikul code ends
+                          ]]></add>
+                  </operation>
+
+                  <operation>
+                          <search><![CDATA[
+                            public function getOrder($order_id) {
+                          ]]></search>
+                          <add position="before"><![CDATA[
+                            // Mobikul code
+                            public function isMobileOrder($order_id = 0) {
+                              $result = $this->db->query("SELECT mobikul FROM " . DB_PREFIX . "order WHERE order_id = '" . (int)$this->db->escape($order_id) . "'")->row;
+                              if (isset($result['mobikul']) && $result['mobikul'] == 1) {
+                                return true;
+                              }
+                              return false;
+                            }
+                            // Mobikul code ends
+                          ]]></add>
+                  </operation>
+
+          </file>
+
+          <file path="admin/language/en-gb/sale/order.php">
+                    <operation>
+                            <search><![CDATA[
+                              <?php
+                            ]]></search>
+                            <add position="after"><![CDATA[
+                              //Mobikul
+                              $_['column_mobikul']              = 'Order Type';
+                              $_['mobikul_mobile']              = 'Mobile Order';
+                              $_['mobikul_web']                 = 'Website Order';
+                              $_['entry_order_type']            = 'Order Type';
+                              //Mobikul code ends
+                            ]]></add>
+                    </operation>
+            </file>
+
+            <file path="admin/language/ar/sale/order.php">
+                      <operation>
+                              <search><![CDATA[
+                                <?php
+                              ]]></search>
+                              <add position="after"><![CDATA[
+                                //Mobikul
+                                $_['column_mobikul']              = 'نوع الطلب';
+                                $_['mobikul_mobile']              = 'ترتيب المحمول';
+                                $_['mobikul_web']                 = 'ترتيب الموقع';
+                                $_['entry_order_type']            = 'نوع الطلب';
+                                //Mobikul code ends
+                              ]]></add>
+                      </operation>
+              </file>
+
+            <file path="admin/view/template/sale/order_list.twig">
+                      <operation>
+                              <search index="1"><![CDATA[
+                                <div class="form-group">
+                              ]]></search>
+                              <add position="before"><![CDATA[
+                                <div class="form-group">
+                                  <label class="control-label" for="input-date-modified">{{ entry_order_type }}</label>
+                                  <select name="filter_order_type" id="input-order-type" class="form-control">
+                                    <option value=""></option>
+                                    <option value="1" {% if(filter_order_type is defined  and  filter_order_type == '1') %} {{ 'selected' }}{% endif %}>{{ mobikul_mobile }}</option>
+                                    <option value="0" {% if(filter_order_type is defined  and  filter_order_type == '0') %} {{ 'selected' }}{% endif %}>{{ mobikul_web }}</option>
+                                  </select>
+                                </div>
+                              ]]></add>
+                      </operation>
+
+                      <operation>
+                              <search><![CDATA[
+                                <td class="text-left">{% if sort == 'order_status' %}
+                              ]]></search>
+                              <add position="before"><![CDATA[
+                                <!-- Mobikul Code -->
+                                <td class="text-left">
+                                {% if (sort == 'o.mobikul') %}
+                                  <a href="{{ sort_mobikul }}" class="{{ order|lower }}">{{ column_mobikul }}</a>
+                                  {% else %}
+                                  <a href="{{ sort_mobikul }}">{{ column_mobikul }}</a>
+                                  {% endif %}
+                                </td>
+                                  <!-- Mobikul Code ends -->
+                              ]]></add>
+                      </operation>
+
+                      <operation>
+                              <search><![CDATA[
+                                <td class="text-left">{{ order.order_status }}</td>
+                              ]]></search>
+                              <add position="before"><![CDATA[
+                                <!-- Mobikul code -->
+                                <td class="text-left">{{ order.order_type }}</td>
+                                <!-- Mobikul code ends -->
+                              ]]></add>
+                      </operation>
+
+                      <operation>
+                              <search><![CDATA[
+                                var filter_date_modified = $('input[name=\'filter_date_modified\']').val();
+                              ]]></search>
+                              <add position="before"><![CDATA[
+                                // Mobikul code
+                                var filter_order_type = $('select[name=\'filter_order_type\']').val();
+
+                                if (filter_order_type) {
+                                  url += '&filter_order_type=' + encodeURIComponent(filter_order_type);
+                                }
+                                // Mobikul code ends
+                              ]]></add>
+                      </operation>
+              </file>
+
+              <file path="admin/view/template/sale/order_info.twig">
+                        <operation>
+                                <search><![CDATA[
+                                  <td>{{ shipping_method }}</td>
+                                ]]></search>
+                                <add position="after" offset="1"><![CDATA[
+                                  <!-- Mobikul code -->
+                                  <tr>
+                                    <td><button data-toggle="tooltip" title="{{ entry_order_type }}" class="btn btn-info btn-xs"><i class="fa fa-info fa-fw"></i></button></td>
+                                    <td>{{ mobikul_order_type }}</td>
+                                  </tr>
+                                  <!-- Mobikul code ends -->
+                                ]]></add>
+                        </operation>
+
+
+
+                         <operation>
+                                <search><![CDATA[
+                                  data: 'order_status_id=' + encodeURIComponent($('select[name=\'order_status_id\']').val()) + '&notify=' + ($('input[name=\'notify\']').prop('checked') ? 1 : 0) + '&override=' + ($('input[name=\'override\']').prop('checked') ? 1 : 0) + '&append=' + ($('input[name=\'append\']').prop('checked') ? 1 : 0) + '&comment=' + encodeURIComponent($('textarea[name=\'comment\']').val()),
+                                ]]></search>
+                                <add position="replace"><![CDATA[
+                                  // Mobikul code
+                                 data: 'language_status_id=' + encodeURIComponent($('select[name=\'language_status_id\']').val()) + '&order_status_id=' + encodeURIComponent($('select[name=\'order_status_id\']').val()) + '&notify=' + ($('input[name=\'notify\']').prop('checked') ? 1 : 0) + '&override=' + ($('input[name=\'override\']').prop('checked') ? 1 : 0) + '&append=' + ($('input[name=\'append\']').prop('checked') ? 1 : 0) + '&comment=' + encodeURIComponent($('textarea[name=\'comment\']').val()),
+                                 // Mobikul code ends 
+                                ]]></add>
+                        </operation>
+
+                         <operation>
+                                <search><![CDATA[
+                                  <form class="form-horizontal">
+                                ]]></search>
+                                <add position="after"><![CDATA[
+                                 {# Mobikul code #}
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-order-status">{{ text_language }}</label>
+                  <div class="col-sm-10">
+                    <select name="language_status_id" id="language_status_id" class="form-control">
+                      
+                      {% for language in languages %}                                                                     
+                          <option value="{{ language.language_id }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</option>
+                    {% endfor %}
+                      </select>
+                  </div>
+                </div>
+                 {# Mobikul code end #}
+                                ]]></add>
+                        </operation>
+                        
+                </file>
+
+                <file path="catalog/controller/api/order.php">
+                          <operation>
+                                  <search index="3"><![CDATA[
+                        if ($order_info) {
+                                  ]]></search>
+                                  <add position="after"><![CDATA[
+                                  // Mobikul code starts here
+                                  if (isset($this->request->post['notify']) && $this->request->post['notify'] == 1) {
+                                    if(isset($this->request->post['language_status_id']) && $this->request->post['language_status_id']){
+                                         $language_id = $this->request->post['language_status_id'];
+									 }else{
+										$language_id = 1;
+									 }
+									 
+                                    $this->load->controller('api/wkrestapi/customer/sendNotificationForOrderStatus', array( "language_id"=> $language_id,"customer_id" => $order_info['customer_id'], "order_id" => $order_info['order_id'], "order_status_id" => $this->request->post['order_status_id'], "comment" => $this->request->post['comment']));
+                                  }
+                                  // Mobikul code ends here
+                                  ]]></add>
+                          </operation>
+                  </file>
+
+                  <file path="admin/view/template/catalog/product_form.twig">
+                    <operation>
+                      <search><![CDATA[
+                        <div class="tab-pane" id="tab-data">
+                          ]]></search>
+                      <add position="after"><![CDATA[
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-start_date"><span data-toggle="tooltip" title="{{ help_sku }}">Set product as new form</span></label>
+                          <div class="col-sm-10">
+                            <input type="date" name="start_date" value="{{ start_date }}" id="input-start_date" style="width:20%;padding:5px;margin-top:10px;border:1px solid #ccc;border-radius:3px;"/>
+                            <span style="margin-left:10px;margin-right:10px;"> To </span>
+                            <input type="date" name="close_date" value="{{ close_date }}" style="width:20%;padding:5px;margin-top:10px;border:1px solid #ccc;border-radius:3px;"/>
+                          </div>
+                          {% if error_set_date %}
+                            <div class="text-danger">Make sure the To Date is later than or the same as the From Date.</div>
+                          {% endif %}
+                        </div>
+                        ]]>
+                      </add>
+                    </operation>
+                  </file>
+
+                  <file path="admin/model/catalog/product.php">
+                    <operation>
+                      <search><![CDATA[ 
+                        $product_id = $this->db->getLastId();  
+                      ]]></search>
+                      <add position="after"><![CDATA[
+                       if(isset($data['start_date']) && isset($data['close_date'])){
+                        $this->db->query("INSERT INTO " . DB_PREFIX . "mobikul_product_set_date SET product_id = '" . (int)$product_id . "', start_date = '" .$this->db->escape($data['start_date']). "', close_date = '" .$this->db->escape($data['close_date']). "'");
+                        }
+                        ]]></add>
+                    </operation>
+                    <operation>
+                      <search><![CDATA[ 
+                        public function editProduct($product_id, $data) {  
+                      ]]></search>
+                      <add position="after"><![CDATA[
+
+                        $set_date = $this->db->query("SELECT product_id FROM " .DB_PREFIX. "mobikul_product_set_date WHERE product_id = ".(int)$product_id)->row;
+                        if($set_date){
+                          $this->db->query("UPDATE " . DB_PREFIX . "mobikul_product_set_date SET start_date = '" .$this->db->escape($data['start_date']). "', close_date = '" .$this->db->escape($data['close_date']). "' WHERE product_id = ".(int)$product_id);
+                        }else{
+                          $this->db->query("INSERT INTO " . DB_PREFIX . "mobikul_product_set_date SET product_id = '" . (int)$product_id . "', start_date = '" .$this->db->escape($data['start_date']). "', close_date = '" .$this->db->escape($data['close_date']). "'");
+                        }
+
+                        ]]></add>
+                    </operation>
+                  </file>
+                 
+                  <file path="admin/controller/catalog/product.php">
+                    <operation>
+                      <search><![CDATA[ 
+                        // Categories  
+                      ]]></search>
+                      <add position="before"><![CDATA[
+
+                        if(isset($this->request->get['product_id'])){
+                          $set_date = $this->db->query("SELECT * FROM ".DB_PREFIX."mobikul_product_set_date WHERE product_id = ".$this->request->get['product_id'])->row;
+                        }else{
+                          $set_date = '';
+                        }
+
+                        if (isset($this->request->post['start_date'])) {
+                          $data['start_date'] = $this->request->post['start_date'];
+                        } elseif (!empty($product_info)) {
+                          $data['start_date'] = isset($set_date['start_date']) ? $set_date['start_date'] : '';
+                        } else {
+                          $data['start_date'] = '';
+                        }
+
+                        if (isset($this->request->post['close_date'])) {
+                          $data['close_date'] = $this->request->post['close_date'];
+                        } elseif (!empty($product_info)) {
+                          $data['close_date'] = isset($set_date['close_date']) ? $set_date['close_date'] : '';
+                        } else {
+                          $data['close_date'] = '';
+                        }
+                        
+                        ]]></add>
+                    </operation>
+
+                    <operation>
+                      <search><![CDATA[ 
+                        $data['text_form'] = !isset($this->request->get['product_id']) ? $this->language->get('text_add') : $this->language->get('text_edit');
+                      ]]></search>
+                      <add position="after"><![CDATA[
+
+                        // set date
+                        if (isset($this->error['set_date'])) {
+                          $data['error_set_date'] = $this->error['set_date'];
+                        } else {
+                          $data['error_set_date'] = '';
+                        }
+                        
+                        ]]></add>
+                    </operation>
+
+                    <operation>
+                      <search><![CDATA[ 
+                        if ($this->request->post['product_seo_url']) {
+                      ]]></search>
+                      <add position="before"><![CDATA[
+
+                        //start date
+                        $start_date = isset($this->request->post['start_date']) ? $this->request->post['start_date'] : '';
+                        $close_date = isset($this->request->post['close_date']) ? $this->request->post['close_date'] : '';
+                        if(($start_date > $close_date) && $close_date != ''){	
+                          $this->error['set_date'] = "Make sure the To Date is later than or the same as the From Date.";
+                        }else if($start_date == ''){
+                          if($close_date != '')
+                          $this->error['set_date'] = "Make sure the To Date is later than or the same as the From Date.";
+                        }
+                        
+                        ]]></add>
+                    </operation>
+                  </file>
+
+
+                  
+</modification>

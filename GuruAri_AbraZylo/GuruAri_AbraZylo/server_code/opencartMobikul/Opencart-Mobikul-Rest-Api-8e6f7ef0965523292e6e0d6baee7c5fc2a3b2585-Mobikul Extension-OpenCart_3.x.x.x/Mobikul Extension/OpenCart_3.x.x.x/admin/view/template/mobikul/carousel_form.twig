@@ -1,0 +1,1441 @@
+<style>
+
+.form-horizontal .form-group {
+    margin-left: -10px !important;
+    margin-right: -10px !important;
+}
+
+.loader {
+  display:block;
+  position: fixed;  
+  left: 50%;
+  bottom: 50%;   
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 80px;
+  height: 80px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.overlay {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+ 
+}
+</style>
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+       
+        <button type="submit" form="form-notification" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ text_form }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+
+    {% if error_common %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_common }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+
+     {% if error_product %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_product }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+
+   
+
+  
+        
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+      </div>
+      <div class="panel-body">
+      
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-notification" class="form-horizontal">
+        <input type="hidden" name="saved_product_ids" id="saved_product_ids" value="" />
+        <input type="hidden" name="saved_image_ids" id="saved_image_ids" value="" />
+
+        <div class="col-sm-3"> 
+         <div class="form-group">
+                <ul class="nav nav-pills nav-stacked">
+                  <li class="active">
+                    <a id="main_carousel_section" data-toggle="tab">{{ column_carousel_information }}</a>
+                  </li>
+                  <li>
+                    <a id="carousel_section_type_button" data-toggle="tab">{{ column_type }}</a>
+                  </li>
+                </ul>
+              </div>
+        </div>
+       <div class="col-sm-9">
+       
+        {# start main form #}
+         <div id = "main-form" style="display:block;" >
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-title"><span data-toggle="tooltip" title="{{ help_title }}">{{ entry_title }}</span></label>
+            <div class="col-sm-10">
+
+              {% for language in languages %}<div class="input-group"><span class="input-group-addon"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" />  </span>
+                <input type="text" name="title[{{ language['language_id'] }}]" value="{{ carousel['title'][language['language_id']] is defined ? carousel['title'][language['language_id']] : '' }}" placeholder="{{ entry_title }}" class="form-control" /></div>
+              {% if error_title[language['language_id']] is defined %}
+              <div class="text-danger">{{ error_title[language['language_id']] }}</div>
+              {% endif %}
+              {% endfor %}
+
+            </div>
+           </div>
+          
+         
+        
+         <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-title">{{ column_sort_order }}</label>
+            <div class="col-sm-10">
+               <input type="text" name="sort_order" value="{{ carousel['sort_order'] ? carousel['sort_order'] : '' }}" placeholder="{{ column_sort_order }}" class="form-control" />
+                   {% if error_sort_order  %}
+              <div class="text-danger">{{ error_sort_order }}</div>
+              {% endif %}
+               </div>
+             </div>
+        
+               
+
+         <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-title"><span data-toggle="tooltip" title="{{ help_title }}">{{ column_status }}</span></label>
+            <div class="col-sm-10">
+              <select name="status" id="input-status" class="form-control">
+              
+                  {% if carousel['status'] == '1' %}
+                
+                <option value="1" selected="selected">{{ text_enabled }}</option>
+                  {% else %}
+                <option value="1">{{ text_enabled }}</option>
+                  {% endif %}
+                  {% if carousel['status'] == '0' %}
+                
+                <option value="0" selected="selected">{{ text_disabled }}</option>
+                
+                  {% else %}
+
+                <option value="0">{{ text_disabled }}</option>
+                {% endif %}
+
+              </select>
+             
+             </div>
+        
+
+              </div>
+         </div> 
+                {# end main form #}
+
+        
+       
+       
+      
+       <div id="type-section" style="display:none;"> 
+         <div>   
+            <div class="form-group required" id="carousel_section_type">
+              <label class="col-sm-2 control-label" for="input-type"><span data-toggle="tooltip" title="{{ help_type }}">{{ entry_type }}</span></label>
+                <div class="col-sm-10">
+                  <select  onchange="pro_img_type()" name="type" id="input-type" class="form-control">
+                
+                      {% if carousel['type']  == 'Product' %}
+                      <option value="Product" selected="selected">{{ text_product }}</option>
+                      {% else %}
+                      <option value="Product">{{ text_product }}</option>
+                      {% endif %}
+                      {% if carousel['type']  == 'Image' %}
+                      <option value="Image" selected="selected">{{ text_image }}</option>
+                      {% else %}
+                      <option value="Image">{{ text_image }}</option>
+                      {% endif %}
+                    
+                  </select>
+                </div>  
+              </div>
+         </div>
+         <div id="sub_type_main_block" >
+           <div class="form-group required" id="sub_type_block">
+           <label class="col-sm-2 control-label" for="input-type"><span data-toggle="tooltip" title="{{ help_sub_type }}">{{ entry_sub_type }}</span></label>
+            <div class="col-sm-10">
+              <select name="image_sub_type" id="sub_type" class="form-control"  onchange="sub_type_fun()">
+             
+                 {% if carousel['image_sub_type']  == 'image_manufacturer' %}
+                  <option value="image_all_parrent_category" selected="selected">{{ entry_all_parrent_category }}</option>
+                  {% else %}
+                  <option value="image_all_parrent_category">{{ entry_all_parrent_category }}</option>
+                  {% endif %}
+
+                  {% if carousel['image_sub_type']  == 'image_manufacturer' %}
+                  <option value="image_manufacturer" selected="selected">{{ entry_manufacturer_carousel }}</option>
+                  {% else %}
+                  <option value="image_manufacturer">{{ entry_manufacturer_carousel }}</option>
+                  {% endif %}
+
+                  {% if carousel['image_sub_type']  == 'image_catagory' %}
+                  <option value="image_catagory" selected="selected">{{ entry_catagories_carousel }}</option>
+                  {% else %}
+                  <option value="image_catagory">{{ entry_catagories_carousel }}</option>
+                  {% endif %}
+
+                   {% if carousel['image_sub_type']  == 'image_carousel' %}
+                  <option value="image_carousel" selected="selected">{{ entry_image_carousel }}</option>
+                  {% else %}
+                  <option value="image_carousel">{{ entry_image_carousel }}</option>
+                  {% endif %}
+                 
+              </select>
+            </div>
+           </div> 
+
+         <div class="form-group image-manufacture-list" style="display:none;">
+            <label class="col-sm-2 control-label" for="input-product">{{ text_manufacture }}<br>{{ text_autocomplete }}</label>
+          <div class="col-sm-10">
+              <input type="text" name="image_manufacturer_carousel" value="" placeholder="" id="input-product" class="form-control" />
+                {% if error_manufacturer  %}
+                  <div class="text-danger">{{ error_manufacturer }}</div>
+                  {% endif %}
+              <div id="image_manufacturer" class="well well-sm" style="height: 150px; overflow: auto;">
+                {% for manufacturer in carousel['manufacturer'] %}
+                  <div id="image_manufacturer{{ manufacturer['manufacturer_id'] }}"><i class="fa fa-minus-circle"></i> {{ manufacturer['name'] }}
+                  <input type="hidden" name="image_manufacturer_id[]" class="image_manufacturer_id" value="{{ manufacturer['manufacturer_id'] }}"> 
+                  <input type="hidden" name="image_manufacturer_name[{{manufacturer['manufacturer_id']}}]" class="image_manufacturer_name" value="{{ manufacturer['name'] }}">
+                  </div>
+                  {% endfor %}
+                 
+              </div>
+            </div>
+           </div>
+  
+
+           <div class="form-group image-catagories-list" style="display:none;">
+            <label class="col-sm-2 control-label" for="input-product">{{ entry_category }}<br>{{ text_autocomplete }}</label>
+          <div class="col-sm-10">
+              <input type="text" name="image_catagories" value="" placeholder="" id="input-product" class="form-control" />
+               {% if error_catagories  %}
+                  <div class="text-danger">{{ error_catagories }}</div>
+                  {% endif %}
+              <div id="image_catagories" class="well well-sm" style="height: 150px; overflow: auto;">
+                {% for catagory in carousel['catagories'] %}
+                <div id="image_catagories{{ catagory['catagories_id'] }}"><i class="fa fa-minus-circle"></i> {{ catagory['name'] }}
+                  <input type="hidden" name="image_catagories_id[]"  class="image_catagories_id" value="{{ catagory['catagories_id'] }}" />
+                  <input type="hidden" name="image_catagories_name[{{catagory['catagories_id']}}]"  class="image_catagories_name" value="{{ catagory['name']  }}" />
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+   </div>
+
+           
+
+         </div>
+     
+      <div id="product_type_block">    
+        <div class="form-group required" id="carousel_product_type">
+           <label class="col-sm-2 control-label" for="input-type"><span data-toggle="tooltip" title="{{ help_type }}">{{ text_product_type }}</span></label>
+            <div class="col-sm-10">
+              <select  onchange="product_type_fun()" name="product_type" id="product_type" class="form-control">
+            
+                {% if  carousel['product_type'] == 'best' %}
+                  <option value="best" selected="selected">{{ text_best }}</option>
+                  {% else %}
+                  <option value="best">{{ text_best }}</option>
+                  {% endif %}
+
+                   {% if carousel['product_type'] == 'popular' %}
+                  <option value="popular" selected="selected">{{ text_popular }}</option>
+                  {% else %}
+                  <option value="popular">{{ text_popular }}</option>
+                  {% endif %}
+
+                   {% if carousel['product_type'] == 'latest' %}
+                  <option value="latest" selected="selected">{{ text_latest }}</option>
+                  {% else %}
+                  <option value="latest">{{ text_latest }}</option>
+                  {% endif %}
+
+                  {% if carousel['product_type'] == 'special_products' %}
+                  <option value="special_products" selected="selected">{{ text_special }}</option>
+                  {% else %}
+                  <option value="special_products">{{ text_special }}</option>
+                  {% endif %}
+
+                  {% if carousel['product_type'] == 'discounted_products' %}
+                  <option value="discounted_products" selected="selected">{{ text_discount }}</option>
+                  {% else %}
+                  <option value="discounted_products">{{ text_discount }}</option>
+                  {% endif %}
+
+
+                  {% if carousel['product_type'] == 'random_product' %}
+                  <option value="random_product" selected="selected">{{ text_random_product }}</option>
+                  {% else %}
+                  <option value="random_product">{{ text_random_product }}</option>
+                  {% endif %}
+
+                   
+
+                  {% if carousel['product_type'] == 'manufacturer' %}
+                  <option value="manufacturer" selected="selected">{{ text_manufacturer }}</option>
+                  {% else %}
+                  <option value="manufacturer">{{ text_manufacturer }}</option>
+                  {% endif %}
+
+                  {% if carousel['product_type'] == 'manufacturer_products' %}
+                  <option value="manufacturer_products" selected="selected">{{ text_manufacturer_products }}</option>
+                  {% else %}
+                  <option value="manufacturer_products">{{ text_manufacturer_products }}</option>
+                  {% endif %}
+
+
+                  
+
+                    {% if carousel['product_type'] == 'catagories' %}
+                  <option value="catagories" selected="selected">{{ text_category }}</option>
+                  {% else %}
+                  <option value="catagories">{{ text_category }}</option>
+                  {% endif %}
+
+                   {% if carousel['product_type'] == 'catagory_products' %}
+                  <option value="catagory_products" selected="selected">{{ text_categories }}</option>
+                  {% else %}
+                  <option value="catagory_products">{{ text_categories }}</option>
+                  {% endif %}
+
+               
+
+              </select>
+            </div>
+            
+           
+
+
+           </div>  
+
+    
+
+ 
+ 
+ {# manutfacturer section #}
+   <div class="form-group manufacture-list" style="display:none;">
+            <label class="col-sm-2 control-label" for="input-product">{{ text_manufacture }}<br>{{ text_autocomplete }}</label>
+          <div class="col-sm-10">
+              <input type="text" name="manufacturer" value="" placeholder="" id="input-product" class="form-control" />
+                {% if error_manufacturer  %}
+                  <div class="text-danger">{{ error_manufacturer }}</div>
+                  {% endif %}
+              <div id="manufacturer" class="well well-sm" style="height: 150px; overflow: auto;">
+                  {% for manufacturer in carousel['manufacturer'] %}
+                  <div id="manufacturer{{ manufacturer['manufacturer_id'] }}"><i class="fa fa-minus-circle"></i> {{ manufacturer['name'] }}
+                  <input type="hidden" name="manufacturer_id[]" class="manufacturer_id" value="{{ manufacturer['manufacturer_id'] }}">
+                   <input type="hidden" name="manufacturer_name[{{manufacturer['manufacturer_id']}}]" value="{{ manufacturer['name'] }}">
+                  </div>
+                  {% endfor %}
+                 
+              </div>
+            </div>
+   </div>
+ {# manutfacturer section end #}
+
+  {# Categories section #}
+   <div class="form-group catagories-list" style="display:none;">
+            <label class="col-sm-2 control-label" for="input-product">{{ text_category }}<br>{{ text_autocomplete }}</label>
+          <div class="col-sm-10">
+              <input type="text" name="catagories" value="" placeholder="" id="input-product" class="form-control" />
+               {% if error_catagories  %}
+                  <div class="text-danger">{{ error_catagories }}</div>
+                  {% endif %}
+              <div id="catagories" class="well well-sm" style="height: 150px; overflow: auto;">
+                {% for catagory in carousel['catagories'] %}
+                <div id="catagories{{ catagory['catagories_id'] }}"><i class="fa fa-minus-circle"></i> {{ catagory['name'] }}
+                  <input type="hidden" name="catagories_id[]"  class="catagories_id" value="{{ catagory['catagories_id'] }}" />
+                   <input type="hidden" name="catagories_name[{{catagory['catagories_id']}}]" value="{{ catagory['name'] }}" />
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+   </div>
+ {# Categories section end #}
+
+  
+  {# product listing section end #}
+
+  
+    
+   {# display image section #}
+<div id="display_image_section" style="display:none;">
+          <div class="well">
+                   {# product filter start #}
+          <div class="row">
+            <div class="col-sm-6">
+             
+              <div class="form-group">
+                <label class="control-label" for="input-title">{{ entry_id }}</label>
+                <input type="text" name="filter_carousel_image_id_from" value="{{ filter_carousel_image_id_from ? filter_carousel_image_id_from : '' }}" placeholder="{{ entry_from }}" id="input-name" class="form-control" />
+              </div>
+               <div class="form-group">
+                <label class="control-label" for="input-model">{{ entry_id }}</label>
+              <input type="text" name="filter_carousel_image_id_to" value="{{ filter_carousel_image_id_to ? filter_carousel_image_id_to : '' }}" placeholder="{{ entry_to }}" id="input-model" class="form-control" />
+              </div>
+               
+
+            </div>
+
+             <div class="col-sm-6">
+             
+              <div class="form-group">
+                <label class="control-label" for="input-quantity">{{ column_title }}</label>
+              <input type="text" name="filter_carousel_image_title" value="{{ filter_carousel_image_title ? filter_carousel_image_title : '' }}" placeholder="{{ column_title }}" id="input-quantity" class="form-control" />
+              </div>
+               <div class="form-group">
+                <label class="control-label" for="input-status">{{ entry_status }}</label>
+              <select name="filter_carousel_image_status" id="input-status" class="form-control">
+                <option value=""></option>
+                 {% if filter_carousel_image_status == '1' %}      
+                   <option value="1" selected="selected">{{ text_enabled }}</option>                
+
+                  {% else %}
+
+                <option value="1">{{ text_enabled }}</option>
+              
+                  {% endif %}
+                  {% if filter_carousel_image_status == '0' %}
+              <option value="0" selected="selected">{{ text_disabled }}</option>
+              {% else %}
+                <option value="0">{{ text_disabled }}</option> 
+                {% endif %}
+              </select>
+              </div>
+              
+              
+            </div>
+       
+          </div>
+           <div class="form-group text-right">
+              <button type="button" id="button-filter-for-image" class="btn btn-default"><i class="fa fa-filter"></i> {{ button_filter }}</button>
+            </div>
+            </div>
+        
+            {# product filter end #}
+<div class="table-responsive ">
+                <table class="table table-bordered table-hover">
+                 <div class="overlay" ></div>
+                 <span class="loader" ></span>
+                  <thead  id= "image-table-heading">
+                    
+                  </thead>
+                   <tbody id= "all_image_section">
+                
+                   <tr>
+                    <td class="text-center" colspan="8">{{ text_no_results }}</td>
+                  </tr>
+                    </tbody>
+                 
+                </table>
+              </div>
+       </div>
+     </div>
+          {# pagination #}
+            <div class="row">           
+                  <div class="col-sm-6 text-left" id="pagination-div"> </div>
+            </div>
+          {# pagination #}
+
+  </div>
+</div>
+
+
+ <div id="product_listing_section" style="display:none;">
+  
+                   {# product listing section start #}
+            <div id="assign-product-module"  >
+                 <div class="well">
+                   {# product filter start #}
+          <div class="row">
+            <div class="col-sm-6">
+             
+              <div class="form-group">
+                <label class="control-label" for="input-title">{{ entry_name }}</label>
+                <input type="text" name="filter_name" value="{{ filter_name }}" placeholder="{{ entry_name }}" id="input-name" class="form-control" />
+              </div>
+               <div class="form-group">
+                <label class="control-label" for="input-model">{{ entry_model }}</label>
+              <input type="text" name="filter_model" value="{{ filter_model }}" placeholder="{{ entry_model }}" id="input-model" class="form-control" />
+              </div>
+               <div class="form-group">
+                <label class="control-label" for="input-price">{{ entry_price }}</label>
+              <input type="text" name="filter_price" value="{{ filter_price }}" placeholder="{{ entry_price }}" id="input-price" class="form-control" />
+              </div>
+
+
+            </div>
+
+             <div class="col-sm-6">
+             
+              <div class="form-group">
+                <label class="control-label" for="input-quantity">{{ entry_quantity }}</label>
+              <input type="text" name="filter_quantity" value="{{ filter_quantity }}" placeholder="{{ entry_quantity }}" id="input-quantity" class="form-control" />
+              </div>
+               <div class="form-group">
+                <label class="control-label" for="input-status">{{ entry_status }}</label>
+              <select name="filter_status" id="input-status" class="form-control">
+                <option value=""></option>
+                 {% if filter_status == '1' %}      
+                   <option value="1" selected="selected">{{ text_enabled }}</option>                
+
+                  {% else %}
+
+                <option value="1">{{ text_enabled }}</option>
+              
+                  {% endif %}
+                  {% if filter_status == '0' %}
+              <option value="0" selected="selected">{{ text_disabled }}</option>
+              {% else %}
+                <option value="0">{{ text_disabled }}</option> 
+                {% endif %}
+              </select>
+              </div>
+              
+              
+            </div>
+       
+          </div>
+           <div class="form-group text-right">
+              <button type="button" id="button-filter" class="btn btn-primary "><i class="fa fa-filter"></i> {{ button_filter }}</button>
+            </div>
+            </div>
+          </div>
+            {# product filter end #}
+
+            <div class="table-responsive ">
+                <table class="table table-bordered table-hover">
+                <div class="overlay" ></div>
+                 <span class="loader" ></span>
+                  <thead id= "product-table-heading">
+                    
+                    
+                  </thead>
+                  <tbody id= "all_product_section">
+                    
+                  </tbody>
+                 
+                </table>
+              </div>
+          </div>
+       </div>
+
+
+
+           
+        </form>
+
+         
+           
+              
+            </div>
+      
+      </div>
+
+     
+      
+    </div>
+      
+  {{ footer }}
+  
+<script type="text/javascript"><!--
+
+
+ var session_carousels_product_id = jQuery.parseJSON( '{{ product_json }}');
+ $('#saved_product_ids').val(JSON.stringify(window.session_carousels_product_id));
+ var session_carousels_image_id = jQuery.parseJSON( '{{ image_json }}');  
+ $('#saved_image_ids').val(JSON.stringify(window.session_carousels_image_id));
+
+$('body').on('click','tbody .product-ids',function(){
+  saveProductIds();
+});
+
+$('body').on('click','tbody .carousels_image_id',function(){        
+   saveImageIds();
+});
+   window.session_save_db_product=   jQuery.parseJSON( '{{ product_json }}');
+function saveProductIds(){
+  // Get checked checkboxes
+   
+    $('.product-ids').each(function(index,checkbox) {
+    
+    if( $(checkbox).prop("checked") == true ){
+        window.session_carousels_product_id.push(checkbox.value);
+    }
+    if( $(checkbox).prop("checked") == false ){
+        const index = window.session_carousels_product_id.indexOf(checkbox.value);
+     
+          if (index > -1) {
+            window.session_carousels_product_id.splice(index, 1); 
+          }
+    }
+
+    });
+      window.session_carousels_product_id =  getUnique(window.session_carousels_product_id);  
+      
+    $('#saved_product_ids').val(JSON.stringify(window.session_carousels_product_id));
+}
+
+function saveImageIds(){ 
+ $('.carousels_image_id').each(function(index,checkbox) {
+    
+    if( $(checkbox).prop("checked") == true ){
+        window.session_carousels_image_id.push(checkbox.value);
+    }
+    if( $(checkbox).prop("checked") == false ){
+        const index = window.session_carousels_image_id.indexOf(checkbox.value);
+     
+          if (index > -1) {
+            window.session_carousels_image_id.splice(index, 1); 
+          }
+    }
+
+    });
+      window.session_carousels_image_id =  getUnique(window.session_carousels_image_id);  
+      
+    $('#saved_image_ids').val(JSON.stringify(window.session_carousels_image_id));
+}
+   function getUnique(array){
+        var uniqueArray = [];
+        
+        // Loop through array values
+        for(i=0; i < array.length; i++){
+            if(uniqueArray.indexOf(array[i]) === -1) {
+                uniqueArray.push(array[i]);
+            }
+        }
+        return uniqueArray;
+    }
+
+//--></script> 
+
+ <script type="text/javascript"><!--
+    localStorage.setItem("product_ids", []); 
+ $('#main_carousel_section').on('click', function() {
+   $('#main-form').show();
+   $('#type-section').hide();
+    $('#pagination-div #pagination').remove();
+    
+});
+
+
+$('body').on('click','#pagination-div #pagination a',function(e){
+  e.preventDefault(); 
+  var pagination_url = $(this).attr('href');
+  var type = $('#input-type').val();
+
+  if(type == 'Product'){
+    var product_type = $('#product_type').val();
+    var manufacturer_id = getManufacturerID();   
+    var catagory_id = getCatagoryID();    
+    ajaxRequest(pagination_url,product_type,manufacturer_id,catagory_id,1);
+  }else if(type == 'Image'){   
+     ajaxRequestForImage(pagination_url, 1);        
+  }
+
+   
+});
+$('body').on('click','table thead a',function(e){
+
+  e.preventDefault();   
+  var sort_url = $(this).attr('href'); 
+  var type = $('#input-type').val();  
+  if(type == 'Product'){
+    var product_type = $('#product_type').val();
+    var manufacturer_id = getManufacturerID();   
+    var catagory_id = getCatagoryID();    
+    ajaxRequest(sort_url,product_type,manufacturer_id,catagory_id,1);
+  }else if(type == 'Image'){   
+     ajaxRequestForImage(sort_url, 1);        
+  }
+
+   
+});
+
+
+
+ $('#carousel_section_type_button').on('click', function() {
+   $('#main-form').hide();
+   $('#type-section').show();
+   pro_img_type();
+ 
+});
+
+$('#button-filter').on('click', function() {
+    var product_type = $('#product_type').val();
+    var manufacturer_id = getManufacturerID();         
+    var url = commonUrl();
+    ajaxRequest(url,product_type,manufacturer_id);
+});
+
+
+
+// for image section 
+$('#button-filter-for-image').on('click', function() {
+     var product_type = $('#product_type').val();
+     var url = commonUrlForImage();  
+     ajaxRequestForImage(url);
+});
+
+function commonUrl(){
+  var url = '';
+
+	var filter_name = $('input[name=\'filter_name\']').val();
+
+	if (filter_name) {
+		url += '&filter_name=' + encodeURIComponent(filter_name);
+	}
+
+	var filter_model = $('input[name=\'filter_model\']').val();
+
+	if (filter_model) {
+		url += '&filter_model=' + encodeURIComponent(filter_model);
+	}
+
+	var filter_price = $('input[name=\'filter_price\']').val();
+
+	if (filter_price) {
+		url += '&filter_price=' + encodeURIComponent(filter_price);
+	}
+
+	var filter_quantity = $('input[name=\'filter_quantity\']').val();
+
+	if (filter_quantity) {
+		url += '&filter_quantity=' + encodeURIComponent(filter_quantity);
+	}
+
+	var filter_status = $('select[name=\'filter_status\']').val();
+
+	if (filter_status !== '') {
+		url += '&filter_status=' + encodeURIComponent(filter_status);
+	}
+
+var sort_name = $('select[name=\'filter_status\']').val();
+
+	if (filter_status !== '') {
+		url += '&filter_status=' + encodeURIComponent(filter_status);
+	}
+  return url;
+}
+
+function ajaxRequest(url,product_type='random_product',manufacturer_id = [],catagory_id = [],fullPath=0 ){  
+  
+ var complete_url; 
+ 
+  if(fullPath==1){
+    complete_url = url;
+  }else{
+   complete_url = 'index.php?route=mobikul/carousels/getAllProduct&product_type='+product_type+'&user_token={{ user_token }}' + url;
+  }
+  var product_ids=[];
+  var db_products = window.session_save_db_product ;    
+  product_ids = window.session_carousels_product_id; 
+  
+  
+ 
+ 
+  $.extend(true, product_ids, db_products); 
+  
+  var Html = '';
+   ProductTableHeadingHtml ='';
+    $.ajax({        
+          url: complete_url,
+          dataType: 'json',
+          data: ({manufacturer_id :   manufacturer_id, catagory_id:catagory_id }),
+          type: 'get',
+          beforeSend : function(){          
+          $( "#all_product_section tr" ).remove();
+          $( ".loader" ).show();
+          $( ".overlay" ).show();
+          },
+          success: function(json) {
+            if(!jQuery.isEmptyObject(json['products'])){
+                if(json['products']){
+                json['products'].forEach( (product,index) => {
+              Html = `<tr>`
+             
+              if( product_ids.indexOf(product.product_id) > -1){                
+                  Html +=  `<td class="text-center">  <input type="checkbox" name="product_id[]" checked class="product-ids"  value="`+ product.product_id + `"></td>`;
+              } else {
+                  Html +=  `<td class="text-center">  <input type="checkbox" name="product_id[]" class="product-ids" value="`+ product.product_id + `"></td>`;
+              }
+             
+                Html +=          
+                      `<td class="text-center"> <img src="`+ product.image +`" alt="Apple Cinema 30&quot;" class="img-thumbnail"> </td>
+                      <td class="text-left">`+product.name+`</td>
+                      <td class="text-left">`+product.model+`</td>`;
+ 
+                      if(product.special){
+                         Html +=      `<td class="text-right"> <span style="text-decoration: line-through;">`+product.price+`</span><br>
+                        <div class="text-danger">`+product.special+`</div>
+                      </td>`;
+                      }else{
+                       Html +=  `<td class="text-right"> <span>`+product.price+`</span><br>
+                       
+                      </td>`;
+                      }
+                    
+               Html +=   `<td class="text-right"> <span class="label label-success">`+product.quantity+`</span> </td>
+                      <td class="text-left">`+product.status+`</td>                
+                    </tr>`;
+              
+                $('#all_product_section').append(Html);
+
+            });
+           $('#pagination-div #pagination').remove();   
+           $('#pagination-div').append(`<div id="pagination"> </div>`);            
+           $('#pagination-div #pagination').append(json['product_pagination']);
+          
+            }
+            }else{
+              $('#pagination-div #pagination').remove();
+              $( ".loader" ).hide();
+              $( ".overlay" ).hide();
+             
+               Html = `<tr>
+                    <td class="text-center" colspan="8">` + json['text_no_results'] + `</td>
+                  </tr>`;
+                $('#all_product_section').append(Html);
+            }
+           
+          $('#product-table-heading tr').remove();
+           var sort =  json['sort'];
+               ProductTableHeadingHtml = `<tr>
+               <td style="width: 1px;" class="text-center"><input type="checkbox" onclick="$('.product-ids').prop('checked', this.checked);saveProductIds();" /></td>`;
+              
+                ProductTableHeadingHtml += `  <td class="text-center">`+ '{{ column_image }}' + `</td>
+                <td class="text-left">`;
+                if(sort == 'pd.name'){
+                  ProductTableHeadingHtml += `<a href="`+ json['sort_name']  + `" class="`+ json['order']  +`">`+ '{{ column_name }}' +`</a>`;
+                }else{
+                     ProductTableHeadingHtml += `<a href="`+ json['sort_name'] + `">`+ '{{ column_name }}' +`</a>`;
+                }
+                
+                ProductTableHeadingHtml += `  <td class="text-left">`;
+                if(sort == 'p.model'){
+                  ProductTableHeadingHtml += `<a href="`+ json['sort_model']  +`" class="`+ json['order']  +`">`+ '{{ column_model }}' +`</a>`;
+                }else{
+                     ProductTableHeadingHtml += `<a href="`+ json['sort_model'] + `">`+ '{{ column_model }}' +`</a>`;
+                };
+
+                ProductTableHeadingHtml += `  <td class="text-left">`;
+                if(sort == 'p.price'){
+                  ProductTableHeadingHtml += `<a href="`+ json['sort_price']  +`"class="`+ json['order']  +`">`+ '{{ column_price }}' +`</a>`;
+                }else{
+                     ProductTableHeadingHtml += `<a href="`+ json['sort_price'] + `">`+ '{{ column_price }}' +`</a>`;
+                };
+
+                 ProductTableHeadingHtml += `  <td class="text-left">`;
+                if(sort == 'p.quantity'){
+                  ProductTableHeadingHtml += `<a href="`+ json['sort_quantity']  +`"class="`+ json['order']  +`">`+ '{{ column_quantity }}' +`</a>`;
+                }else{
+                     ProductTableHeadingHtml += `<a href="`+ json['sort_quantity'] + `">`+ '{{ column_quantity }}' +`</a>`;
+                };
+
+                 ProductTableHeadingHtml += `  <td class="text-left">`;
+                if(sort == 'p.status'){
+                  ProductTableHeadingHtml += `<a href="`+ json['sort_status']  +`"class="`+ json['order']  +`">`+ '{{ column_status }}' +`</a>`;
+                }else{
+                     ProductTableHeadingHtml += `<a href="`+ json['sort_status'] + `">`+ '{{ column_status }}' +`</a>`;
+                };
+
+                
+
+                
+               ProductTableHeadingHtml +=    `</tr>`; 
+              
+                  
+               
+            $('#product-table-heading').append(ProductTableHeadingHtml);   
+
+          },
+          complete:function() {  
+            
+            $( ".loader" ).hide();
+            $( ".overlay" ).hide();
+         } 
+        
+        });
+}
+
+
+ 
+ 
+function commonUrlForImage(){
+  var url = '';
+
+	var filter_carousel_image_id_from = $('input[name=\'filter_carousel_image_id_from\']').val();
+
+	if (filter_carousel_image_id_from) {
+		url += '&filter_carousel_image_id_from=' + encodeURIComponent(filter_carousel_image_id_from);
+	}
+
+	var filter_carousel_image_id_to = $('input[name=\'filter_carousel_image_id_to\']').val();
+
+	if (filter_carousel_image_id_to) {
+		url += '&filter_carousel_image_id_to=' + encodeURIComponent(filter_carousel_image_id_to);
+	}
+
+	var filter_carousel_image_title = $('input[name=\'filter_carousel_image_title\']').val();
+
+	if (filter_carousel_image_title) {
+		url += '&filter_carousel_image_title=' + encodeURIComponent(filter_carousel_image_title);
+	}
+
+	var filter_carousel_image_status = $('select[name=\'filter_carousel_image_status\']').val();
+
+	if (filter_carousel_image_status) {
+		url += '&filter_carousel_image_status=' + encodeURIComponent(filter_carousel_image_status);
+	}
+  return url;
+}
+
+function ajaxRequestForImage(url,fullPath = 0){
+  var complete_url;
+  if(fullPath==1){
+    complete_url = url;
+  }else{
+   complete_url = 'index.php?route=mobikul/carousels/getAllImage&user_token={{ user_token }}' + url;
+  }
+ 
+  var image_ids=[];
+  var db_image_id = jQuery.parseJSON( '{{ image_json }}');  
+  image_ids = window.session_carousels_image_id; 
+  $.extend(true, image_ids, db_image_id); 
+
+  var Html = '';
+  ProductTableHeadingHtml = '';
+    $.ajax({         
+          url: complete_url,
+          dataType: 'json',        
+          type: 'get',
+
+           beforeSend : function(){ 
+          $('#all_image_section tr').remove();         
+          $( "#all_product_section tr" ).remove();
+          $('#pagination-div #pagination').remove();  
+          $( ".loader" ).show();
+          $( ".overlay" ).show();
+          },
+          success: function(json) {
+         
+          if( !jQuery.isEmptyObject(json['carousels_images'])  ){
+            json['carousels_images'].forEach( (image,index) => {
+           
+
+           Html = `<tr>`;
+               if( image_ids.indexOf(image.id) > -1){                
+               Html +=  `<td class="text-center">  <input type="checkbox" name="carousels_image_id[]" checked class="carousels_image_id carousels_image_ids"  value="`+ image.id + `" checked ></td>`;
+           } else {
+               Html +=  `<td class="text-center">  <input type="checkbox" name="carousels_image_id[]" class="carousels_image_id carousels_image_ids" value="`+ image.id + `" checked ></td>`;
+           }
+          
+          Html += `<td class="text-left">`+ image.id +`</td>
+                 <td class="text-center"> <img src="`+ image.image +`" alt="" class="img-thumbnail"> </td>
+                
+                 <td class="text-left">`+ image.title +`</td>
+                  <td class="text-left">`+ image.status +`</td>
+                 
+               </tr>`;   
+               
+            $('#all_image_section').append(Html);
+            saveImageIds();
+            
+         });
+       
+        $('#pagination-div #pagination').remove();   
+        $('#pagination-div').append(`<div id="pagination"> </div>`);            
+        $('#pagination-div #pagination').append(json['carousels_image_pagination']);
+         }else{ 
+              $('#pagination-div #pagination').remove();
+             
+             
+               Html = `<tr>
+                    <td class="text-center" colspan="8">` + json['text_no_results'] + `</td>
+                  </tr>`;
+                $('#all_image_section').append(Html);
+            }
+             
+            $('#image-table-heading tr').remove();
+           var sort =  json['sort'];
+               ProductTableHeadingHtml = `<tr>
+               <td style="width: 1px;" class="text-center"><input type="checkbox" onclick="$('.carousels_image_id').prop('checked', this.checked);saveImageIds();" /></td>`;
+                ProductTableHeadingHtml += ``;
+               
+                ProductTableHeadingHtml += `  <td class="text-left">`;
+                if(sort == 'ci.id'){
+                  ProductTableHeadingHtml += `<a href="`+ json['carousel_image_sort_id']  +`"class="`+ json['order']  +`">`+ '{{ column_id }}' +`</a>`;
+                }else{
+                     ProductTableHeadingHtml += `<a href="`+ json['carousel_image_sort_id'] + `">`+ '{{ column_id }}' +`</a>`;
+                };
+
+                ProductTableHeadingHtml += ` <td class="text-center ">` + '{{ column_image }}' + `</td>`;
+
+                ProductTableHeadingHtml += `  <td class="text-left">`;
+                if(sort == 'cid.title'){
+                  ProductTableHeadingHtml += `<a href="`+ json['carousel_image_title']  +`"class="`+ json['order']  +`">`+ '{{ column_title }}' +`</a>`;
+                }else{
+                     ProductTableHeadingHtml += `<a href="`+ json['carousel_image_title'] + `">`+ '{{ column_title }}' +`</a>`;
+                };
+
+                ProductTableHeadingHtml += `  <td class="text-left">`;
+                if(sort == 'ci.status'){
+                  ProductTableHeadingHtml += `<a href="`+ json['carousel_image_status']  +`"class="`+ json['order']  +`">`+ '{{ column_status }}' +`</a>`;
+                }else{
+                     ProductTableHeadingHtml += `<a href="`+ json['carousel_image_status'] + `">`+ '{{ column_status }}' +`</a>`;
+                };
+
+              
+               
+                ProductTableHeadingHtml +=    `</tr>`; 
+                 $('#image-table-heading ').append(ProductTableHeadingHtml);
+          },
+            complete:function(json) {
+            $( ".loader" ).hide();
+            $( ".overlay" ).hide();
+         } 
+        });
+
+     
+}
+//--></script> 
+ 
+
+<script>
+
+function pro_img_type(){
+	var type = $('#input-type').val();
+   $('#pagination-div #pagination').remove(); 
+  if(type == 'Product'){
+
+               $('#product_type_block').show();
+               $('#carousel_product_type').show();
+               $('#sub_type_block').hide();
+               $('#display_image_section').hide();
+               $('.image-catagories-list').hide();
+                 $('.image-manufacture-list').hide();
+               product_type_fun();
+            
+
+  }else if(type == 'Image'){
+              $('#product_type_block').hide();
+              $('#carousel_product_type').hide();            
+              $('.image-catagories-list').hide();
+              $('.image-catagories-list').hide(); 
+              $('.image-manufacture-list').hide(); 
+              $('#product_listing_section').hide();
+
+              sub_type_fun();
+  }
+
+}
+function sub_type_fun(){ 
+  $('#sub_type_block').show();
+	var type = $('#input-type').val();
+    
+   if(type == 'Image'){
+     var sub_type = $('#sub_type').val();
+      
+     if(sub_type == 'image_manufacturer'){
+        $('.image-manufacture-list').show();
+        $('#product_type_block').hide();
+        $('#display_image_section').hide();
+        $('.image-catagories-list').hide();
+        $('#pagination-div #pagination').remove(); 
+
+     }else if(sub_type == 'image_catagory'){
+        $('.image-manufacture-list').hide();
+         $('#product_type_block').hide();
+        $('#display_image_section').hide();
+        $('#pagination-div #pagination').remove(); 
+         $('.image-catagories-list').show();
+     }else if(sub_type == 'image_carousel'){
+              $('.image-catagories-list').hide();
+              $('.image-manufacture-list').hide();
+              $('#product_type_block').show();
+              $('#carousel_product_type').hide();
+              $('#display_image_section').show();
+              var url = commonUrlForImage();  
+             ajaxRequestForImage(url);
+     }else if(sub_type == 'image_all_parrent_category'){
+              $('.image-catagories-list').hide();
+              $('.image-manufacture-list').hide();
+              $('#product_type_block').hide();
+              $('#carousel_product_type').hide();
+              $('#display_image_section').hide();             
+     }
+
+  }
+}
+function product_type_fun(){
+   
+  var db_product_type = jQuery.parseJSON( '{{ db_product_type }}'); 
+    var product_type = $('#product_type').val();
+    if( !(db_product_type == product_type) )
+    { 
+      console.log('fgjgh');
+      $('#saved_product_ids').val("[]");
+      window.session_carousels_product_id=[];
+      window.session_save_db_product=[];
+     
+    }else{ console.log('sadf');
+       window.session_carousels_product_id = jQuery.parseJSON( '{{ product_json }}');
+       window.session_save_db_product=   jQuery.parseJSON( '{{ product_json }}');
+    }
+
+  var type = $('#product_type').val(); 
+  if(type){
+    if( (type == 'manufacturer_products') || (type == 'manufacturer') ){ 
+     $('.manufacture-list').show();
+     $('#product_listing_section').hide();
+     $('#pagination-div #pagination').remove();     
+    }else{
+       $('.manufacture-list').hide();
+    }
+
+    if( (type == 'catagory_products') || (type == 'catagories') ){
+      $('.catagories-list').show();
+      $('#product_listing_section').hide();
+      $('#pagination-div #pagination').remove();
+    }else{
+       $('.catagories-list').hide();
+    }
+
+    if( !(type == 'best') && !(type == 'popular') && !(type == 'latest')  && !(type == 'special_products') && !(type == 'discounted_products') && !(type == 'manufacturer')  && !(type == 'catagories') ){  
+        $('#product_listing_section').show();
+        var manufacturer_id = getManufacturerID();
+        var catagory_id = getCatagoryID();
+        var url = commonUrl();
+        ajaxRequest(url,type,manufacturer_id,catagory_id);
+    }
+
+      if( (type == 'best') || (type == 'popular') || (type == 'latest') || (type == 'special_products') || (type == 'discounted_products') ){      
+        $('#product_listing_section').hide();
+           $('#pagination-div #pagination').remove();
+    }
+   
+    
+    if( (type == 'manufacturer') || (type == 'catagories') ){
+      $('#product_listing_section').hide();
+      $('#pagination-div #pagination').remove();
+    } 
+    
+   
+  }
+}
+
+$('input[name=\'filter_name\']').autocomplete({
+	'source': function(request, response) {
+		$.ajax({
+			url: 'index.php?route=catalog/product/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+			dataType: 'json',
+			success: function(json) {
+				response($.map(json, function(item) {
+					return {
+						label: item['name'],
+						value: item['product_id']
+					}
+				}));
+			}
+		});
+	},
+	'select': function(item) {
+		$('input[name=\'filter_name\']').val(item['label']);
+	}
+});
+
+$('input[name=\'filter_model\']').autocomplete({
+	'source': function(request, response) {
+		$.ajax({
+			url: 'index.php?route=catalog/product/autocomplete&user_token={{ user_token }}&filter_model=' +  encodeURIComponent(request),
+			dataType: 'json',
+			success: function(json) {
+				response($.map(json, function(item) {
+					return {
+						label: item['model'],
+						value: item['product_id']
+					}
+				}));
+			}
+		});
+	},
+	'select': function(item) {
+		$('input[name=\'filter_model\']').val(item['label']);
+	}
+});
+
+  // Items
+  jQuery(function(){
+  $('input[name=\'catagories\']').autocomplete({
+    'source': function(request, response) { 
+      $.ajax({
+        url: 'index.php?route=mobikul/notification/getItem&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+        dataType: 'json',
+        data: ({type : 2 }),
+        type: 'post',
+        success: function(json) {
+         
+          response($.map(json, function(item) {
+            return {
+              label: item['name'],
+              value: item['id']
+            }
+          }));
+        }
+      });
+    },
+	select: function(item) {
+		$('input[name=\'catagories\']').val('');
+
+		$('#catagories' + item['value']).remove();
+
+		$('#catagories').append('<div id="catagories' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="catagories_id[]" class="catagories_id" value="' + item['value'] + '" />' + '<input type="hidden" name="catagories_name[' + item['value'] +']" value="' + item['label'] + '" />' + '</div>');
+  
+   catagory_id = getCatagoryID();
+  
+   if(catagory_id){    
+          var product_type = $('#product_type').val();
+          var url = commonUrl();
+          ajaxRequest(url,product_type,null,catagory_id);
+      } 
+	  
+
+}
+  });
+  });
+$('#catagories').delegate('.fa-minus-circle', 'click', function() {
+	$(this).parent().remove();
+
+   catagory_id = getCatagoryID();
+  
+   if(catagory_id){    
+          var product_type = $('#product_type').val();
+          var url = commonUrl();
+          ajaxRequest(url,product_type,null,catagory_id);
+      } 
+ 
+});
+
+
+
+</script>
+<script type="text/javascript"><!--
+ 
+$('input[name=\'manufacturer\']').autocomplete({ 
+  
+ 
+	source: function(request, response) {   
+		$.ajax({
+		  url: 'index.php?route=catalog/manufacturer/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+			dataType: 'json',
+			success: function(json) {  
+               
+				response($.map(json, function(item) {
+					return {
+					 label: item['name'],
+           value: item['manufacturer_id']
+					}
+				}));
+			}
+		});
+	},
+	select: function(item) {
+		$('input[name=\'manufacturer\']').val('');
+
+		$('#manufacturer' + item['value']).remove();
+
+		$('#manufacturer').append('<div id="manufacturer' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="manufacturer_id[]" class="manufacturer_id" value="' + item['value'] + '" />' +'<input type="hidden" name="manufacturer_name['+  item['value']  +']"  value="' + item['label'] + '" />' +'</div>');
+  
+  manufacturer_id = getManufacturerID();
+   if(manufacturer_id){    
+          var product_type = $('#product_type').val();
+          var url = commonUrl();
+          ajaxRequest(url,product_type,manufacturer_id);
+      }
+	  
+
+}
+});
+$('#manufacturer').delegate('.fa-minus-circle', 'click', function() {
+	$(this).parent().remove();
+  manufacturer_id = getManufacturerID();
+   if(manufacturer_id){    
+          var product_type = $('#product_type').val();
+          var url = commonUrl();
+          ajaxRequest(url,product_type,manufacturer_id);
+      }
+ 
+});
+
+$('input[name=\'image_manufacturer_carousel\']').autocomplete({ 
+  
+ 
+	source: function(request, response) {   
+		$.ajax({
+		  url: 'index.php?route=catalog/manufacturer/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+			dataType: 'json',
+			success: function(json) {  
+               
+				response($.map(json, function(item) {
+					return {
+					 label: item['name'],
+           value: item['manufacturer_id']
+					}
+				}));
+			}
+		});
+	},
+	select: function(item) {
+		$('input[name=\'image_manufacturer_carousel\']').val('');
+
+		$('#image_manufacturer_carousel' + item['value']).remove();
+
+		$('#image_manufacturer').append('<div id="image_manufacturer' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="image_manufacturer_id[]" class="image_manufacturer" value="' + item['value'] + '" />'+ '<input type="hidden" name="image_manufacturer_name['+item['value']+']" class="image_manufacturer" value="' + item['label'] + '" />' + '</div>');
+  
+  
+
+}
+});
+$('#image_manufacturer').delegate('.fa-minus-circle', 'click', function() {
+	$(this).parent().remove();
+ 
+});
+ 
+ jQuery(function(){
+  $('input[name=\'image_catagories\']').autocomplete({
+    'source': function(request, response) { 
+      $.ajax({
+        url: 'index.php?route=mobikul/notification/getItem&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+        dataType: 'json',
+        data: ({type : 2 }),
+        type: 'post',
+        success: function(json) {
+         
+          response($.map(json, function(item) {
+            return {
+              label: item['name'],
+              value: item['id']
+            }
+          }));
+        }
+      });
+    },
+	select: function(item) {
+		$('input[name=\'image_catagories\']').val('');
+
+		$('#image_catagories' + item['value']).remove();
+
+		$('#image_catagories').append('<div id="image_catagories' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="image_catagories_id[]" class="image_catagories_id" value="' + item['value'] + '" />' + '<input type="hidden" name="image_catagories_name[' + item['value'] +']" class="image_catagories_id" value="' + item['label'] + '" />' + '</div>');
+  
+  
+
+}
+  });
+  });
+$('#image_catagories').delegate('.fa-minus-circle', 'click', function() {
+	$(this).parent().remove();
+ 
+});
+
+function getManufacturerID(){
+    var manufacturer_id = new Array();
+    $('.manufacturer_id').each(function(){
+      manufacturer_id.push($(this).val());
+     
+   });  
+   return manufacturer_id;
+	  
+}
+
+function getCatagoryID(){
+    var catagories_id = new Array();
+    $('.catagories_id').each(function(){
+      catagories_id.push($(this).val());
+     
+   });
+ 
+   return catagories_id;
+	  
+}
+
+
+
+//--></script>
+
+<script type="text/javascript">
+  $('#multiple_delete').on('click',function(){
+  
+    var post_arr = [];
+
+    // Get checked checkboxes
+    $('.input-selected').each(function() {
+      if (jQuery(this).is(":checked")) {
+        var id = this.id;   
+         
+        post_arr.push(id);
+        
+      }
+    });
+    
+    if (confirm('{{ text_confirm }}')) {
+      $.ajax({
+        url: 'index.php?route=mobikul/customcollection/delete&user_token={{ user_token }}',
+        data : {post_id : post_arr },
+        method: 'POST',
+        dataType: 'json',
+        success: function (json) {
+          window.location.reload();
+        },
+        error : function(error){
+          console.log(error);
+        },
+        async: false
+      });
+    }
+  });
+</script>
+
+
+

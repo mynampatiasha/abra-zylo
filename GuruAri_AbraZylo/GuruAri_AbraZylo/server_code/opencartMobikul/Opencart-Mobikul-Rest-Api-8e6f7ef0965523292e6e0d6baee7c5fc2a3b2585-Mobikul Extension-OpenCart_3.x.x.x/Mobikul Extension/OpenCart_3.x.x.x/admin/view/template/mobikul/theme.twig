@@ -1,0 +1,310 @@
+{{ header }}{{ column_left }}
+
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">      
+        <button type="submit" form="form-notification" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+	{% if success %}
+    <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-notification" class="form-horizontal">
+
+
+        <div class="panel-heading bright">
+           <h3 class="panel-title"><i class="fa-solid fa-brightness"></i> {{ text_bright_theme }}</h3>
+
+			<div class ="btn_reset_color pull-right" >
+		   		<button type="button" id="reset_bright_color" data-toggle="tooltip" title="{{ help_btn_reset }}" class="btn btn-primary reset_color">Reset</button>
+			</div>
+     	</div>	
+
+            <div class="form-group">
+    			<label class="col-sm-2 control-label">
+    				{{ entry_app_button_color }}
+    			</label>
+    			<div class="col-sm-10">
+    				<div class="input-group-addon ">
+    					<input type="color" name="mobikul_theme_bright_app_button_color" class="form-control" value="{{mobikul_theme_bright_app_button_color}}" readonly />
+    					
+    				</div>
+    			</div>
+    		</div>
+
+             <div class="form-group">
+    			<label class="col-sm-2 control-label">
+    				{{ entry_app_button_text_color }}
+    			</label>
+    			<div class="col-sm-10">
+    				<div class="input-group-addon ">
+    					<input type="color" name="mobikul_theme_bright_app_button_text_theme_color" class="form-control" value="{{mobikul_theme_bright_app_button_text_theme_color}}" readonly />
+    					
+    				</div>
+    			</div>
+    		</div>
+
+             <div class="form-group">
+    			<label class="col-sm-2 control-label">
+    				{{ entry_app_theme_color }}
+    			</label>
+    			<div class="col-sm-10">
+    				<div class="input-group-addon ">
+    					<input type="color" name="mobikul_theme_bright_app_theme_color" class="form-control" value="{{mobikul_theme_bright_app_theme_color}}" readonly />
+    					
+    				</div>
+    			</div>
+    		</div>      
+
+             <div class="form-group">
+    			<label class="col-sm-2 control-label">
+    				{{ entry_theme_text_color }}
+    			</label>
+    			<div class="col-sm-10">
+    				<div class="input-group-addon ">
+    					<input type="color" name="mobikul_theme_bright_theme_text_color" class="form-control" value="{{mobikul_theme_bright_theme_text_color}}" readonly />
+    				
+    				</div>
+    			</div>
+    		</div>
+
+ 			<div class="form-group">
+    			<label class="col-sm-2 control-label">
+    				{{ entry_app_background_color }}
+    			</label>
+    			<div class="col-sm-10">
+    				<div class="input-group-addon ">
+    					<input type="color" name="mobikul_theme_bright_background_color" class="form-control" value="{{mobikul_theme_bright_background_color}}" readonly />
+    				
+    				</div>
+    			</div>
+    		</div>
+
+			<div class="form-group ">
+    			<label class="col-sm-2 control-label">
+    				{{ text_upload_logo }}
+    			</label>
+    			<div class="col-sm-3">
+				{% if mobikul_theme_bright_logo %}
+					<div id="image-preview"><img src="{{ mobikul_theme_bright_logo}}" /></div>
+				{% endif %}	
+    				
+					<div class="input-group-addon ">
+							<input type="file" name="mobikul_theme_bright_logo" accept=".png, .jpg, .jpeg, .gif" class="form-control"/>
+    				
+    				</div>
+    			</div>
+    		</div>
+			{% if text_allowed_logo %}
+			    <div class="col-sm-2 control-label"></div>
+   				<div> {{ text_allowed_logo }}</div><hr>
+   			{% endif %}
+
+
+			<div class="form-group ">
+    			<label class="col-sm-2 control-label">
+    				{{ text_upload_image }}
+    			</label>
+    			<div class="col-sm-3">
+				{% if mobikul_theme_bright_splash %}
+					<div id="image-preview"><img src="{{ mobikul_theme_bright_splash }}" /></div>
+    			{% endif %}
+					<div class="input-group-addon ">
+							<input type="file" name="mobikul_theme_bright_splash" accept=".png, .jpg, .jpeg, .gif" class="form-control"/>
+    				</div>
+    			</div>
+    		</div>
+			{% if text_allowed_splash %}
+			    <div class="col-sm-2 control-label"></div>
+   				<div> {{ text_allowed_splash }}</div>
+   			{% endif %}
+		
+
+           
+ <div class="panel-heading dark">
+        <h3 class="panel-title"><i class="fa-solid fa-brightness"></i> {{ text_dark_theme }}</h3>
+
+		<div class = "btn_reset_color pull-right" >
+			<button type="button" id="reset_dark_color" form="form-notification" data-toggle="tooltip" title="{{ help_btn_reset }}" class="btn btn-primary reset_color">Reset</button>
+		</div>
+	</div>
+
+             <div class="form-group">
+    			<label class="col-sm-2 control-label">
+    				{{ entry_app_button_color }}
+    			</label>
+    			<div class="col-sm-10">
+    				<div class="input-group-addon ">
+    					<input type="color" name="mobikul_theme_dark_app_button_color" class="form-control" value="{{mobikul_theme_dark_app_button_color}}" readonly />
+    					
+    				</div>
+    			</div>
+    		</div>
+
+             <div class="form-group">
+    			<label class="col-sm-2 control-label">
+    				{{ entry_app_button_text_color }}
+    			</label>
+    			<div class="col-sm-10">
+    				<div class="input-group-addon ">
+    					<input type="color" name="mobikul_theme_dark_app_button_text_theme_color" class="form-control" value="{{mobikul_theme_dark_app_button_text_theme_color}}" readonly />
+    					
+    				</div>
+    			</div>
+    		</div>
+
+             <div class="form-group">
+    			<label class="col-sm-2 control-label">
+    				{{ entry_app_theme_color }}
+    			</label>
+    			<div class="col-sm-10">
+    				<div class="input-group-addon ">
+    					<input type="color" name="mobikul_theme_dark_app_theme_color" class="form-control" value="{{mobikul_theme_dark_app_theme_color}}" readonly />
+    					
+    				</div>
+    			</div>
+    		</div>
+
+             <div class="form-group">
+    			<label class="col-sm-2 control-label">
+    				{{ entry_theme_text_color }}
+    			</label>
+    			<div class="col-sm-10">
+    				<div class="input-group-addon ">
+    					<input type="color" name="mobikul_theme_dark_theme_text_color" class="form-control" value="{{mobikul_theme_dark_theme_text_color}}" readonly />
+    				
+    				</div>
+    			</div>
+    		</div>
+
+
+
+			<div class="form-group">
+    			<label class="col-sm-2 control-label">
+    				{{ entry_app_background_color }}
+    			</label>
+    			<div class="col-sm-10">
+    				<div class="input-group-addon ">
+    					<input type="color" name="mobikul_theme_dark_background_color" class="form-control" value="{{mobikul_theme_dark_background_color}}" readonly />
+    				
+    				</div>
+    			</div>
+    		</div>
+
+
+
+			<div class="form-group ">
+    			<label class="col-sm-2 control-label">
+    				{{ text_upload_logo }}
+    			</label>
+    			<div class="col-sm-3">
+				{% if mobikul_theme_dark_logo %}
+					<div id="image-preview"><img src="{{ mobikul_theme_dark_logo}}" /></div>
+				{% endif %}	
+    				
+					<div class="input-group-addon ">
+							<input type="file" name="mobikul_theme_dark_logo" accept=".png, .jpg, .jpeg, .gif" class="form-control"/>
+    				
+    				</div>
+    			</div>
+    		</div>
+			{% if text_allowed_logo %}
+			    <div class="col-sm-2 control-label"></div>
+   				<div> {{ text_allowed_logo }}</div><hr>
+   			{% endif %}
+
+
+			<div class="form-group ">
+    			<label class="col-sm-2 control-label">
+    				{{ text_upload_image }}
+    			</label>
+    			<div class="col-sm-3">
+				{% if mobikul_theme_dark_splash %}
+					<div id="image-preview"><img src="{{ mobikul_theme_dark_splash}}" /></div>
+				{% endif %}	
+    				
+					<div class="input-group-addon ">
+							<input type="file" name="mobikul_theme_dark_splash" accept=".png, .jpg, .jpeg, .gif" class="form-control"/>
+    				
+    				</div>
+    			</div>
+    		</div>
+			{% if text_allowed_splash %}
+			    <div class="col-sm-2 control-label"></div>
+   				<div> {{ text_allowed_splash }}</div>
+   			{% endif %}
+          
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+#image-preview {
+  
+  width: 100px;   
+  border: 2px;  
+  margin-bottom: 20px;
+}
+#image-preview img {  
+  width: 100%;
+  height: auto; 
+  display: block;   
+}
+
+.btn_reset_color{
+	position:relative;
+	top:-10px;
+}
+</style>
+
+
+<script>
+
+$('.reset_color').on('click', function(e) {
+	let result = confirm("The theme color will revert to its original state! Are you sere?");
+	if(result){	
+		button = this.id;
+  		$.ajax({
+  		  url: 'index.php?route=mobikul/theme/resetThemeColor&user_token={{ user_token }}&reset='+button,
+  		  type: 'post',
+  		  dataType: 'json',
+  		  data: '',
+  		  success: function(json) {
+			if(json.success){
+					for (let key in json.color) {
+					let element = document.querySelector(`[name="${key}"]`);
+					element.value = json.color[key];
+				}
+			}
+  		  }
+  		});
+	}
+});
+
+
+</script>
+  
+{{ footer }}

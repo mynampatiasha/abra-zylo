@@ -1,0 +1,174 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="button" data-toggle="tooltip" title="{{ button_send_save }}" class="btn btn-primary" onclick="confirm('{{ text_confirm_send_save }}') ? notificationSend() : false;"><i class="fa fa-envelope"> {{ button_send }}</i> &amp; {{ button_save }}</button>
+        <button type="submit" form="form-notification" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-notification" class="form-horizontal">
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-title"><span data-toggle="tooltip" title="{{ help_title }}">{{ entry_title }}</span></label>
+            <div class="col-sm-10">
+
+              {% for language in languages %}<div class="input-group"><span class="input-group-addon"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" />  </span>
+                <input type="text" name="title[{{ language['language_id'] }}]" value="{{ title[language['language_id']] is defined ? title[language['language_id']] : '' }}" placeholder="{{ entry_title }}" class="form-control" /></div>
+              {% if error_title[language['language_id']] is defined %}
+              <div class="text-danger">{{ error_title[language['language_id']] }}</div>
+              {% endif %}
+              {% endfor %}
+
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-content"><span data-toggle="tooltip" title="{{ help_content }}">{{ entry_content }}</span></label>
+            <div class="col-sm-10">
+              <textarea name="content" rows="5" placeholder="{{ entry_content }}" id="input-content" class="form-control">{{ content }}</textarea>
+            {% if error_content %}
+              <div class="text-danger">{{ error_content }}</div>
+              {% endif %}
+            </div>
+           
+          </div>
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-type"><span data-toggle="tooltip" title="{{ help_type }}">{{ entry_type }}</span></label>
+            <div class="col-sm-10">
+              <select name="type" id="input-type" class="form-control">
+                <option value="1" {% if type == 1 %}{{ 'selected' }}{% endif %}>  {{ text_product }} </option>
+                <option value="2" {% if type == 2 %}{{ 'selected' }}{% endif %}>  {{ text_category }} </option>
+                <option value="3" {% if type == 3 %}{{ 'selected' }}{% endif %}>  {{ text_other }} </option>
+                <option value="4" {% if type == 4 %}{{ 'selected' }}{% endif %}>  {{ text_customcollection }} </option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group {% if type == 4 %}{{ 'hide' }}{% endif %}" id="form-group_product">
+            <label class="col-sm-2 control-label" for="input-id"><span data-toggle="tooltip" title="{{ help_id }}">{{ entry_id }}</span></label>
+            <div class="col-sm-10">
+              <input type="text" name="product_category" value="{{ name }}" placeholder="{{ entry_id }}" id="input-id" class="form-control" />
+              <input type="hidden" name="id" value="{{ id }}" >
+              {% if error_id %}
+              <div class="text-danger">{{ error_id }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="form-group {% if type != 4 %}{{ 'hide' }}{% endif %}" id="form-group_collection">
+            <label class="col-sm-2 control-label" for="input-custom_id">{{ entry_custom_id }}</label>
+            <div class="col-sm-10">
+              <select name="input-custom_id" id="input-custom_id" class="form-control">
+                <option value="0">{{ text_select }} </option>
+                {% if custom_collections is defined and custom_collections %}
+                  {% for custom_collection in custom_collections %}
+                    <option value="{{ custom_collection['id'] }}" {% if custom_collection['id'] == id %}{{ 'selected' }}{% endif %} >{{ custom_collection['name'] }}</option>
+                  {% endfor %}
+                {% endif %}
+              </select>
+              {% if error_id %}
+              <div class="text-danger">{{ error_id }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-status"><span data-toggle="tooltip" title="{{ help_status }}">{{ entry_status }}</span></label>
+            <div class="col-sm-10">
+              <select name="status" id="input-status" class="form-control">
+                <option value="0" {% if not status %}{{ 'selected' }}{% endif %}>  {{ text_disabled }} </option>
+                <option value="1" {% if status %}{{ 'selected' }}{% endif %}>  {{ text_enabled }} </option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-status">{{ entry_image }}</label>
+            <div class="col-sm-10">
+              <a href="" id="thumb-image" data-toggle="image" class="img-thumbnail"><img src="{{ image }}" alt="{{ placeholder }}" title="" data-placeholder="{{ placeholder }}" /></a><input type="hidden" name="image" value="{{ image_name }}" id="input-image" />
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+<script type="text/javascript">
+  //$('#input-content').summernote({height: 200});
+  if ($('#input-type').val() == 3) {
+    $('#input-id').attr('disabled','true');
+  };
+
+  function notificationSend () {
+    $('#form-notification').append('<input type="hidden" name="send">');
+    $('#form-notification').submit();
+  }
+</script>
+<script>
+jQuery(function(){
+  $('#input-type').on('change', function () {
+    var type = $('#input-type').val();
+
+    if (type == 4) {
+      $('#form-group_product').addClass('hide');
+      $('#form-group_collection').removeClass('hide');
+    } else {
+      $('#form-group_collection').addClass('hide');
+      $('#form-group_product').removeClass('hide');
+    }
+
+    if (type == 3) {
+      $('#input-id').attr('disabled','true');
+      $('input[name=\'id\']').val('');
+    } else {
+      $('#input-id').removeAttr('disabled');
+    }
+  });
+
+  $('#input-id').on('change', function () {
+    var input = $('#input-id').val();
+    if (!input) {
+      $('input[name=\'id\']').val('');
+    }
+  });
+
+  // Items
+  $('input[name=\'product_category\']').autocomplete({
+    'source': function(request, response) {
+      $.ajax({
+        url: 'index.php?route=mobikul/notification/getItem&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+        dataType: 'json',
+        data: ({type : $('#input-type').val()}),
+        type: 'post',
+        success: function(json) {
+          response($.map(json, function(item) {
+            return {
+              label: item['name'],
+              value: item['id']
+            }
+          }));
+        }
+      });
+    },
+    'select': function(item) {
+      $('input[name=\'product_category\']').val(item['label']);
+      $('input[name=\'id\']').val(item['value']);
+    }
+  });
+});
+</script>
+</div>
+{{ footer }}

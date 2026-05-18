@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Webkul Software.
+  ~
+  ~ Kotlin
+  ~
+  ~ @author Webkul <support@webkul.com>
+  ~ @category Webkul
+  ~ @package com.webkul.mobikul
+  ~ @copyright 2010-2018 Webkul Software Private Limited (https://webkul.com)
+  ~ @license https://store.webkul.com/license.html ASL Licence
+  ~ @link https://store.webkul.com/license.html
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/ar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".SceneFormActivity">
+
+            <fragment
+                android:id="@+id/ux_fragment"
+                android:name="com.google.ar.sceneform.ux.ArFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
+
+        <ProgressBar
+            android:id="@+id/progress_circular"
+            android:layout_width="wrap_content"
+            android:visibility="gone"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+
+</layout>

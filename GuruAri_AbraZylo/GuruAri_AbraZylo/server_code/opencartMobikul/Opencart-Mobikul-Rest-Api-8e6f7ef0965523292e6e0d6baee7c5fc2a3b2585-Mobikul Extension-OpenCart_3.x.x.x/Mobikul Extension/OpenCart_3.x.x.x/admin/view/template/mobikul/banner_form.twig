@@ -1,0 +1,168 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">      
+        <button type="submit" form="form-notification" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-notification" class="form-horizontal">
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-title"><span data-toggle="tooltip" title="{{ help_title }}">{{ column_title }}</span></label>
+            <div class="col-sm-10">
+
+              {% for language in languages %}<div class="input-group"><span class="input-group-addon"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" />  </span>
+                <input type="text" name="title[{{ language['language_id'] }}]" value="{{ banner['title'][language['language_id']] ? banner['title'][language['language_id']] : '' }}" placeholder="{{ entry_title }}" class="form-control" /></div>
+              {% if error_title[language['language_id']] is defined %}
+              <div class="text-danger">{{ error_title[language['language_id']] }}</div>
+              {% endif %}
+              {% endfor %}
+
+            </div>
+          </div>
+          
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-type"><span data-toggle="tooltip" title="{{ help_type }}">{{ entry_type }}</span></label>
+            <div class="col-sm-10">
+              <select name="type" onchange="gettype()" id="input-type" class="form-control">
+                <option value="1" {% if banner['type'] == 1 %}{{ 'selected' }}{% endif %}>  {{ column_product }} </option>
+                <option value="2" {% if banner['type'] == 2 %}{{ 'selected' }}{% endif %}>  {{ column_catagory }} </option>
+                <option value="3" {% if banner['type'] == 3 %}{{ 'selected' }}{% endif %}>  {{ column_external_link }} </option>
+                <option value="4" {% if banner['type'] == 4 %}{{ 'selected' }}{% endif %}>  {{ column_no_link }} </option>
+               
+              </select>
+            </div>
+          </div>
+
+              
+             <div class="form-group required" id="link-tab">
+            <label class="col-sm-2 control-label" for="input-type"><span data-toggle="tooltip" title="{{ help_link }}">{{ column_link }}</span></label>
+            <div class="col-sm-10">
+             <input type="text" name="product_category" value="{{  banner['pro_cat_name'] ?  banner['pro_cat_name'] : '' }}" placeholder="" class="form-control product_category">
+             <input type="hidden" name="pro_cat_id"  id="pro_cat_id" value="{{  banner['pro_cat_id'] ?  banner['pro_cat_id'] :'' }}" placeholder="" class="form-control">
+            {% if error_pro_cat_id %}
+              <div class="text-danger">{{ error_pro_cat_id }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+
+            <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-type"><span data-toggle="tooltip" title="{{ help_sort_order }}">{{ column_sort_order }}</span></label>
+            <div class="col-sm-10">
+             <input type="text" name="sort_order" value="{{  banner['sort_order'] ?  banner['sort_order'] : '' }}" placeholder="{{ column_sort_order }}" class="form-control">           
+            {% if error_sort_order %}
+              <div class="text-danger">{{ error_sort_order}}</div>
+              {% endif %}
+            </div>
+          </div>
+
+
+
+
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+            <div class="col-sm-10">
+              <select name="status" id="input-status" class="form-control">              
+                <option value="1" {% if  banner['status']=='1' %}{{ 'selected' }}{% endif %}>  {{ text_enabled }} </option>
+                <option value="0" {% if  banner['status']=='0'  %}{{ 'selected' }}{% endif %}>  {{ text_disabled }} </option>
+              </select>
+            </div>
+          </div>
+
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-status">{{ entry_image }}</label>
+            <div class="col-sm-10">
+              <a href="" id="thumb-image" data-toggle="image" class="img-thumbnail"><img src="{{ banner['thumb'] }}" alt="{{ placeholder }}" title="" data-placeholder="{{ placeholder }}" /></a><input type="hidden" name="image" value="{{ banner['image'] ? banner['image'] :'' }}" id="input-image" />
+            </div>
+          </div>
+
+          
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+   
+
+<script>
+  var type = '';
+  type = $("#input-type").val();
+  function gettype(){
+  type = $("#input-type").val();
+ console.log(type);
+      if(type == '4'){
+        $("#link-tab").hide();
+      }else{
+         $("#link-tab").show();
+      }
+  } 
+      if(type == '4'){
+        $("#link-tab").hide();
+      }else{
+         $("#link-tab").show();
+      }
+  
+jQuery(function(){
+    
+   
+          $(document.body).on('focus', '.product_category' ,function(){  
+             if(  type == 1 || type == 2  ){
+            // Items
+                  $('.product_category').autocomplete({
+
+                    'source': function(request, response) {
+                      $.ajax({
+                        url: 'index.php?route=mobikul/notification/getItem&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+                        dataType: 'json',
+                        data: ({type : type}),
+                        type: 'post',
+                        success: function(json) {
+                          response($.map(json, function(item) {
+                            return {
+                              label: item['name'],
+                              value: item['id']
+                            }
+                          }));
+                        }
+                      });
+                    },
+                    'select': function(item) {
+                    // $("input[name=\'"+ link_name +"\']").val(item['label']);
+                    $("#pro_cat_id").val(item['value']);
+                      $(".product_category").val(item['label']);
+                    }
+                  });
+
+             } 
+
+          });
+
+ 
+   
+
+});
+
+</script>
+
+{{ footer }}

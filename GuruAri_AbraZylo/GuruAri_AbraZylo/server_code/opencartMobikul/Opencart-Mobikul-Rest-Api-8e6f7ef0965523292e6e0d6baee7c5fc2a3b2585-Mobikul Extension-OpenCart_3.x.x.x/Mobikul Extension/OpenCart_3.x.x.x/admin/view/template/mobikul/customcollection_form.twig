@@ -1,0 +1,313 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ collection_heading }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}{% if success %}
+    <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+ <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i>  {{ collection_heading }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form" class="form-horizontal">
+
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-create">{{ text_name }}<strong style="color:red;">*</strong></label>
+              <div class="col-sm-10">
+                {# <input type="text" name="name" value="{{  collections['name'] }}" placeholder="" id="name" class="form-control" /> #}
+                {% for language in languages %}
+                  <div class="input-group pull-left"><span class="input-group-addon"><img src="language/{{ language['code'] }}/{{ language['code'] }}.png" title="{{ language['name'] }}" /> </span>
+                    <input type="text" name="name[{{ language['language_id'] }}][collection_name]" value="{{ custom_collection['collection_name'][ language['language_id'] ]['collection_name'] ? custom_collection['collection_name'][ language['language_id'] ]['collection_name'] : '' }}" placeholder="{{ entry_title }}" class="form-control" />
+                  </div>
+                  {% if error_collection_name[language['language_id']] is defined %}
+                  <div class="text-danger">{{ error_collection_name[language['language_id']] }}</div>
+                  {% endif %}
+                  {% endfor %}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-create">{{ text_create }}</label>
+              <div class="col-sm-10">
+                <select name="collection_type" id="input-type" class="form-control">
+                  <option value="0">{{ text_select }} </option>
+                  <option value="product_ids"{% if custom_collection['collection_type'] == 'product_ids' %}{{ 'selected' }}{% endif %} > {{ text_product_id }} </option>
+                  <option value="latest_count" {% if custom_collection['collection_type'] == 'latest_count' %}{{ 'selected' }}{% endif %} >{{ text_product_count }} </option>
+                  <option value="product_attribute" {% if custom_collection['collection_type'] == 'product_attribute' %}{{ 'selected' }}{% endif %} >{{ text_product_attribute }} </option>
+                </select>
+              </div>
+            </div>
+            
+
+            <div class="form-group hide" id="form-group_product">
+              <label class="col-sm-2 control-label" for="input-product">{{ entry_product }}</label>
+              <div class="col-sm-10">
+                <input type="text" name="product" value="" placeholder="" id="input-product" class="form-control" />
+                <div id="customcollection-product" class="well well-sm" style="height: 150px; overflow: auto;">
+                  {% for product in custom_collection['products'] %}
+                  <div id="customcollection-product{{ product['product_id'] }}"><i class="fa fa-minus-circle"></i> {{ product['name'] }}
+                    <input type="hidden" name="mobikul_customcollection_customcollection_product[]" value="{{ product['product_id'] }}" />
+                  </div>     
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group hide" id="form-group_count">
+              <label class="col-sm-2 control-label" for="input-count">{{ text_product_count }}</label>
+              <div class="col-sm-10">
+                <input type="text" name="latest_count" value="{% if custom_collection['latest_count'] == 'null' %}{{ '' }}{% else %}{{ custom_collection['latest_count'] }}{% endif %}" placeholder="" id="input-count" class="form-control" />
+              </div>
+            </div>
+
+            <div class="form-group hide" id="form-group_attribute">
+              <label class="col-sm-2 control-label" for="input-attribute">{{ text_product_attribute }}</label>
+              <div class="col-sm-10">
+                <select name="product_attribute" id="input-attribute" class="form-control">
+                  <option value="{{ text_price }}" {% if custom_collection['product_attribute'] == 'price' %}{{ 'selected' }}{% endif %} >{{ text_price }} </option>
+                  <option value="{{ text_manufacturer }}" {% if custom_collection['product_attribute'] == 'manufacturer' %}{{ 'selected' }}{% endif %} >{{ text_manufacturer }} </option>
+                  <option value="{{ text_model }}" {% if custom_collection['product_attribute'] == 'model' %}{{ 'selected' }}{% endif %} >{{ text_model }} </option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-group hide" id="form-group_attribute_value">
+              <div class="form-group" id="form-group_attribute_value_price">
+                <label class="col-sm-2 control-label" for="input-attribute_value_price">{{ text_attribute_value }}</label>
+                <div class="col-sm-5">
+                  <input type="text" name="price_from" id="input-attribute_value_price" value="{% if custom_collection['price_from'] == 'null' %}{{ '' }}{% else %}{{ custom_collection['price_from'] }}{% endif %}" placeholder="Price From" class="form-control" />
+                </div>
+                <div class="col-sm-5">
+                  <input type="text" name="price_to" id="input-attribute_value_price" value="{% if custom_collection['price_to'] == 'null' %}{{ '' }}{% else %}{{ custom_collection['price_to'] }}{% endif %}" placeholder="Price To" class="form-control" />
+                </div>
+              </div>
+
+              <div class="form-group hide" id="form-group_attribute_value_manufacturer">
+                <label class="col-sm-2 control-label" for="input-attribute_value_manufacturer">{{ text_attribute_value }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="manufacturer_name" id="input-attribute_value_manufacturer" value="{% if custom_collection['manufacturer_name'] == 'null' %}{{ '' }}{% else %}{{ custom_collection['manufacturer_name'] }}{% endif %}" placeholder="{{text_manufacturer}}" class="form-control" />
+                   <input type="hidden" name="manufacturer_id" id="input-attribute_value_manufacturer" value="" placeholder="" class="form-control" />
+                </div>
+              </div>
+
+              <div class="form-group hide" id="form-group_attribute_value_model">
+                <label class="col-sm-2 control-label" for="input-attribute_value_model">{{ text_attribute_value }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="product_model" id="input-attribute_value_model" value="{% if custom_collection['product_model'] == 'null' %}{{ '' }}{% else %}{{ custom_collection['product_model'] }}{% endif %}" placeholder="Model" class="form-control" />
+                </div>
+              </div>
+
+            </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+window.onload = function(){
+ var type = $('#input-type').val();
+    if (type == 'product_ids') {
+      $('#form-group_product').removeClass('hide');
+    } else {
+      $('#form-group_product').addClass('hide');
+    }
+
+    if (type == 'latest_count') {
+      $('#form-group_count').removeClass('hide');
+    } else {
+      $('#form-group_count').addClass('hide');
+    }
+
+    if (type == 'product_attribute') {
+      $('#form-group_attribute').removeClass('hide');
+      $('#form-group_attribute_value').removeClass('hide');
+    } else {
+      $('#form-group_attribute').addClass('hide');
+      $('#form-group_attribute_value').addClass('hide');
+    }
+
+
+      var type = $('#input-attribute').val();
+    if (type == 'price') {
+      $('#form-group_attribute_value_model').addClass('hide');
+      $('#form-group_attribute_value_manufacturer').addClass('hide');
+      $('#form-group_attribute_value_price').removeClass('hide');
+    } else if(type == 'manufacturer') {
+      $('#form-group_attribute_value_price').addClass('hide');
+      $('#form-group_attribute_value_model').addClass('hide');
+      $('#form-group_attribute_value_manufacturer').removeClass('hide');
+    } else {
+      $('#form-group_attribute_value_price').addClass('hide');
+      $('#form-group_attribute_value_manufacturer').addClass('hide');
+      $('#form-group_attribute_value_model').removeClass('hide');
+    }
+}
+</script>
+<script>
+  $('#input-attribute').on('change', function () {
+    var type = $('#input-attribute').val();
+    if (type == 'price') {
+      $('#form-group_attribute_value_model').addClass('hide');
+      $('#form-group_attribute_value_manufacturer').addClass('hide');
+      $('#form-group_attribute_value_price').removeClass('hide');
+    } else if(type == 'manufacturer') {
+      $('#form-group_attribute_value_price').addClass('hide');
+      $('#form-group_attribute_value_model').addClass('hide');
+      $('#form-group_attribute_value_manufacturer').removeClass('hide');
+    } else {
+      $('#form-group_attribute_value_price').addClass('hide');
+      $('#form-group_attribute_value_manufacturer').addClass('hide');
+      $('#form-group_attribute_value_model').removeClass('hide');
+    }
+  });
+
+  // Manufacturer
+  $('input[name=\'manufacturer_name\']').autocomplete({
+    'source': function(request, response) {
+      $.ajax({
+        url: 'index.php?route=catalog/manufacturer/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+        dataType: 'json',
+        success: function(json) {
+          response($.map(json, function(item) {
+            return {
+              label: item['name'],
+              value: item['manufacturer_id']
+            }
+          }));
+        }
+      });
+    },
+    'select': function(item) {
+      $('input[name=\'manufacturer_name\']').val(item['label']);
+      $('input[name=\'manufacturer_id\']').val(item['value']);
+    }
+  });
+
+
+   // Product Model
+  $('input[name=\'product_model\']').autocomplete({
+    'source': function(request, response) {
+      $.ajax({
+        url: 'index.php?route=catalog/product/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+        dataType: 'json',
+        success: function(json) {
+          response($.map(json, function(item) {
+            return {
+              label: item['model'],
+              value: item['product_id']
+            }
+          }));
+        }
+      });
+    },
+    'select': function(item) {
+      $('input[name=\'product_model\']').val(item['label']);
+     
+    }
+  });
+
+</script>
+
+<script>
+jQuery(function(){
+  $('#input-type').on('change', function () {
+    var type = $('#input-type').val();
+    if (type == 'product_ids') {
+      $('#form-group_product').removeClass('hide');
+    } else {
+      $('#form-group_product').addClass('hide');
+    }
+
+    if (type == 'latest_count') {
+      $('#form-group_count').removeClass('hide');
+    } else {
+      $('#form-group_count').addClass('hide');
+    }
+
+    if (type == 'product_attribute') {
+      $('#form-group_attribute').removeClass('hide');
+      $('#form-group_attribute_value').removeClass('hide');
+    } else {
+      $('#form-group_attribute').addClass('hide');
+      $('#form-group_attribute_value').addClass('hide');
+    }
+
+  });
+
+  // Items
+  $('input[name=\'product_category\']').autocomplete({
+    'source': function(request, response) {
+      $.ajax({
+        url: 'index.php?route=mobikul/notification/getItem&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+        dataType: 'json',
+        data: ({type : $('#input-type').val()}),
+        type: 'post',
+        success: function(json) {
+          response($.map(json, function(item) {
+            return {
+              label: item['name'],
+              value: item['id']
+            }
+          }));
+        }
+      });
+    },
+    'select': function(item) {
+      $('input[name=\'product_category\']').val(item['label']);
+      $('input[name=\'id\']').val(item['value']);
+    }
+  });
+});
+</script>
+
+<script type="text/javascript"><!--
+$('input[name=\'product\']').autocomplete({
+  source: function(request, response) {
+    $.ajax({
+      url: 'index.php?route=catalog/product/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['product_id']
+          }
+        }));
+      }
+    });
+  },
+  select: function(item) {
+    $('input[name=\'product\']').val('');
+
+    $('#customcollection-product' + item['value']).remove();
+
+    $('#customcollection-product').append('<div id="customcollection-product' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="mobikul_customcollection_customcollection_product[]" value="' + item['value'] + '" /></div>');
+  }
+});
+
+$('#customcollection-product').delegate('.fa-minus-circle', 'click', function() {
+  $(this).parent().remove();
+});
+//--></script>
+{{ footer }}
+

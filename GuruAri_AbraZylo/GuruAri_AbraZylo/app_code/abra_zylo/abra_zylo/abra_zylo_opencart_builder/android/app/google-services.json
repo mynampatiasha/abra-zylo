@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "847585068690",
+    "project_id": "abra-zylo-44c01",
+    "storage_bucket": "abra-zylo-44c01.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:712075561478:android:983618445b682e69e09187",
+        "android_client_info": {
+          "package_name": "com.abra.zylo.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "847585068690-74je0ce1r9j6gijli99f5njhm736a555.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.abra.zylo.android",
+            "certificate_hash": "93c533cf703c6fb88036daf6a3938996f120d344"
+          }
+        },
+        {
+          "client_id": "847585068690-74je0ce1r9j6gijli99f5njhm736a555.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfb0p1u6Ugu8s17Sogt7PlV9UlLRhiCBo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "847585068690-74je0ce1r9j6gijli99f5njhm736a555.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,31 @@
+ext.kotlin_version = '2.3.0'
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    configurations.configureEach {
+        resolutionStrategy {
+            force 'androidx.camera:camera-core:1.4.2'
+            force 'com.google.android.filament:filament-android:1.56.0'
+            force 'com.google.android.filament:filament-utils-android:1.56.0'
+            force 'com.google.android.filament:gltfio-android:1.56.0'
+            force 'com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1'
+            force 'com.google.ar:core:1.52.0'
+            force 'com.google.mlkit:barcode-scanning:17.3.0'
+            force 'com.google.mlkit:vision-internal-vkp:18.2.3'
+        }
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    project.evaluationDependsOn(':app')
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

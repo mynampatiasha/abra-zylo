@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1093061177361",
+    "project_id": "kotit-tech",
+    "storage_bucket": "kotit-tech.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1093061177361:android:4cbb9f1a9557010dfac1b0",
+        "android_client_info": {
+          "package_name": "com.kotit.tech"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB749j5lDJ5hPNHzZd59TfHqi2SRKfgghs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

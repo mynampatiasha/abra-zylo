@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug on V2059",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "V2059",
+      "program": "lib/main.dart",
+      "flutterMode": "debug",
+      "args": ["--flavor", "ocbuilder"]
+    },
+    {
+      "name": "Profile on V2059",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "V2059",
+      "program": "lib/main.dart",
+      "flutterMode": "profile",
+      "args": ["--flavor", "ocbuilder"]
+    },
+    {
+      "name": "Release on V2059",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "V2059",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "args": ["--flavor", "ocbuilder"]
+    }
+  ]
+}

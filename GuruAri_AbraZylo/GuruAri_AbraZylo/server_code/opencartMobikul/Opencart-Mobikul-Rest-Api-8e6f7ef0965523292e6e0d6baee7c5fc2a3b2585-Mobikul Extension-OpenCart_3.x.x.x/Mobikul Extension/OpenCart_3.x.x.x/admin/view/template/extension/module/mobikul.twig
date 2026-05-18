@@ -1,0 +1,559 @@
+{{ header }}{{ column_left }}
+<div id="content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="pull-right">
+				<button type="submit" form="form-mobikul" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+					<i class="fa fa-save"></i>
+				</button>
+				<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+					<i class="fa fa-reply"></i>
+				</a>
+			</div>
+			<h1>{{ heading_title }}</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+					<li>
+						<a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	<div class="container-fluid">
+		{% if  warning_composer %}
+			<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ warning_composer }}
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+		{% endif %}
+		{% if error_warning %}
+			<div class="alert alert-danger">
+				<i class="fa fa-exclamation-circle"></i>
+				{{ error_warning }}
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+		{% endif %}
+		{% if success %}
+			<div class="alert alert-success">
+				<i class="fa fa-check-circle"></i>
+				{{ success }}
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+			</div>
+		{% endif %}
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<i class="fa fa-pencil"></i>
+						{{ text_edit }}</h3>
+				</div><br>
+				<ul class="nav nav-tabs">
+					<li class="active">
+						<a href="#tab-general" data-toggle="tab">{{ tab_general }}</a>
+					</li>
+					<li>
+						<a href="#tab-home" data-toggle="tab">{{ tab_home }}</a>
+					</li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active" id="tab-general">
+						<div class="alert alert-info">
+							<i class="fa fa-info-circle"></i>
+							{{ help_generate_fcm }}
+							<button type="button" class="close" data-dismiss="alert">&times;</button>
+						</div>
+						<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-manage-affiliate" class="form-horizontal">
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input-mobikul_status">{{ entry_status }}</label>
+								<div class="col-sm-10">
+									<select name="module_mobikul_status" id="input-mobikul_status" class="form-control">
+										<option value="0" {% if(not module_mobikul_status) %} {{ 'selected' }} {% endif %}>
+											{{ text_disabled }}
+										</option>
+										<option value="1" {% if(module_mobikul_status) %} {{ 'selected' }} {% endif %}>
+											{{ text_enabled }}
+										</option>
+									</select>
+								</div>
+							</div>
+							<fieldset>
+								<legend>
+									<h4>
+										<b>{{ tag_general }}</b>
+									</h4>
+								</legend>
+								<div class="form-group required">
+									<label class="col-sm-2 control-label" for="input-api-key">
+										<span data-toggle="tooltip" title="{{ help_api_key }}">{{ entry_api_key }}</span>
+									</label>
+									<div class="col-sm-10">
+										<input type="text" name="module_mobikul_api_key" value="{{ module_mobikul_api_key }}" placeholder="{{ entry_api_key }}" id="input-api-key" class="form-control"/>
+										{% if error_api_key %}
+											<div class="text-danger">{{ error_api_key }}</div>
+										{% endif %}
+									</div>
+								</div>
+								<div class="form-group required">
+									<label class="col-sm-2 control-label" for="input-api-password">
+										<span data-toggle="tooltip" title="{{ help_api_password }}">{{ entry_api_password }}</span>
+									</label>
+									<div class="col-sm-10">
+										<input type="password" name="module_mobikul_api_password" value="{{ module_mobikul_api_password }}" placeholder="{{ entry_api_password }}" id="input-api-password" class="form-control"/>
+										{% if error_api_password %}
+											<div class="text-danger">{{ error_api_password }}</div>
+										{% endif %}
+									</div>
+								</div>
+								<!-- FCM project ID -->
+								<div class="form-group">
+									<label class="col-sm-2 control-label"><span data-toggle="tooltip" title="{{ help_project_id }}">{{ entry_project_id }}</span></label>
+									<div class="col-sm-10">
+									<input type="text" value="{{ project_id }}" class="form-control" placeholder="{{ entry_project_id }}" readonly>
+									</div>
+								</div>
+								<!-- FCM topic name -->
+								<div class="form-group">
+									<label class="col-sm-2 control-label"><span data-toggle="tooltip" title="{{ help_topic_name }}">{{ entry_topic_name }}</span></label>
+									<div class="col-sm-10">
+									<input type="text" name="module_mobikul_topic_name" value="{{ module_mobikul_topic_name }}" placeholder="{{entry_topic_name}}" class="form-control">
+									</div>
+								</div>
+								<!-- upload FCM json file -->
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-gcm-key">
+										<span data-toggle="tooltip" title="{{ help_gcm_key }}">{{ entry_gcm_key }}</span>
+									</label>
+									<div class="col-sm-10">
+										<input type="file" name="module_mobikul_gcm_key" accept=".json" class="form-control" />
+									</div>
+								</div>
+							</fieldset>
+							<fieldset>
+								<legend>
+									<h4>
+										<b>{{ tag_application }}</b>
+									</h4>
+								</legend>
+
+							{# App Category View#}
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_app_category_view_status">
+										<span data-toggle="tooltip" title="{{ text_category_type }}">{{ entry_app_category_status }}</span>
+									</label>
+									<div class="col-sm-10">
+										<select name="module_mobikul_app_category_view_status" id="input-mobikul_app_category_view_status" class="form-control">
+											<option value="0" {% if not module_mobikul_app_category_view_status %} {{ 'selected' }} {% endif %}>
+												{{ text_default_category }}
+											</option>
+											<option value="1" {% if module_mobikul_app_category_view_status %} {{ 'selected' }} {% endif %}>
+												{{ text_tab_category }}
+											</option>
+										</select>
+									</div>
+								</div>
+
+
+							{# Launcher Icon Type#}
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_launcher_icon_type">{{ entry_launcher_icon_type }}</label>
+									<div class="col-sm-10">
+										<select name="module_mobikul_launcher_icon_type" id="input-mobikul_launcher_icon_type" class="form-control">
+										{% for launcher_type in launcher_types %}
+											<option value="{{ launcher_type.value }}" {% if launcher_type.value ==  module_mobikul_launcher_icon_type %} {{ 'selected' }} {% endif %}>
+												{{ launcher_type.name }}
+											</option>
+											
+										{% endfor %}
+										</select>
+									</div>
+								</div>
+							
+							{# Launcher Icon Type#}
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_playstore_link_status">{{ entry_android_status }}</label>
+									<div class="col-sm-10">
+										<select name="module_mobikul_playstore_link_status" id="input-mobikul_playstore_link_status" class="form-control">
+											<option value="0" {% if not module_mobikul_playstore_link_status %} {{ 'selected' }} {% endif %}>
+												{{ text_disabled }}
+											</option>
+											<option value="1" {% if module_mobikul_playstore_link_status %} {{ 'selected' }} {% endif %}>
+												{{ text_enabled }}
+											</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_applestore_link_status">{{ entry_ios_status }}</label>
+									<div class="col-sm-10">
+										<select name="module_mobikul_applestore_link_status" id="input-mobikul_applestore_link_status" class="form-control">
+											<option value="0" {% if not module_mobikul_applestore_link_status %} {{ 'selected' }} {% endif %}>
+												{{ text_disabled }}
+											</option>
+											<option value="1" {% if module_mobikul_applestore_link_status %} {{ 'selected' }} {% endif %}>
+												{{ text_enabled }}
+											</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_playstore_link">{{ entry_android_link }}</label>
+									<div class="col-sm-9">
+										<input type="text" name="module_mobikul_playstore_link" value="{{ module_mobikul_playstore_link }}" placeholder="{{ entry_android_link }}" id="input-mobikul_playstore_link" class="form-control"/>
+										{% if error_playstore_link %}
+											<div class="text-danger">{{ error_playstore_link }}</div>
+										{% endif %}
+									</div>
+									<div class="col-sm-1">
+										<button type="button" id="mobikul_playstore_link" class="btn btn-primary form-control" title="{{ help_validate }}">{{ tag_check }}</button>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_applestore_link">{{ entry_ios_link }}</label>
+									<div class="col-sm-9">
+										<input type="text" name="module_mobikul_applestore_link" value="{{ module_mobikul_applestore_link }}" placeholder="{{ entry_ios_link }}" id="input-mobikul_applestore_link" class="form-control"/>
+										{% if error_applestore_link %}
+											<div class="text-danger">{{ error_applestore_link }}</div>
+										{% endif %}
+									</div>
+									<div class="col-sm-1">
+										<button type="button" id="mobikul_applestore_link" class="btn btn-primary form-control" title="{{ help_validate }}">{{ tag_check }}</button>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_header_status">{{ entry_display_header }}</label>
+									<div class="col-sm-10">
+										<select name="module_mobikul_header_status" id="input-mobikul_header_status" class="form-control">
+											<option value="0" {% if not module_mobikul_header_status %} {{ 'selected' }} {% endif %}>
+												{{ text_disabled }}
+											</option>
+											<option value="1" {% if module_mobikul_header_status %} {{ 'selected' }} {% endif %}>
+												{{ text_enabled }}
+											</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_footer_status">{{ entry_display_footer }}</label>
+									<div class="col-sm-10">
+										<select name="module_mobikul_footer_status" id="input-mobikul_footer_status" class="form-control">
+											<option value="0" {% if not module_mobikul_footer_status %} {{ 'selected' }} {% endif %}>
+												{{ text_disabled }}
+											</option>
+											<option value="1" {% if module_mobikul_footer_status %} {{ 'selected' }} {% endif %}>
+												{{ text_enabled }}
+											</option>
+										</select>
+									</div>
+								</div>
+
+								{# {walkthrough} #}
+
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_walkthrough_status">{{ entry_walkthrough_status }}</label>
+									<div class="col-sm-10">
+										<select name="module_mobikul_walkthrough_status" id="input-mobikul_walkthrough_status" class="form-control">
+											<option value="0" {% if not module_mobikul_walkthrough_status %} {{ 'selected' }} {% endif %}>
+												{{ text_disabled }}
+											</option>
+											<option value="1" {% if module_mobikul_walkthrough_status %} {{ 'selected' }} {% endif %}>
+												{{ text_enabled }}
+											</option>
+										</select>
+									</div>
+								</div>
+
+								{# {walkthrough} #}
+
+
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-front_text">
+										<span data-toggle="tooltip" title="{{ help_front_text }}">{{ entry_front_text }}</span>
+									</label>
+									<div class="col-sm-10">
+										<input type="text" name="module_mobikul_front_text" value="{{ mobikul_front_text }}" placeholder="{{ entry_front_text }}" id="input-front_text" class="form-control"/>
+									</div>
+								</div>
+							</fieldset>
+
+							<fieldset>
+								<legend>
+									<h4>
+										<b>{{ tag_shipping }}</b>
+									</h4>
+								</legend>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_shipping">{{ entry_shipping }}</label>
+									<div class="col-sm-10">
+										<select name="module_mobikul_shipping[]" id="input-mobikul_shipping" class="form-control" multiple>
+											{% for method in shipping_methods %}
+												<option value="{{ method.code }}" {% if method.selected %} {{ "selected" }} {% endif %}>{{ method.title}}
+												</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+							</fieldset>
+
+							<fieldset>
+								<legend>
+									<h4>
+										<b>{{ tag_payment }}</b>
+									</h4>
+								</legend>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_payment">{{ entry_payment }}</label>
+									<div class="col-sm-10">
+										<select name="module_mobikul_payment[]" id="input-mobikul_payment" class="form-control" multiple>
+											{% for method in payment_methods %}
+												<option value="{{ method.code }}" {% if method.selected %} {{ "selected" }} {% endif %}>{{ method.title}}
+												</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+							</fieldset>
+
+							<!--Mobikul Catalog Search Configuration -->
+							<fieldset>
+								<legend>
+									<h4>
+										<b>{{ text_catalog_search }}</b>
+									</h4>
+								</legend>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_display_search_status">{{ text_display_tags }}</label>
+									<div class="col-sm-10">
+										<select name="module_mobikul_display_search_status" id="input-mobikul_display_search_status" class="form-control">
+											<option value="0" {% if not module_mobikul_display_search_status %} {{ 'selected' }} {% endif %}>
+												{{ text_disabled }}
+											</option>
+											<option value="1" {% if module_mobikul_display_search_status %} {{ 'selected' }} {% endif %}>
+												{{ text_enabled }}
+											</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_number_of_tag">{{ text_number_tags_displayed }}</label>
+									<div class="col-sm-10">
+										<input type="text" name="module_mobikul_number_of_tag" value="{{ module_mobikul_number_of_tag }}" placeholder="{{ entry_front_text }}" id="input-mobikul_number_of_tag" class="form-control"/>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_display_product">{{ text_display_product_search }}</label>
+									<div class="col-sm-10">
+										<select name="module_mobikul_display_product_status" id="input-mobikul_display_product" class="form-control">
+											<option value="0" {% if not module_mobikul_display_product_status %} {{ 'selected' }} {% endif %}>
+												{{ text_disabled }}
+											</option>
+											<option value="1" {% if module_mobikul_display_product_status %} {{ 'selected' }} {% endif %}>
+												{{ text_enabled }}
+											</option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-mobikul_number_of_product">{{ text_number_product_display_search }}</label>
+									<div class="col-sm-10">
+										<input type="text" name="module_mobikul_number_of_product" value="{{ module_mobikul_number_of_product }}" placeholder="{{ entry_front_text }}" id="input-mobikul_number_of_product" class="form-control"/>
+									</div>
+								</div>
+							</fieldset>
+
+						</form>
+					</div>
+					<div class="tab-pane" id="tab-home">
+						<div class="alert alert-info">
+							<i class="fa fa-info-circle"></i>
+							{{ help_home_settings }}
+							<button type="button" class="close" data-dismiss="alert">×</button>
+						</div>
+
+						<div class="col-sm-12"  style="margin-bottom: 20px;">
+
+							<div class="col-sm-3">
+						         	<label class="control-label" for="input-api-key" style="margin-top: 8px;">
+										<span data-toggle="tooltip" title="" data-original-title="{{ help_count }}">{{ text_count }}</span>
+									</label>
+							</div>
+
+							<div class="col-sm-4">	
+								<input type="text" id = "product_homecount" name="product_homecount"  value="{{ product_homecount ? product_homecount : '' }}" placeholder="{{ text_count }}" id="input-api-key" class="form-control">							
+							</div>
+
+						</div>
+
+					
+
+
+						<div class="col-sm-3">
+
+							<div class="list-group">
+								<div id="menu-banner" class="list-group-item">
+									<a style="color:black;" href="#collapse_banner" data-toggle="collapse" class="parent collapsed" aria-expanded="false">
+								
+                      <i class="fa fa-picture-o" aria-hidden="true"></i>
+										{{ text_banners }}</a>
+                  
+									<div class="list-group collapse" id="collapse_banner" aria-expanded="false" style="height: 0px;">
+										<hr>
+										{% if banners %}
+
+											{% for banner in banners %}
+												<a class="list-group-item addsortable" onclick="addSortable('banner_{{banner.id}}',$(this).text(),'banner','banner',true)">{{ banner.title }}<i class="fa fa-plus"></i>
+												</a>
+											{% endfor %}
+
+										{% endif %}
+									</div>
+
+
+								</div>
+
+
+							</div>
+
+
+              <div class="list-group" id ="hover-carousel" >
+								<div id="menu-carousel" class="list-group-item">
+									<a style="color:black;" href="#collapse_carousel" id="carousel-toggle"data-toggle="collapse" class="parent collapsed" aria-expanded="false">
+										<i class="fa fa-sliders" aria-hidden="true"></i>
+										{{ text_carousel }}</a>
+									<div class="list-group collapse" id="collapse_carousel" aria-expanded="false" style="height: 0px;">
+										<hr>
+										{% if carousels %}
+
+											{% for carousel in carousels %}
+												<a class="list-group-item addsortable" onclick="addSortable('carousel_{{carousel.id}}',$(this).text(), '{{carousel.value}}', '{{carousel.title|replace({"'": "\\\'"})}}',true )">{{ carousel.title }}<i class="fa fa-plus"></i>
+												</a>
+											{% endfor %}
+
+										{% endif %}
+									</div>
+
+
+								</div>
+
+
+							</div>
+
+
+						
+						</div>
+						<div class="col-sm-4">
+							<div id="sequence">
+								<ul class="nav nav-pills nav-stacked ui-sortable" id="sortable"></ul>
+							</div>
+						</div>
+						<div class="col-sm-5">
+							<div class="mobile_preview">
+								<div class="mobile-content"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<div id="message-cont"></div>
+		<style>
+  .product{
+    background: url('../image/mobikul/product.png') no-repeat;        
+    height: 130px;
+    background-position: center;
+    
+  }
+  .label{     
+    position: absolute;
+    margin-top: 101px;
+    margin-left: -35px;
+    font-size: 13px;
+    color: black;
+    font-family: sans-serif;
+    font-weight: 500;
+  }
+  .product-box{
+    width: 50%;
+    float:left;
+    margin-bottom: 10px;
+}
+
+</style>
+  	<script>
+     var banners = '{{ json_banners }}';   
+     var carousels = {{ json_carousels }};      
+    </script>
+ 
+	<link rel="stylesheet" href="view/stylesheet/mobikul/common.css"/>
+	<script src="view/javascript/mobikul/sortable-min.js"></script>
+	<script>
+		$.ajax({
+url: "index.php?route=extension/module/mobikul/getHomeSequence&user_token={{ token }}",
+success: function (result) {
+
+if (result) {
+	
+$.each(result, function (key, value) {
+addSortable(value.type, value.title,value.value, false);
+});
+}
+}
+});
+	</script>
+
+
+	<script type="text/javascript"></script>
+	<script src="view/javascript/mobikul/common.php?token={{ token }}&product_homecount={{ product_homecount }}"></script>
+	<script type="text/javascript"><!--
+
+var input = document.getElementById("product_homecount");
+
+// Execute a function when the user presses a key on the keyboard
+input.addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+	var count = $('input[name="product_homecount"]').val(); 
+	if(!count || count==0 ||  !( /^\d*$/.test(count) ) ){
+    count = 4;
+	}
+
+	 $.post("index.php?route=extension/module/mobikul/saveHomeCount&user_token={{ token }}",
+	{
+		product_homecount:count,	
+	},
+	function(data, status){
+	  displayMessage("Homepage product count has been saved");
+	  location.reload()
+	});
+
+  }
+});
+	
+
+$('#mobikul_playstore_link ,#mobikul_applestore_link').on('click', function(e) {
+  aid = '#input-'+this.id;
+  url = $(aid).val();
+  bid = '#'+this.id;
+  $.ajax({
+    url: 'index.php?route=extension/module/mobikul/checkUrl&user_token={{ token }}&application_url='+url,
+    type: 'post',
+    dataType: 'json',
+    data: '',
+    success: function(json) {
+      $('.text-success').remove();
+      $('.text-danger').remove();
+      $(aid).parent().find('.text-danger').remove();
+      if(json['status']) {
+        $(aid).after('<div class="text-success">{{ text_valid_url }}</div>');
+      } else {
+        $(aid).after('<div class="text-danger">{{ text_invalid_url }}</div>');
+      }
+    }
+  });
+});
+	</script>
+	{{ footer }}

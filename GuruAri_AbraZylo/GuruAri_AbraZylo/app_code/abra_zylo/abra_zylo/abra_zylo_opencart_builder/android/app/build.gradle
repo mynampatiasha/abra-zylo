@@ -1,0 +1,136 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    // Flutter 3.38 requires the Gradle plugin DSL instead of applying flutter.gradle.
+    id 'dev.flutter.flutter-gradle-plugin'
+    id 'com.google.gms.google-services'
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+  //  flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '2.0'
+}
+
+android {
+    namespace "webkul.opencart_flutter.mobikul"
+    // local_auth_android in the Flutter 3.38 dependency graph requires Android SDK 36.
+    compileSdkVersion 36
+    ndkVersion "28.2.13676358"
+    compileOptions {
+        // AGP 8.x and Flutter 3.38 run on modern JDKs; Java 17 avoids bytecode/toolchain mismatch.
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+        // flutter_local_notifications 19 uses Java 8+ APIs that require Android desugaring.
+        coreLibraryDesugaringEnabled true
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+        disable "Instantiatable"
+        checkReleaseBuilds false
+        abortOnError false
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+    dataBinding {
+        enabled = true
+    }
+
+    signingConfigs {
+        ocBuilderConfig {
+            keyAlias 'kotit'
+            keyPassword 'Admin@123'
+            storeFile file('../kotit_keystore.jks')
+            storePassword 'Admin@123'
+        }
+    }
+
+    defaultConfig {
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion 35
+        multiDexEnabled true
+        signingConfig signingConfigs.debug
+        ndk {
+            abiFilters "arm64-v8a", "x86_64"
+        }
+        /*versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName*/
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+            shrinkResources false
+        }
+
+        release {
+            minifyEnabled false
+            debuggable false
+            shrinkResources false
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    buildFeatures {
+        buildConfig = true
+    }
+    flavorDimensions "mobikulOC"
+    productFlavors {
+        ocbuilder {
+            dimension 'mobikulOC'
+            applicationId "com.abra.zylo.android"
+            resValue "string", "authority", "com.abra.zylo.android"
+            resValue "string", "app_name", "Abra Zylo"
+            resValue "string", "google_map_api_key", "AIzaSyCfb0p1u6Ugu8s17Sogt7PlV9UlLRhiCBo"
+            buildConfigField "boolean", "isMobikul", "true"
+            manifestPlaceholders = [
+                    appIcon: "@mipmap/ic_launcher_round",
+                    host:"oc.webkul.in/mobikul/Network/",
+            ]
+            versionCode 5
+            versionName '1.5'
+//            signingConfig signingConfigs.ocBuilderConfig
+        }
+        }
+
+
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    //    ML KIT
+    api 'com.google.android.gms:play-services-mlkit-text-recognition:18.0.0'
+    api 'com.google.mlkit:image-labeling:17.0.7'
+    // Image labeling custom
+    api 'com.google.mlkit:image-labeling-custom:17.0.1'
+    //===Ar Core
+    implementation "com.gorisse.thomas.sceneform:ux:1.23.0"
+    implementation "com.gorisse.thomas.sceneform:core:1.23.0"
+    implementation "com.google.ar:core:1.52.0"
+    //---------------------------------------//
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+}

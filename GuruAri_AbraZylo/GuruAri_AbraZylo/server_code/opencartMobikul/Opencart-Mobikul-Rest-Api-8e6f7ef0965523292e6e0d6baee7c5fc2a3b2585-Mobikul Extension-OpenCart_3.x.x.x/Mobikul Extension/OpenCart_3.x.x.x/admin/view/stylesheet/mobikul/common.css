@@ -1,0 +1,64 @@
+.list-group-item .fa{
+  float:right;
+}
+.tab-content .list-group {
+    margin-bottom: 0px;
+}
+#sequence {
+    border: 2px solid #d0c8c8;
+    min-height: 400px;
+}
+.mobile_preview {
+    background-repeat: no-repeat;
+    background-position: top center;
+    text-align: center;
+    padding: 38px 0 80px;
+    background-image: url(../../../../image/mobikul/mobile.png);
+}
+.mobile-content {
+    height: 578px;
+    margin: 0 auto;
+    width: 283px;
+    overflow-x: hidden;
+}
+body::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+#sortable a.list-group-item {
+    background-color: #eee;
+    cursor: copy;
+}
+.list-trash{
+  cursor: pointer;
+}
+#message-cont {
+  position: fixed;
+  z-index: 9999999;
+  right: 144px;
+  top: 27px;
+}
+.message {
+    background-color: #7ab74a;
+    border-color: #dfebd5;
+    color: white;
+    padding: 15px;
+    width: 200px;
+    margin: 20px;
+}
+
+.mobile-content::-webkit-scrollbar {
+  width: 3px;
+}
+
+.mobile-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.mobile-content::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.mobile-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
