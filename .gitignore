@@ -11,3 +11,5 @@ build/
 *.salive
 android/app/build/
 ios/build/
+login.php
+customer.php
