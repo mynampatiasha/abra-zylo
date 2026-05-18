@@ -239,26 +239,24 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
 
-                  // ── Google Sign-In ──────────────────────────────────
-                  const SizedBox(height: AppSizes.size16),
-                  Row(
-                    children: const [
-                      Expanded(child: Divider(thickness: 1)),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text('OR', style: TextStyle(fontSize: 12)),
-                      ),
-                      Expanded(child: Divider(thickness: 1)),
-                    ],
-                  ),
-                  const SizedBox(height: AppSizes.size16),
-                  // On web: use Google's own rendered button (GIS requirement)
-                  // On mobile: use our custom styled button
-                  if (kIsWeb)
-                    GoogleSignInWebButton(onSuccess: _handleGoogleUser)
-                  else
-                    _GoogleSignInButton(onTap: _signInWithGoogle),
-                  const SizedBox(height: AppSizes.size16),
+                  // ── Google Sign-In (temporarily disabled) ──────────────────────────────────
+                  // const SizedBox(height: AppSizes.size16),
+                  // Row(
+                  //   children: const [
+                  //     Expanded(child: Divider(thickness: 1)),
+                  //     Padding(
+                  //       padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  //       child: Text('OR', style: TextStyle(fontSize: 12)),
+                  //     ),
+                  //     Expanded(child: Divider(thickness: 1)),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: AppSizes.size16),
+                  // if (kIsWeb)
+                  //   GoogleSignInWebButton(onSuccess: _handleGoogleUser)
+                  // else
+                  //   _GoogleSignInButton(onTap: _signInWithGoogle),
+                  // const SizedBox(height: AppSizes.size16),
                 ],
               ),
             ),
