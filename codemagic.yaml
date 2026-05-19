@@ -12,7 +12,6 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.abralogistic.abrazylo
-        provisioning_profile: Abra_Zylo_2
     scripts:
       - name: Get Flutter packages
         script: flutter pub get
