@@ -98,9 +98,10 @@ dependency_overrides:
   win32: ^5.15.0
   # AGP 8.x requires namespace in build.gradle; 5.4.1 is missing it — force newer version.
   flutter_keyboard_visibility: ^6.0.0
-  # Pin to a version that does NOT use dart:js_interop extension types,
-  # which are incompatible with the Dart frontend server bundled in this Flutter SDK.
-  google_identity_services_web: 0.3.1+4
+  # Pin google_sign_in_web to a version before dart:js_interop was introduced.
+  # google_sign_in_web 0.12.3+2 is the last version using the old js/js_util interop.
+  google_sign_in_web: 0.12.3+2
+  google_identity_services_web: 0.3.0
 
 dev_dependencies:
   flutter_test:
