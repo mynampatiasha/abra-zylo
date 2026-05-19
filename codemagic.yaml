@@ -2,6 +2,7 @@ workflows:
   ios-workflow:
     name: Abra Zylo iOS
     max_build_duration: 60
+    working_directory: GuruAri_AbraZylo/GuruAri_AbraZylo/app_code/abra_zylo/abra_zylo
     environment:
       flutter: stable
       xcode: latest
@@ -12,9 +13,7 @@ workflows:
       - name: Install pods
         script: find . -name "Podfile" -execdir pod install \;
       - name: Build IPA
-        script: |
-          flutter build ipa --release \
-            --export-options-plist=/Users/builder/export_options.plist
+        script: flutter build ipa --release
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
