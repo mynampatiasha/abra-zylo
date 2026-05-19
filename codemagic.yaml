@@ -3,6 +3,8 @@ workflows:
     name: Abra Zylo iOS
     max_build_duration: 60
     working_directory: GuruAri_AbraZylo/GuruAri_AbraZylo/app_code/abra_zylo/abra_zylo
+    integrations:
+      app_store_connect: Abra App Store Key
     environment:
       flutter: stable
       xcode: latest
