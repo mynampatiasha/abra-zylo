@@ -12,6 +12,7 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.abralogistic.abrazylo
+        certificate: Abra_Finance_App2
     scripts:
       - name: Get Flutter packages
         script: flutter pub get
