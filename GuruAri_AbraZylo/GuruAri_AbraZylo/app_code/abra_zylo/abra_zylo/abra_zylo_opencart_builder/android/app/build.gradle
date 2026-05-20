@@ -106,7 +106,7 @@ android {
             ]
             versionCode 5
             versionName '1.5'
-//            signingConfig signingConfigs.ocBuilderConfig
+            signingConfig signingConfigs.ocBuilderConfig
         }
         }
 

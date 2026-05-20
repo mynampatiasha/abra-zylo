@@ -48,9 +48,11 @@ dependencies:
   path_provider: ^2.1.5
   simple_animations: 4.0.2
   carousel_slider: ^5.1.2
-  # Keep 6.2.x on Flutter 3.38 because newer google_sign_in iOS packages pull
-  # GoogleSignIn 8/9, which conflicts with this app's Firebase 10 pods.
-  google_sign_in: 6.2.2
+  # Keep 6.2.2 — there is no 6.2.3, next version is 7.x which breaks Firebase pods.
+  # google_sign_in commented out — causes dart:js_interop build failure on Android
+  # via google_sign_in_web pulling in web-only dart:js_interop into the Android build.
+  # Re-enable once Flutter SDK is upgraded to a version that handles this correctly.
+  # google_sign_in: 6.2.2
   firebase_core: ^3.6.0
 #  flutter_login_facebook: ^1.5.0+1
   webview_flutter: ^4.13.1
@@ -92,17 +94,12 @@ dependency_overrides:
   # Dart 3.10 removed old unmodifiable typed-list view aliases used by older transitive releases.
   archive: ^4.0.9
   # Flutter 3.38 removed v1 Android embedding Registrar APIs used by older plugin transitive locks.
-  fluttertoast: ^9.0.0
+  fluttertoast: ^8.2.4
   flutter_plugin_android_lifecycle: ^2.0.34
   sqflite: ^2.4.2
   win32: ^5.15.0
   # AGP 8.x requires namespace in build.gradle; 5.4.1 is missing it — force newer version.
   flutter_keyboard_visibility: ^6.0.0
-  # Pin google_sign_in_web to a version before dart:js_interop was introduced.
-  # google_sign_in_web 0.12.3+2 is the last version using the old js/js_util interop.
-  google_sign_in_web: 0.12.3+2
-  google_identity_services_web: 0.3.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

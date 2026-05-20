@@ -107,11 +107,21 @@ class GoogleSignInEvent extends SigninSignupScreenEvent {
   List<Object> get props => [wkToken, fcmToken];
 }
 
-/// Used on web — the GoogleSignInAccount comes from renderButton callback
-class GoogleSignInWebEvent extends SigninSignupScreenEvent {
-  const GoogleSignInWebEvent(this.user, this.wkToken, this.fcmToken);
+/// Used on web — commented out (google_sign_in disabled)
+// class GoogleSignInWebEvent extends SigninSignupScreenEvent {
+//   const GoogleSignInWebEvent(this.user, this.wkToken, this.fcmToken);
+//
+//   final GoogleSignInAccount user;
+//   final String wkToken;
+//   final String fcmToken;
+//
+//   @override
+//   List<Object> get props => [wkToken, fcmToken];
+// }
 
-  final GoogleSignInAccount user;
+class GoogleSignInWebEvent extends SigninSignupScreenEvent {
+  const GoogleSignInWebEvent(this.wkToken, this.fcmToken);
+
   final String wkToken;
   final String fcmToken;
 

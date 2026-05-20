@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart'; // commented out — google_sign_in disabled
 import 'package:local_auth/local_auth.dart';
 import 'package:lottie/lottie.dart';
 import 'package:oc_demo/config/theme.dart';
@@ -20,7 +20,7 @@ import '../../../helper/app_shared_pref.dart';
 import '../../../helper/open_bottom_model_sheet_helper.dart';
 import '../../../utils/helper.dart';
 import '../../login_signup/bloc/signin_signup_screen_bloc.dart';
-import 'google_sign_in_web_button.dart';
+// import 'google_sign_in_web_button.dart'; // commented out — google_sign_in disabled
 
 class SignInScreen extends StatefulWidget {
   SignInScreen(this.isComingFromCartPage, {Key? key}) : super(key: key);
@@ -273,12 +273,12 @@ class _SignInScreenState extends State<SignInScreen> {
     bloc?.add(GoogleSignInEvent(wkToken, fcmToken));
   }
 
-  // Called by the web Google button after successful sign-in
-  void _handleGoogleUser(GoogleSignInAccount user) async {
-    var wkToken = await AppSharedPref.getWkToken();
-    var fcmToken = await AppSharedPref.getFcmToken();
-    bloc?.add(GoogleSignInWebEvent(user, wkToken, fcmToken));
-  }
+  // Called by the web Google button after successful sign-in — disabled
+  // void _handleGoogleUser(GoogleSignInAccount user) async {
+  //   var wkToken = await AppSharedPref.getWkToken();
+  //   var fcmToken = await AppSharedPref.getFcmToken();
+  //   bloc?.add(GoogleSignInWebEvent(user, wkToken, fcmToken));
+  // }
 
   //================Handle Fingerprint Login==============//
   final LocalAuthentication auth = LocalAuthentication(); //----Initialization

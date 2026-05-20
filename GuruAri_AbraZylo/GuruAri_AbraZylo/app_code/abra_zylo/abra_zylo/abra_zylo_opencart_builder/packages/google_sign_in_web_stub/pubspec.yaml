@@ -1,0 +1,12 @@
+name: google_sign_in_web
+description: Stub for google_sign_in_web to prevent dart:js_interop from being compiled on Android.
+version: 0.12.4+4
+
+environment:
+  sdk: ">=3.2.3 <4.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_sign_in_platform_interface: ^2.5.0
