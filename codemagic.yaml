@@ -1,8 +1,7 @@
 workflows:
   ios-workflow:
     name: Abra Zylo iOS
-    max_build_duration: 60
-    working_directory: GuruAri_AbraZylo/GuruAri_AbraZylo/app_code/abra_zylo/abra_zylo/abra_zylo_opencart_builder
+    max_build_duration: 120
     integrations:
       app_store_connect: Abra App Store Key
     environment:
@@ -12,6 +11,7 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.abralogistic.abrazylo
+    working_directory: GuruAri_AbraZylo/GuruAri_AbraZylo/app_code/abra_zylo/abra_zylo/abra_zylo_opencart_builder
     scripts:
       - name: Get Flutter packages
         script: flutter pub get
@@ -19,14 +19,11 @@ workflows:
         script: find . -name "Podfile" -execdir pod install \;
       - name: Set up code signing
         script: |
-          keychain initialize
-          app-store-connect fetch-signing-files com.abralogistic.abrazylo --type IOS_APP_STORE --create
-          keychain add-certificates
           xcode-project use-profiles
       - name: Build IPA
         script: flutter build ipa --release
     artifacts:
-      - build/ios/ipa/*.ipa
+      - "**/build/ios/ipa/*.ipa"
     publishing:
       app_store_connect:
         auth: integration
