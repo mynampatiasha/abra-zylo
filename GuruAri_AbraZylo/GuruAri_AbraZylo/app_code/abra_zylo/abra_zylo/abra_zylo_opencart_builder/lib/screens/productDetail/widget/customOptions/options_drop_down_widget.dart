@@ -26,58 +26,47 @@ class _OptionsDropDownWidgetState extends State<OptionsDropDownWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          const EdgeInsets.only(top: 6.0, right: 8.0, left: 8.0, bottom: 6.0),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButtonFormField(
-          decoration: formFieldDecoration(
-            context,
-            "",
-            "",
-            isRequired: true,
-          ),
-          dropdownColor:
-              Theme.of(context).cardColor, // Set dropdown color based on theme
-          items: widget.variants?.map((ProductOptionValue value) {
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+      child: SizedBox(
+        width: AppSizes.deviceWidth,
+        child: Wrap(
+          spacing: 8.0,
+          runSpacing: 8.0,
+          children: (widget.variants ?? []).map((ProductOptionValue value) {
             String optionString = value.name ?? "";
             if (value.price != "") {
-              optionString +=
-                  "  (" + (value.pricePrefix ?? "") + (value.price ?? "") + ")";
+              optionString += " (" + (value.pricePrefix ?? "") + (value.price ?? "") + ")";
             }
-            return DropdownMenuItem(
-              value: value.productOptionValueId,
-              child: Text(optionString),
+            bool isSelected = selectedVariant == optionString;
+
+            return ChoiceChip(
+              label: Text(
+                optionString,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+              selected: isSelected,
+              selectedColor: Theme.of(context).primaryColor,
+              backgroundColor: Theme.of(context).cardColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                side: BorderSide(
+                  color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade300,
+                  width: 1.5,
+                ),
+              ),
+              onSelected: (bool selected) {
+                if (selected) {
+                  setState(() {
+                    selectedVariant = optionString;
+                    widget.selectedOption!(value.productOptionValueId as String);
+                  });
+                }
+              },
             );
           }).toList(),
-          // isExpanded: true,
-          hint: Text(
-            selectedVariant,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontSize: 16,
-                fontWeight: FontWeight.w300,
-                color: AppColors.gray),
-          ),
-          style: Theme.of(context).textTheme.bodyLarge,
-          onChanged: (newValue) async {
-            widget.variants?.forEach((element) {
-              if (newValue == element.productOptionValueId) {
-                setState(() {
-                  if (element.price != "") {
-                    var t = element.name ?? "";
-                    t += "  (" +
-                        (element.pricePrefix ?? "") +
-                        (element.price ?? "") +
-                        ")";
-                    selectedVariant = t;
-                  } else {
-                    selectedVariant = element.name ?? "";
-                  }
-
-                  widget.selectedOption!(newValue as String);
-                });
-              }
-            });
-          },
         ),
       ),
     );

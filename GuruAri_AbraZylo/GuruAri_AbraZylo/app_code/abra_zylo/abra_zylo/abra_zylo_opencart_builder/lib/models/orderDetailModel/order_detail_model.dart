@@ -24,7 +24,7 @@ class OrderDetailModel extends BaseModel {
   List<OrderTotals>? totals;
   String? comment;
   List<OrderHistories>? histories;
-  int? error;
+  dynamic error;
   @JsonKey(name: "boy_name")
   String? boyName;
   @JsonKey(name: "boy_image")

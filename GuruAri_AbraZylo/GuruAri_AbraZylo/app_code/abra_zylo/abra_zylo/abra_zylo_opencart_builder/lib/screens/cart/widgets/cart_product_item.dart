@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:oc_demo/common_widgets/title_separated_card.dart';
 import 'package:oc_demo/common_widgets/widget_space.dart';
@@ -91,6 +92,10 @@ class CartProductItem extends StatelessWidget {
                           height: AppSizes.size24,
                           child: QuantityDropDown((value) async {
                             product?.quantity = value;
+                            Map<String, String> jsonMap = {};
+                            jsonMap[product?.key ?? "0"] = value.toString();
+                            bloc?.add(CartUpdateEvent(json.encode(jsonMap)));
+                            bloc?.emit(CartScreenStateInitial());
                           }, int.parse(product?.quantity ?? "0")),
                         ),
                       ],

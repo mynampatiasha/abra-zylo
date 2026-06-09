@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:location/location.dart' as locationReq;
+import 'package:geolocator/geolocator.dart';
 import 'package:oc_demo/common_widgets/common_outlined_button.dart';
 import 'package:oc_demo/common_widgets/common_text_field.dart';
 import 'package:oc_demo/common_widgets/dialog_helper.dart';
@@ -24,12 +24,12 @@ import '../../../common_widgets/alert_message.dart';
 import '../../../helper/generic_methods.dart';
 
 class AddressForm extends StatefulWidget {
-  const AddressForm(this.model, this.onSaveAddress, this.selectedLanguage,
-      {Key? key})
-      : super(key: key);
   final EditAddressBook? model;
   final Function(AddAddressRequest) onSaveAddress;
   final String? selectedLanguage;
+  final Map<String, dynamic>? initialLocationData;
+
+  const AddressForm(this.model, this.onSaveAddress, this.selectedLanguage, {this.initialLocationData, Key? key}) : super(key: key);
 
   @override
   State<AddressForm> createState() => _AddressFormState();
@@ -85,12 +85,58 @@ class _AddressFormState extends State<AddressForm> {
         _firstName.text = value?.firstname ?? "";
         _lastName.text = value?.lastname ?? "";
       });
-      var country = widget.model?.getCountryById(_selectedCountry);
-      if (country != null) {
-        _selectedCountry = country.countryId;
-        _selectedCountryName = country.name;
-        _selectedZone = country.zone?.elementAt(0).zoneId;
-        _selectedZoneName = country.zone?.elementAt(0).name;
+      if (widget.initialLocationData != null) {
+        String fullAddress = widget.initialLocationData!['address_string'] ?? "";
+        if (fullAddress.length > 128) {
+          _address1.text = fullAddress.substring(0, 128);
+          _address2.text = fullAddress.substring(128, fullAddress.length > 256 ? 256 : fullAddress.length);
+        } else {
+          _address1.text = fullAddress;
+        }
+
+        if (widget.initialLocationData!['address'] != null) {
+          final address = widget.initialLocationData!['address'];
+          _city.text = address['city'] ?? address['town'] ?? address['village'] ?? address['county'] ?? "";
+          _zip.text = address['postcode'] ?? "";
+
+          // Try matching the Country
+          String? mapCountryName = address['country'];
+          if (mapCountryName != null) {
+            var matchedCountry = widget.model?.getCountryByName(mapCountryName);
+            if (matchedCountry != null) {
+              _selectedCountry = matchedCountry.countryId;
+              _selectedCountryName = matchedCountry.name;
+
+              // Try matching the Zone/State
+              String? mapStateName = address['state'];
+              if (mapStateName != null) {
+                var matchedZone = matchedCountry.getZoneByName(mapStateName);
+                if (matchedZone != null) {
+                  _selectedZone = matchedZone.zoneId;
+                  _selectedZoneName = matchedZone.name;
+                }
+              }
+              // If no state matched, fallback to first zone of matched country
+              if (_selectedZone == null && (matchedCountry.zone?.isNotEmpty ?? false)) {
+                _selectedZone = matchedCountry.zone?.elementAt(0).zoneId;
+                _selectedZoneName = matchedCountry.zone?.elementAt(0).name;
+              }
+            }
+          }
+        }
+      }
+
+      // If we couldn't match a country from the map data, fallback to default logic
+      if (_selectedCountry == null) {
+        var country = widget.model?.getCountryById(_selectedCountry);
+        if (country != null) {
+          _selectedCountry = country.countryId;
+          _selectedCountryName = country.name;
+          if (country.zone?.isNotEmpty ?? false) {
+            _selectedZone = country.zone?.elementAt(0).zoneId;
+            _selectedZoneName = country.zone?.elementAt(0).name;
+          }
+        }
       }
     } else {
       var data = widget.model?.data;
@@ -199,7 +245,7 @@ class _AddressFormState extends State<AddressForm> {
                     }
                     var validate = _formKey.currentState?.validate();
                     if (validate == true) {
-                      if (_address1.text.length < 3) {
+                      if (_address1.text.length < 3 || _address1.text.length > 128) {
                         WidgetsBinding.instance?.addPostFrameCallback((_) {
                           AlertMessage.showError(
                               _localizations?.translate(AppStringConstant
@@ -305,9 +351,22 @@ class _AddressFormState extends State<AddressForm> {
   Widget location() {
     return InkWell(
       onTap: () async {
-        var status = await locationReq.Location.instance.hasPermission();
-        if (status == locationReq.PermissionStatus.granted ||
-            status == locationReq.PermissionStatus.grantedLimited) {
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+        
+        if (permission == LocationPermission.deniedForever) {
+          DialogHelper.locationPermissionDialog(
+              AppStringConstant.provideLocationPermission, context,
+              onConfirm: () async {
+            await Geolocator.openAppSettings();
+          });
+          return;
+        }
+
+        if (permission == LocationPermission.whileInUse ||
+            permission == LocationPermission.always) {
           Navigator.pushNamed(context, AppRoute.location).then((value) {
             if (value is Map) {
               print('values ----- $value');
@@ -318,29 +377,27 @@ class _AddressFormState extends State<AddressForm> {
               _city.text = value['city'];
               _zip.text = value['zip'];
               if (!kIsWeb && Platform.isIOS) {
-                _address1.text =
-                    "${value['street1'] ?? value['street2'] ?? value['street3'] ?? ""}";
-                _address2.text =
-                    "${value['street1'] ? value['street4'] : value['street3']}";
+                String fullAddress = "${value['street1'] ?? value['street2'] ?? value['street3'] ?? ""}";
+                if (fullAddress.length > 128) {
+                  _address1.text = fullAddress.substring(0, 128);
+                  _address2.text = fullAddress.substring(128, fullAddress.length > 256 ? 256 : fullAddress.length);
+                } else {
+                  _address1.text = fullAddress;
+                  _address2.text = "${value['street1'] != null ? value['street4'] ?? '' : value['street3'] ?? ''}";
+                }
               } else {
-                _address1.text =
-                    "${value['street1'] ?? ''}, ${value['street2'] ?? ''}";
-                _address2.text = "${value['street3'] ?? ''}";
+                String fullAddress = "${value['street1'] ?? ''}, ${value['street2'] ?? ''}";
+                if (fullAddress.startsWith(', ')) fullAddress = fullAddress.substring(2);
+                if (fullAddress.endsWith(', ')) fullAddress = fullAddress.substring(0, fullAddress.length - 2);
+
+                if (fullAddress.length > 128) {
+                  _address1.text = fullAddress.substring(0, 128);
+                  _address2.text = fullAddress.substring(128, fullAddress.length > 256 ? 256 : fullAddress.length);
+                } else {
+                  _address1.text = fullAddress;
+                  _address2.text = "${value['street3'] ?? ''}";
+                }
               }
-            }
-          });
-        } else {
-          DialogHelper.locationPermissionDialog(
-              AppStringConstant.provideLocationPermission, context,
-              onConfirm: () async {
-            var status =
-                await locationReq.Location.instance.requestPermission();
-            if (status == locationReq.PermissionStatus.deniedForever) {
-              DialogHelper.locationPermissionDialog(
-                  AppStringConstant.provideLocationPermission, context,
-                  onConfirm: () async {
-                openAppSettings();
-              });
             }
           });
         }
@@ -373,10 +430,16 @@ class _AddressFormState extends State<AddressForm> {
     }*/
 
     if (!kIsWeb && Platform.isAndroid) {
+      // Do nothing special for Android
     } else {
-      _selectedZone = filterCountry?.getZoneByName(state)?.zoneId;
-      _selectedZoneName =
-          _localizations?.translate(AppStringConstant.pleaseSelectState) ?? "";
+      var zone = filterCountry?.getZoneByName(state);
+      if (zone != null) {
+        _selectedZone = zone.zoneId;
+        _selectedZoneName = zone.name;
+      } else {
+        _selectedZoneName =
+            _localizations?.translate(AppStringConstant.pleaseSelectState) ?? "";
+      }
     }
 
     setState(() {});

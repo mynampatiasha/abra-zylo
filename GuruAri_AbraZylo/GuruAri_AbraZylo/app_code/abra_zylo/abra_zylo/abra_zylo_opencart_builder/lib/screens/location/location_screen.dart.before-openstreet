@@ -1,0 +1,343 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:geolocator/geolocator.dart';
+import 'package:oc_demo/common_widgets/alert_message.dart';
+import 'package:oc_demo/common_widgets/loader.dart';
+import 'package:oc_demo/constants/app_constants.dart';
+import 'package:oc_demo/constants/app_string_constant.dart';
+import 'package:oc_demo/helper/app_localizations.dart';
+import 'package:oc_demo/helper/open_bottom_model_sheet_helper.dart';
+
+class LocationScreen extends StatefulWidget {
+  const LocationScreen({Key? key}) : super(key: key);
+
+  @override
+  _LocationScreenState createState() => _LocationScreenState();
+}
+
+class _LocationScreenState extends State<LocationScreen> {
+  double? latitude;
+  double? longitude;
+  LatLng? position;
+
+  GoogleMapController? _controller;
+  String address = '';
+  Map<String, dynamic> addressMap = {};
+  bool _mapReady = false; // FIX 1: delays GoogleMap render to avoid null crash in _gmapTypeIDForPluginType
+
+  @override
+  void initState() {
+    super.initState();
+    // FIX 1: Defer map rendering by one frame.
+    // On Flutter Web, GoogleMap widget crashes with a null check error
+    // inside _gmapTypeIDForPluginType if rendered on the very first build.
+    // Waiting one frame lets the platform view registry initialise first.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() => _mapReady = true);
+    });
+    getCurrentLocation();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildUI();
+  }
+
+  Widget _buildUI() {
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              // FIX 1 (continued): Only render GoogleMap after _mapReady is true.
+              // latitude/longitude are checked separately — show Loader while
+              // location is still being fetched, but never before _mapReady.
+              child: !_mapReady
+                  ? const Loader()
+                  : (latitude == null || longitude == null)
+                      ? const Loader()
+                      : Stack(
+                          children: <Widget>[
+                            GoogleMap(
+                              mapType: MapType.normal,
+                              compassEnabled: false,
+                              myLocationButtonEnabled: false,
+                              zoomControlsEnabled: false,
+                              initialCameraPosition: CameraPosition(
+                                target: LatLng(latitude!, longitude!),
+                                zoom: 16.0,
+                              ),
+                              onMapCreated: (GoogleMapController controller) {
+                                _controller = controller;
+                              },
+                              onCameraMove: (positions) {
+                                position = positions.target;
+                              },
+                              onCameraIdle: () {
+                                if (position != null) {
+                                  // FIX 2: Reset address before each geocode call,
+                                  // not inside setState of getLocation — avoids
+                                  // address strings being appended on repeated drags.
+                                  setState(() {
+                                    address = '';
+                                    addressMap = {};
+                                  });
+                                  getLocation(position!);
+                                }
+                              },
+                            ),
+                            const Positioned(
+                              right: 0,
+                              top: 0,
+                              left: 0,
+                              bottom: 0,
+                              child: Icon(
+                                Icons.location_pin,
+                                color: Colors.red,
+                                size: AppSizes.size40,
+                              ),
+                            ),
+                            Positioned(
+                              bottom: AppSizes.size15,
+                              right: AppSizes.size15,
+                              child: InkWell(
+                                onTap: getCurrentLocation,
+                                child: CircleAvatar(
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                  child: const Center(
+                                    child: Icon(Icons.my_location_sharp),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                placeSearchBottomModelSheet(context, (value) {
+                                  print('callback value $value');
+                                  placeSearch(value);
+                                });
+                              },
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.all(AppSizes.size12),
+                                margin: const EdgeInsets.all(AppSizes.size12),
+                                color: Theme.of(context).cardColor,
+                                child: Row(
+                                  children: <Widget>[
+                                    const Icon(Icons.search),
+                                    const SizedBox(width: AppSizes.size16),
+                                    Text(
+                                      AppStringConstant.searchLocation
+                                          .localized(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context, addressMap);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(AppSizes.size8),
+                height: AppSizes.deviceHeight / 5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.location_pin),
+                        const SizedBox(width: AppSizes.size8),
+                        Text(AppStringConstant.selectLocation.localized()),
+                        const Expanded(
+                          child: Align(
+                            alignment: Alignment.topRight,
+                            child: Padding(
+                              padding: EdgeInsets.all(AppSizes.size6),
+                              child: Icon(
+                                Icons.done_sharp,
+                                color: Colors.red,
+                                size: AppSizes.size40,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: AppSizes.size8),
+                    address.isNotEmpty
+                        ? Flexible(
+                            child: Text(
+                              address,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(color: AppColors.lightGray),
+                              softWrap: true,
+                              maxLines: 4,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        : Text(AppStringConstant.loadingMessage.localized()),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void getCurrentLocation() async {
+    Position? locationData;
+    try {
+      locationData = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+    } catch (e) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          AlertMessage.showError(
+            e is PlatformException ? e.message.toString() : e.toString(),
+            context,
+          );
+        }
+      });
+      if (mounted) Navigator.pop(context);
+      print('exception----------- $e');
+      return;
+    }
+    if (locationData == null) return;
+    setState(() {
+      latitude = locationData!.latitude;
+      longitude = locationData!.longitude;
+    });
+    position = LatLng(latitude!, longitude!);
+    _controller?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: LatLng(latitude!, longitude!), zoom: 16.0),
+      ),
+    );
+    // Fetch address for initial location
+    getLocation(position!);
+  }
+
+  void placeSearch(LatLng loc) {
+    setState(() {
+      latitude = loc.latitude;
+      longitude = loc.longitude;
+      address = '';
+      addressMap = {};
+    });
+    position = LatLng(latitude!, longitude!);
+    _controller?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: LatLng(latitude!, longitude!), zoom: 16.0),
+      ),
+    );
+    getLocation(loc);
+  }
+
+  void getLocation(LatLng latLng) async {
+    if (kIsWeb) {
+      await _getLocationWeb(latLng);
+    } else {
+      await _getLocationNative(latLng);
+    }
+  }
+
+  Future<void> _getLocationWeb(LatLng latLng) async {
+    try {
+      final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json'
+        '?latlng=${latLng.latitude},${latLng.longitude}'
+        '&key=${AppConstant.googleKey}',
+      );
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == 'OK' &&
+            (data['results'] as List).isNotEmpty) {
+          final components =
+              data['results'][0]['address_components'] as List;
+          String street = '',
+              area = '',
+              locality = '',
+              state = '',
+              zip = '',
+              country = '';
+          for (var c in components) {
+            final types = List<String>.from(c['types']);
+            if (types.contains('route')) street = c['long_name'];
+            if (types.contains('sublocality_level_1') ||
+                types.contains('sublocality')) area = c['long_name'];
+            if (types.contains('locality')) locality = c['long_name'];
+            if (types.contains('administrative_area_level_1'))
+              state = c['long_name'];
+            if (types.contains('postal_code')) zip = c['long_name'];
+            if (types.contains('country')) country = c['long_name'];
+          }
+          // FIX 2: Build fresh address string each time (no appending to stale state)
+          final StringBuffer sb = StringBuffer();
+          final Map<String, dynamic> map = {};
+          if (street.isNotEmpty) { sb.write('$street, '); map['street1'] = street; }
+          if (area.isNotEmpty)   { sb.write('$area, ');   map['street2'] = area; }
+          if (locality.isNotEmpty) { sb.write('$locality, '); map['city'] = locality; }
+          if (state.isNotEmpty)  { sb.write('$state, ');  map['state'] = state; }
+          if (zip.isNotEmpty)    { sb.write('$zip, ');    map['zip'] = zip; }
+          if (country.isNotEmpty){ sb.write(country);     map['country'] = country; }
+          setState(() {
+            address = sb.toString();
+            addressMap = map;
+          });
+        }
+      }
+    } catch (e) {
+      print('Web geocoding error: $e');
+    }
+  }
+
+  Future<void> _getLocationNative(LatLng latLng) async {
+    try {
+      final placemarks = await placemarkFromCoordinates(
+          latLng.latitude, latLng.longitude);
+      if (placemarks.isEmpty) return;
+      final p = placemarks.first;
+
+      // FIX 2: Build fresh strings — never append to existing state
+      final StringBuffer sb = StringBuffer();
+      final Map<String, dynamic> map = {};
+
+      if ((p.street ?? '').isNotEmpty)              { sb.write('${p.street}, ');              map['street1'] = p.street; }
+      if ((p.thoroughfare ?? '').isNotEmpty)        { sb.write('${p.thoroughfare}, ');        map['street2'] = p.thoroughfare; }
+      if ((p.subLocality ?? '').isNotEmpty)         { sb.write('${p.subLocality}, ');         map['street3'] = p.subLocality; }
+      if ((p.locality ?? '').isNotEmpty)            { sb.write('${p.locality}, ');            map['city'] = p.locality; }
+      if ((p.administrativeArea ?? '').isNotEmpty)  { sb.write('${p.administrativeArea}, ');  map['state'] = p.administrativeArea; }
+      if ((p.postalCode ?? '').isNotEmpty)          { sb.write('${p.postalCode}, ');          map['zip'] = p.postalCode; }
+      if ((p.country ?? '').isNotEmpty)             { sb.write('${p.country} ');              map['country'] = p.country; }
+
+      setState(() {
+        address = sb.toString();
+        addressMap = map;
+      });
+
+      print('placemarks------- $placemarks');
+    } catch (e) {
+      print('Native geocoding error: $e');
+    }
+  }
+}

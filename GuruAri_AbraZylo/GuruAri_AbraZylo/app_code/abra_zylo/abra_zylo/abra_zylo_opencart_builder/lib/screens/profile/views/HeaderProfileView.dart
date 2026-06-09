@@ -70,106 +70,49 @@ class _HeaderProfileViewState extends State<HeaderProfileView> {
   Widget build(BuildContext context) {
     getDetails();
     return SizedBox(
-        height: AppSizes.deviceWidth * 0.5,
-        width: AppSizes.deviceWidth,
-        child: _commonBannerView(bannerImage, profileImage, name, email));
-  }
-
-  Widget _commonBannerView(
-      String? bannerImage, String? profileImage, String name, String email) {
-    print("ImageUrl:::$profileImage");
-    return SizedBox(
       width: AppSizes.deviceWidth,
       child: Card(
           elevation: 0,
+          color: Theme.of(context).cardColor,
           child: Padding(
-            padding: const EdgeInsets.only(left: 0, right: 0),
-            child: Stack(
-              children: [
-                Container(
-                  decoration: ((bannerImage ?? "").isNotEmpty)
-                      ? BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(
-                              AppImages.placeholder,
-                            ),
-                            fit: BoxFit.contain,
-                          ),
-                        )
-                      : const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage(
-                              AppImages.placeholder,
-                            ),
-                            fit: BoxFit.contain,
-                          ),
-                        ),
+            padding: const EdgeInsets.symmetric(vertical: AppSizes.size24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(
+                  height: 80,
+                  width: 80,
+                  child: ClipOval(
+                    child: ImageView(
+                      url: profileImage,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-                Positioned(
-                  left: 0,
-                  bottom: 0,
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                      width: AppSizes.deviceWidth,
-                      decoration: const BoxDecoration(
-                        color: AppColors.transparentBackground,
-                        shape: BoxShape.rectangle,
-                      )),
+                const SizedBox(height: AppSizes.size16),
+                Text(
+                  name,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(
+                        fontSize: AppSizes.size20,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
-                Positioned(
-                  left: 0,
-                  bottom: 2,
-                  child: SizedBox(
-                      width: AppSizes.deviceWidth,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: AppSizes.size4,
-                          horizontal: AppSizes.size4,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            SizedBox(
-                              height: AppSizes.size60,
-                              width: AppSizes.size60,
-                              child: ImageView(
-                                url: profileImage,
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                            const SizedBox(width: AppSizes.size8),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  name,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(
-                                        fontSize: AppSizes.size14,
-                                      ),
-                                ),
-                                const SizedBox(
-                                  height: AppSizes.size4,
-                                ),
-                                Text(
-                                  email,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                        fontSize: AppSizes.size14,
-                                      ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      )),
+                const SizedBox(
+                  height: AppSizes.size4,
+                ),
+                Text(
+                  email,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(
+                        fontSize: AppSizes.size14,
+                        color: Colors.grey,
+                      ),
                 ),
               ],
             ),

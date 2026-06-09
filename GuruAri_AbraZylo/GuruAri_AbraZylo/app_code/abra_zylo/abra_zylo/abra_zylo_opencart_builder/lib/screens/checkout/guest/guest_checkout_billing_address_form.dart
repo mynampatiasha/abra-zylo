@@ -8,7 +8,7 @@ import 'package:oc_demo/constants/app_constants.dart';
 import 'package:oc_demo/constants/app_routes.dart';
 import 'package:oc_demo/constants/app_string_constant.dart';
 import 'package:oc_demo/models/address/add_address_request.dart';
-import 'package:location/location.dart' as locationReq;
+import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../common_widgets/alert_message.dart';
@@ -141,11 +141,22 @@ class _GuestCheckoutBillingAddressFormState
                   children: [
                     InkWell(
                       onTap: () async {
-                        var status =
-                            await locationReq.Location.instance.hasPermission();
-                        if (status == locationReq.PermissionStatus.granted ||
-                            status ==
-                                locationReq.PermissionStatus.grantedLimited) {
+                        LocationPermission permission = await Geolocator.checkPermission();
+                        if (permission == LocationPermission.denied) {
+                          permission = await Geolocator.requestPermission();
+                        }
+                        
+                        if (permission == LocationPermission.deniedForever) {
+                          DialogHelper.locationPermissionDialog(
+                              AppStringConstant.provideLocationPermission, context,
+                              onConfirm: () async {
+                            await Geolocator.openAppSettings();
+                          });
+                          return;
+                        }
+                
+                        if (permission == LocationPermission.whileInUse ||
+                            permission == LocationPermission.always) {
                           Navigator.pushNamed(context, AppRoute.location)
                               .then((value) {
                             if (value is Map) {
@@ -166,21 +177,6 @@ class _GuestCheckoutBillingAddressFormState
                                     "${value['street1'] ?? ''}, ${value['street2'] ?? ''}";
                                 _address2.text = "${value['street3'] ?? ''}";
                               }
-                            }
-                          });
-                        } else {
-                          DialogHelper.locationPermissionDialog(
-                              AppStringConstant.requiredLocationPermission,
-                              context, onConfirm: () async {
-                            var status = await locationReq.Location.instance
-                                .requestPermission();
-                            if (status ==
-                                locationReq.PermissionStatus.deniedForever) {
-                              DialogHelper.locationPermissionDialog(
-                                  AppStringConstant.provideLocationPermission,
-                                  context, onConfirm: () async {
-                                openAppSettings();
-                              });
                             }
                           });
                         }

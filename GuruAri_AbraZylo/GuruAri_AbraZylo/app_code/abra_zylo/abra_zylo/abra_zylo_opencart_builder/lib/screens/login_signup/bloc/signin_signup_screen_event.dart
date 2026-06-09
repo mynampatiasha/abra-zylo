@@ -120,8 +120,9 @@ class GoogleSignInEvent extends SigninSignupScreenEvent {
 // }
 
 class GoogleSignInWebEvent extends SigninSignupScreenEvent {
-  const GoogleSignInWebEvent(this.wkToken, this.fcmToken);
+  const GoogleSignInWebEvent(this.user, this.wkToken, this.fcmToken);
 
+  final GoogleSignInAccount user;
   final String wkToken;
   final String fcmToken;
 

@@ -2,16 +2,18 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:location/location.dart' as location;
+import 'package:geolocator/geolocator.dart';
 import 'package:oc_demo/common_widgets/alert_message.dart';
 import 'package:oc_demo/common_widgets/loader.dart';
 import 'package:oc_demo/constants/app_constants.dart';
 import 'package:oc_demo/constants/app_string_constant.dart';
 import 'package:oc_demo/helper/app_localizations.dart';
 import 'package:oc_demo/helper/open_bottom_model_sheet_helper.dart';
+import 'package:oc_demo/helper/nominatim_helper.dart';
 
 class LocationScreen extends StatefulWidget {
   const LocationScreen({Key? key}) : super(key: key);
@@ -24,8 +26,8 @@ class _LocationScreenState extends State<LocationScreen> {
   double? latitude;
   double? longitude;
   LatLng? position;
-  location.Location currentLocation = location.Location();
-  GoogleMapController? _controller;
+
+  MapController _controller = MapController();
   String address = '';
   Map<String, dynamic> addressMap = {};
   bool _mapReady = false; // FIX 1: delays GoogleMap render to avoid null crash in _gmapTypeIDForPluginType
@@ -63,33 +65,34 @@ class _LocationScreenState extends State<LocationScreen> {
                       ? const Loader()
                       : Stack(
                           children: <Widget>[
-                            GoogleMap(
-                              mapType: MapType.normal,
-                              compassEnabled: false,
-                              myLocationButtonEnabled: false,
-                              zoomControlsEnabled: false,
-                              initialCameraPosition: CameraPosition(
-                                target: LatLng(latitude!, longitude!),
-                                zoom: 16.0,
+                            FlutterMap(
+                              mapController: _controller,
+                              options: MapOptions(
+                                initialCenter: LatLng(latitude!, longitude!),
+                                initialZoom: 16.0,
+                                onPositionChanged: (position_info, hasGesture) {
+                                  if (position_info.center != null) {
+                                    position = position_info.center;
+                                  }
+                                },
+                                onMapEvent: (event) {
+                                  if (event is MapEventMoveEnd) {
+                                    if (position != null) {
+                                      setState(() {
+                                        address = '';
+                                        addressMap = {};
+                                      });
+                                      getLocation(position!);
+                                    }
+                                  }
+                                },
                               ),
-                              onMapCreated: (GoogleMapController controller) {
-                                _controller = controller;
-                              },
-                              onCameraMove: (positions) {
-                                position = positions.target;
-                              },
-                              onCameraIdle: () {
-                                if (position != null) {
-                                  // FIX 2: Reset address before each geocode call,
-                                  // not inside setState of getLocation — avoids
-                                  // address strings being appended on repeated drags.
-                                  setState(() {
-                                    address = '';
-                                    addressMap = {};
-                                  });
-                                  getLocation(position!);
-                                }
-                              },
+                              children: [
+                                TileLayer(
+                                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                  userAgentPackageName: 'com.abra.zylo.android',
+                                ),
+                              ],
                             ),
                             const Positioned(
                               right: 0,
@@ -204,9 +207,10 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   void getCurrentLocation() async {
-    location.LocationData? locationData;
+    Position? locationData;
     try {
-      locationData = await currentLocation.getLocation();
+      locationData = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
     } catch (e) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
@@ -221,16 +225,17 @@ class _LocationScreenState extends State<LocationScreen> {
       return;
     }
     if (locationData == null) return;
+    if (!mounted) return;
     setState(() {
       latitude = locationData!.latitude;
       longitude = locationData!.longitude;
     });
     position = LatLng(latitude!, longitude!);
-    _controller?.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(target: LatLng(latitude!, longitude!), zoom: 16.0),
-      ),
-    );
+    if (mounted && _mapReady) {
+      try {
+        _controller.move(LatLng(latitude!, longitude!), 16.0);
+      } catch (_) {}
+    }
     // Fetch address for initial location
     getLocation(position!);
   }
@@ -243,100 +248,44 @@ class _LocationScreenState extends State<LocationScreen> {
       addressMap = {};
     });
     position = LatLng(latitude!, longitude!);
-    _controller?.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(target: LatLng(latitude!, longitude!), zoom: 16.0),
-      ),
-    );
+    if (mounted && _mapReady) {
+      try {
+        _controller.move(LatLng(latitude!, longitude!), 16.0);
+      } catch (_) {}
+    }
     getLocation(loc);
   }
 
   void getLocation(LatLng latLng) async {
-    if (kIsWeb) {
-      await _getLocationWeb(latLng);
-    } else {
-      await _getLocationNative(latLng);
-    }
-  }
-
-  Future<void> _getLocationWeb(LatLng latLng) async {
     try {
-      final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json'
-        '?latlng=${latLng.latitude},${latLng.longitude}'
-        '&key=${AppConstant.googleKey}',
-      );
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['status'] == 'OK' &&
-            (data['results'] as List).isNotEmpty) {
-          final components =
-              data['results'][0]['address_components'] as List;
-          String street = '',
-              area = '',
-              locality = '',
-              state = '',
-              zip = '',
-              country = '';
-          for (var c in components) {
-            final types = List<String>.from(c['types']);
-            if (types.contains('route')) street = c['long_name'];
-            if (types.contains('sublocality_level_1') ||
-                types.contains('sublocality')) area = c['long_name'];
-            if (types.contains('locality')) locality = c['long_name'];
-            if (types.contains('administrative_area_level_1'))
-              state = c['long_name'];
-            if (types.contains('postal_code')) zip = c['long_name'];
-            if (types.contains('country')) country = c['long_name'];
-          }
-          // FIX 2: Build fresh address string each time (no appending to stale state)
-          final StringBuffer sb = StringBuffer();
-          final Map<String, dynamic> map = {};
-          if (street.isNotEmpty) { sb.write('$street, '); map['street1'] = street; }
-          if (area.isNotEmpty)   { sb.write('$area, ');   map['street2'] = area; }
-          if (locality.isNotEmpty) { sb.write('$locality, '); map['city'] = locality; }
-          if (state.isNotEmpty)  { sb.write('$state, ');  map['state'] = state; }
-          if (zip.isNotEmpty)    { sb.write('$zip, ');    map['zip'] = zip; }
-          if (country.isNotEmpty){ sb.write(country);     map['country'] = country; }
-          setState(() {
-            address = sb.toString();
-            addressMap = map;
-          });
-        }
+      final result = await NominatimHelper.reverseGeocode(latLng.latitude, latLng.longitude);
+      if (result != null) {
+        final Map<String, dynamic> addressData = result['address'] ?? {};
+        final Map<String, dynamic> map = {};
+        
+        String street = addressData['road'] ?? '';
+        String area = addressData['suburb'] ?? addressData['neighbourhood'] ?? '';
+        String locality = addressData['city'] ?? addressData['town'] ?? addressData['village'] ?? '';
+        String state = addressData['state'] ?? '';
+        String zip = addressData['postcode'] ?? '';
+        String country = addressData['country'] ?? '';
+
+        if (street.isNotEmpty) map['street1'] = street;
+        if (area.isNotEmpty) map['street2'] = area;
+        if (locality.isNotEmpty) map['city'] = locality;
+        if (state.isNotEmpty) map['state'] = state;
+        if (zip.isNotEmpty) map['zip'] = zip;
+        if (country.isNotEmpty) map['country'] = country;
+
+        setState(() {
+          address = result['address_string'] ?? '';
+          addressMap = map;
+        });
       }
     } catch (e) {
-      print('Web geocoding error: $e');
+      print('Nominatim Geocoding Error: $e');
     }
   }
 
-  Future<void> _getLocationNative(LatLng latLng) async {
-    try {
-      final placemarks = await placemarkFromCoordinates(
-          latLng.latitude, latLng.longitude);
-      if (placemarks.isEmpty) return;
-      final p = placemarks.first;
 
-      // FIX 2: Build fresh strings — never append to existing state
-      final StringBuffer sb = StringBuffer();
-      final Map<String, dynamic> map = {};
-
-      if ((p.street ?? '').isNotEmpty)              { sb.write('${p.street}, ');              map['street1'] = p.street; }
-      if ((p.thoroughfare ?? '').isNotEmpty)        { sb.write('${p.thoroughfare}, ');        map['street2'] = p.thoroughfare; }
-      if ((p.subLocality ?? '').isNotEmpty)         { sb.write('${p.subLocality}, ');         map['street3'] = p.subLocality; }
-      if ((p.locality ?? '').isNotEmpty)            { sb.write('${p.locality}, ');            map['city'] = p.locality; }
-      if ((p.administrativeArea ?? '').isNotEmpty)  { sb.write('${p.administrativeArea}, ');  map['state'] = p.administrativeArea; }
-      if ((p.postalCode ?? '').isNotEmpty)          { sb.write('${p.postalCode}, ');          map['zip'] = p.postalCode; }
-      if ((p.country ?? '').isNotEmpty)             { sb.write('${p.country} ');              map['country'] = p.country; }
-
-      setState(() {
-        address = sb.toString();
-        addressMap = map;
-      });
-
-      print('placemarks------- $placemarks');
-    } catch (e) {
-      print('Native geocoding error: $e');
-    }
-  }
 }

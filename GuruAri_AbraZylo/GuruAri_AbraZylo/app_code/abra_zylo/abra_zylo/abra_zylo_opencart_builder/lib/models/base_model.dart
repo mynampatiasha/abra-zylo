@@ -12,10 +12,10 @@ class BaseModel {
   int? fault;
 
   @HiveField(202)
-  String? message;
+  dynamic message;
 
   @HiveField(203)
-  int? error;
+  dynamic error;
 
   @HiveField(204)
   String? redirect;

@@ -5,7 +5,7 @@ part 'download_product_model.g.dart';
 
 @JsonSerializable()
 class DownloadProductModel extends BaseModel {
-  int? error;
+  dynamic error;
   List<DownloadData>? downloadData;
   String? downloadsTotal;
 

@@ -226,6 +226,19 @@ class _CartScreenState extends State<CartScreen> {
                             cartModel?.cart?.errorWarning ?? "", context);
                         return;
                       }
+                      bool isOutOfStock = false;
+                      cartModel?.cart?.products?.forEach((product) {
+                        if (product.stock == false) {
+                          isOutOfStock = true;
+                        }
+                      });
+                      
+                      if (isOutOfStock) {
+                        AlertMessage.showWarning(
+                            AppStringConstant.outOfStock.localized(), context);
+                        return;
+                      }
+
                       if (!(await AppSharedPref.isLogin())) {
                         showModalBottomSheet(
                           backgroundColor: Theme.of(context).cardColor,

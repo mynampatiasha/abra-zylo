@@ -233,68 +233,8 @@ class ProductPageBasicDetailsWidgetState
 
                   ),
               /*
-              * Guest review/ review count view
+              * Guest review/ review count view removed as per requirements
               * */
-              Row(
-                children: [
-                  ((widget.product?.reviewStatus == "1" ||
-                          (widget.product?.reviewGuest ?? false)))
-                      ? productReviews(
-                          widget.product?.reviewData?.reviews?.length ?? 0,
-                          widget.product?.rating ?? 0)
-                      : Text(_localizations
-                              ?.translate(AppStringConstant.noReview) ??
-                          ''),
-                  SizedBox(
-                      // width: AppSizes.size12,
-                      width: MediaQuery.of(context).size.width * 0.03),
-                  const Text("|"),
-                  SizedBox(
-                      // width: AppSizes.size12,
-                      width: MediaQuery.of(context).size.width * 0.03),
-                  Visibility(
-                    visible: (widget.product?.reviewStatus == "1" ||
-                        (widget.product?.reviewGuest ?? false)),
-                    child: InkWell(
-                      onTap: () async {
-                        if (await AppSharedPref.isLogin() == true ||
-                            (widget.product?.reviewGuest == true)) {
-                          reviewBottomModalSheet(
-                              context,
-                              widget.product?.name ?? '',
-                              widget.product?.thumb ?? '',
-                              widget.product?.productId.toString() ?? "");
-                        } else {
-                          DialogHelper.confirmationDialog(
-                              "${_localizations?.translate(AppStringConstant.signInToContinue)}",
-                              context,
-                              _localizations, onConfirm: () async {
-                            //Todo: move to signup/login page
-                            signInSignUpBottomModalSheet(context, false, false);
-                            // Navigator.pushNamed(context, loginSignup,arguments: false);
-                          });
-                        }
-                      },
-                      child: Text(
-                        _localizations
-                                ?.translate(AppStringConstant.addReview) ??
-                            '',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            decoration: TextDecoration.underline,
-                            decorationColor: Theme.of(context)
-                                .textTheme
-                                .headlineMedium!
-                                .color,
-                            color: Theme.of(context)
-                                .textTheme
-                                .headlineMedium!
-                                .color,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  )
-                ],
-              ),
               // const SizedBox(
               //   height: 12.0,
               // ),
@@ -496,62 +436,7 @@ class ProductPageBasicDetailsWidgetState
         // const SizedBox(
         //   width: AppSizes.size8 / 2,
         // ),
-        Expanded(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              side: const BorderSide(
-                width: 0.5,
-                // width: MediaQuery.of(context).size.width * 0.0005,
-                color: Colors.grey,
-              ),
-              shape: const RoundedRectangleBorder(),
-
-              backgroundColor: Theme.of(context).cardColor, // background
-              foregroundColor: Colors.black, // foreground
-            ),
-            //style: ElevatedButton.styleFrom(padding: EdgeInsets.all(0)),
-            onPressed: () {
-              widget?.productPageBloc?.emit(ProductDetailStateInitial());
-              widget?.productPageBloc?.add(
-                  AddCompareProduct(widget.product?.productId?.toString()));
-            },
-            child: Container(
-              child: Row(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    //size: AppSizes.size22,
-                    size: MediaQuery.of(context).size.width * 0.040,
-                    Icons.compare_arrows_rounded,
-                    // color: Colors.white,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                  SizedBox(
-                    //  width: AppSizes.size8,
-                    width: MediaQuery.of(context).size.width * 0.015,
-                  ),
-                  Expanded(
-                    child: Text(
-                        _localizations?.translate(AppStringConstant.compares) ??
-                            "",
-                        maxLines: 1,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color:
-                                Theme.of(context).textTheme.titleLarge!.color,
-                            fontSize: AppSizes.size12,
-                            fontWeight: FontWeight.w500)
-                        // style: TextStyle(
-                        //     color: Colors.black45,
-                        //     fontWeight: FontWeight.w500,
-                        //     fontSize:
-                        //         MediaQuery.of(context).size.width * 0.030),
-                        ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
+        // Compare button removed as per requirements
         // const SizedBox(
         //   width: AppSizes.size8 / 2,
         // ),

@@ -1,7 +1,8 @@
+import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:google_sign_in/google_sign_in.dart'; // commented out — google_sign_in disabled
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:lottie/lottie.dart';
 import 'package:oc_demo/config/theme.dart';
@@ -239,24 +240,23 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
 
-                  // ── Google Sign-In (temporarily disabled) ──────────────────────────────────
-                  // const SizedBox(height: AppSizes.size16),
-                  // Row(
-                  //   children: const [
-                  //     Expanded(child: Divider(thickness: 1)),
-                  //     Padding(
-                  //       padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  //       child: Text('OR', style: TextStyle(fontSize: 12)),
-                  //     ),
-                  //     Expanded(child: Divider(thickness: 1)),
-                  //   ],
-                  // ),
-                  // const SizedBox(height: AppSizes.size16),
-                  // if (kIsWeb)
-                  //   GoogleSignInWebButton(onSuccess: _handleGoogleUser)
-                  // else
-                  //   _GoogleSignInButton(onTap: _signInWithGoogle),
-                  // const SizedBox(height: AppSizes.size16),
+                  const SizedBox(height: AppSizes.size16),
+                  Row(
+                    children: const [
+                      Expanded(child: Divider(thickness: 1)),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text('OR', style: TextStyle(fontSize: 12)),
+                      ),
+                      Expanded(child: Divider(thickness: 1)),
+                    ],
+                  ),
+                  const SizedBox(height: AppSizes.size16),
+                  if (kIsWeb)
+                    Container() // Web disabled for now
+                  else if (!Platform.isIOS)
+                    _GoogleSignInButton(onTap: _signInWithGoogle),
+                  const SizedBox(height: AppSizes.size16),
                 ],
               ),
             ),

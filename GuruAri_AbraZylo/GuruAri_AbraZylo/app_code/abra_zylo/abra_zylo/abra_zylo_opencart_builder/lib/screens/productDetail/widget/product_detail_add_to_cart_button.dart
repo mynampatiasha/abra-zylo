@@ -5,9 +5,12 @@ import 'package:oc_demo/config/theme.dart';
 import 'package:oc_demo/screens/productDetail/Bloc/product_detail_bloc.dart';
 import 'package:oc_demo/screens/productDetail/Bloc/product_detail_event.dart';
 import 'package:oc_demo/screens/productDetail/Bloc/product_detail_state.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 
 import '../../../common_widgets/dialog_helper.dart';
 import '../../../constants/app_constants.dart';
+import '../../../common_widgets/alert_message.dart';
+import '../../../constants/app_routes.dart';
 import '../../../constants/app_string_constant.dart';
 import '../../../helper/app_localizations.dart';
 import '../../../helper/app_shared_pref.dart';
@@ -21,10 +24,11 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
   int quantity;
   Map<String, dynamic>? selectedProductOptions;
   List<Option>? productOptions;
+  bool isAddedToCart;
 
   ProductDetailAddToCartButtonWidget(this.productPageBloc, this.productId,
       this.quantity, this.selectedProductOptions, this.productOptions,
-      {Key? key});
+      {this.isAddedToCart = false, Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +64,11 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
                               Theme.of(context).colorScheme.onPrimary,
                           backgroundColor: MobikulTheme.iconColor),
                       onPressed: () async {
+                        if (isAddedToCart) {
+                          Navigator.pushNamed(context, AppRoute.cart);
+                          return;
+                        }
+
                         //productId= await AppSharedPref.getProductId();
                         /*
                         * Add to cart labelLarge functionality
@@ -72,6 +81,15 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
                               quantity.toString(),
                               json.encode(selectedProductOptions).toString()));
                           productPageBloc?.emit(ProductDetailStateInitial());
+                          try {
+                            FacebookAppEvents().logEvent(
+                              name: 'add_to_cart',
+                              parameters: {
+                                'product_id': productId.toString(),
+                                'quantity': quantity.toString(),
+                              },
+                            );
+                          } catch (e) {}
                           json.encode(selectedProductOptions);
                         } else {
                           GenericMethods.showErrorAlertMessages(context,
@@ -90,9 +108,9 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
                       ,
                       child: Center(
                           child: Text(
-                        _localizations
+                        isAddedToCart ? "View Cart" : (_localizations
                                 ?.translate(AppStringConstant.addToCart) ??
-                            '',
+                            ''),
                       )),
                     ),
                   ),

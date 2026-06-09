@@ -4,7 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart' as loc;
 
 import '../../config/theme.dart';
@@ -24,20 +25,13 @@ class DeliveryTrackingScreen extends StatefulWidget {
 
 class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   AppLocalizations? localization;
-  final Completer<GoogleMapController> _controller = Completer();
+  MapController _controller = MapController();
   LatLng? sourceLocation;
   LatLng? destination;
 
-  /*  LatLng? sourceLocation = LatLng(37.33500926, -122.03272188);
-   LatLng? destination = LatLng(37.33429383, -122.06600055);*/
-/*  static LatLng sourceLocation = LatLng(28.629637761068185, 77.37793902873749);
-  static LatLng destination = LatLng(28.629637761068185, 77.37793902873749);*/
   List<LatLng> polylineCoordinates = [];
   LatLng? deliveryBoyLocation;
-  BitmapDescriptor sourceIcon = BitmapDescriptor.defaultMarker;
-  BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;
-  BitmapDescriptor deliveryBoyIcon = BitmapDescriptor.defaultMarker;
-  Map<PolylineId, Polyline> polylines = {};
+  Map<String, Polyline> polylines = {};
 
   @override
   void initState() {
@@ -46,7 +40,6 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
     //setDestination();
     fetchCoordinates();
     startTracking();
-    setCustomMarkerIcon();
 
     super.initState();
   }
@@ -90,54 +83,53 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
           localization?.translate(AppStringConstant.trackOrder) ?? '',
         ),
       ),
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: destination!,
-          zoom: 13.5,
+      body: FlutterMap(
+        mapController: _controller,
+        options: MapOptions(
+          initialCenter: destination ?? const LatLng(0, 0),
+          initialZoom: 13.5,
         ),
-        markers: {
-          Marker(
-            markerId: MarkerId("source"),
-            position: sourceLocation!,
-            icon: sourceIcon,
+        children: [
+          TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.abra.zylo.android',
           ),
-          Marker(
-            icon: destinationIcon,
-            markerId: const MarkerId("destination"),
-            position: destination!,
+          PolylineLayer(
+            polylines: polylines.values.toList(),
           ),
-          if (deliveryBoyLocation != null)
-            Marker(
-              icon: deliveryBoyIcon,
-              markerId: const MarkerId("deliveryboy"),
-              position: deliveryBoyLocation!,
-            ),
-        },
-        onMapCreated: (mapController) {
-          _controller.complete(mapController);
-        },
-        polylines: Set<Polyline>.of(polylines
-            .values), /*{
-          Polyline(
-            polylineId: const PolylineId("route"),
-            points: polylineCoordinates,
-            color: MobikulTheme.accentColor,
-            width: 8,
+          MarkerLayer(
+            markers: [
+              if (sourceLocation != null)
+                Marker(
+                  point: sourceLocation!,
+                  child: Image.asset("assets/images/source_pin.png"),
+                ),
+              if (destination != null)
+                Marker(
+                  point: destination!,
+                  child: Image.asset("assets/images/destination_pin.png"),
+                ),
+              if (deliveryBoyLocation != null)
+                Marker(
+                  point: deliveryBoyLocation!,
+                  child: Image.asset("assets/images/delivery_pin.png"),
+                ),
+            ],
           ),
-        }*/
+        ],
       ),
     );
   }
 
   void _updatePolyline(/* parameters for new points */) {
-    final PolylineId polylineId = PolylineId('updatedroute');
-    final Polyline polyline = polylines[polylineId]!.copyWith(
-      pointsParam: [
+    final String polylineId = 'updatedroute';
+    final Polyline polyline = Polyline(
+      points: [
         LatLng(deliveryBoyLocation!.latitude, deliveryBoyLocation!.longitude),
         LatLng(destination?.latitude ?? 0, destination?.longitude ?? 0),
-        // New list of LatLng points
       ],
-      //colorParam: Colors.black
+      color: Colors.red,
+      strokeWidth: 4.0,
     );
 
     setState(() {
@@ -146,21 +138,17 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   }
 
   _addPolyLine() {
-    PolylineId initialRouteId = PolylineId("initialroute");
+    String initialRouteId = "initialroute";
     Polyline polyline = Polyline(
-      polylineId: initialRouteId,
       color: Colors.grey,
       points: polylineCoordinates,
-      jointType: JointType.mitered,
-      patterns: [PatternItem.dot, PatternItem.gap(10)],
+      strokeWidth: 4.0,
     );
-    PolylineId updatedRouteId = PolylineId("updatedroute");
+    String updatedRouteId = "updatedroute";
     Polyline updatedPolyline = Polyline(
-      polylineId: updatedRouteId,
       color: Colors.red,
       points: polylineCoordinates,
-      jointType: JointType.mitered,
-      patterns: [PatternItem.dot, PatternItem.gap(10)],
+      strokeWidth: 4.0,
     );
     polylines[initialRouteId] = polyline;
     polylines[updatedRouteId] = updatedPolyline;
@@ -188,27 +176,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   }
 
   void setCustomMarkerIcon() {
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration.empty, "assets/images/source_pin.png")
-        .then(
-      (icon) {
-        sourceIcon = icon;
-      },
-    );
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration.empty, "assets/images/destination_pin.png")
-        .then(
-      (icon) {
-        destinationIcon = icon;
-      },
-    );
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration.empty, "assets/images/delivery_pin.png")
-        .then(
-      (icon) {
-        deliveryBoyIcon = icon;
-      },
-    );
+    // In flutter_map, we use widgets directly for markers instead of BitmapDescriptor.
   }
 
 /*  setDestination() async {

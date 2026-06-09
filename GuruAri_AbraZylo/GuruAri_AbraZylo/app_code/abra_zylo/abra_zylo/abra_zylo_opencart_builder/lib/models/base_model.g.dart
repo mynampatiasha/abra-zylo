@@ -18,8 +18,8 @@ class BaseModelAdapter extends TypeAdapter<BaseModel> {
     };
     return BaseModel(
       fault: fields[201] as int?,
-      message: fields[202] as String?,
-      error: fields[203] as int?,
+      message: fields[202] as dynamic,
+      error: fields[203] as dynamic,
       redirect: fields[204] as String?,
       newsletter: fields[205] as dynamic,
       cartTotal: fields[206] as dynamic,
@@ -61,8 +61,8 @@ class BaseModelAdapter extends TypeAdapter<BaseModel> {
 
 BaseModel _$BaseModelFromJson(Map<String, dynamic> json) => BaseModel(
       fault: json['fault'] as int?,
-      message: json['message'] as String?,
-      error: json['error'] as int?,
+      message: json['message'],
+      error: json['error'],
       redirect: json['redirect'] as String?,
       newsletter: json['newsletter'],
       cartTotal: json['total'],

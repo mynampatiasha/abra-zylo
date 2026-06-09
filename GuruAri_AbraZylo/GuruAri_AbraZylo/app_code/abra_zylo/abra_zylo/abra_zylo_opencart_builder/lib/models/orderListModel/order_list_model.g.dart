@@ -19,7 +19,7 @@ class OrderListModelAdapter extends TypeAdapter<OrderListModel> {
     return OrderListModel(
       orderData: (fields[1] as List?)?.cast<OrderListData>(),
       orderTotals: fields[2] as String?,
-      error: fields[3] as int?,
+      error: fields[3] as dynamic,
     )
       ..eTag = fields[100] as String?
       ..fault = fields[201] as int?
@@ -126,7 +126,7 @@ OrderListModel _$OrderListModelFromJson(Map<String, dynamic> json) =>
           ?.map((e) => OrderListData.fromJson(e as Map<String, dynamic>))
           .toList(),
       orderTotals: json['orderTotals'] as String?,
-      error: json['error'] as int?,
+      error: json['error'],
     )
       ..fault = json['fault'] as int?
       ..message = json['message'] as String?

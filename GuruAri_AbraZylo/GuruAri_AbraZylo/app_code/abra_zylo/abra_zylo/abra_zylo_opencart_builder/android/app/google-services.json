@@ -1,20 +1,28 @@
 {
   "project_info": {
-    "project_number": "847585068690",
-    "project_id": "abra-zylo-44c01",
-    "storage_bucket": "abra-zylo-44c01.firebasestorage.app"
+    "project_number": "701689503202",
+    "project_id": "abra-zylo-84775",
+    "storage_bucket": "abra-zylo-84775.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:712075561478:android:983618445b682e69e09187",
+        "mobilesdk_app_id": "1:701689503202:android:b1e12c9ab1e965f398edbb",
         "android_client_info": {
           "package_name": "com.abra.zylo.android"
         }
       },
       "oauth_client": [
         {
-          "client_id": "847585068690-74je0ce1r9j6gijli99f5njhm736a555.apps.googleusercontent.com",
+          "client_id": "701689503202-dtmkh3mg23bk5rkrhfq68tj40clkvdjq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.abra.zylo.android",
+            "certificate_hash": "3d19cce9a72c0b71a556a6d83e04ad29dc68c1a7"
+          }
+        },
+        {
+          "client_id": "701689503202-lh4q7qs8nnkqf5pg3br8o7rps08h5c8s.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.abra.zylo.android",
@@ -22,20 +30,20 @@
           }
         },
         {
-          "client_id": "847585068690-74je0ce1r9j6gijli99f5njhm736a555.apps.googleusercontent.com",
+          "client_id": "701689503202-e43oghrsmqlc7tp4lvjif72lqgt8tm03.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCfb0p1u6Ugu8s17Sogt7PlV9UlLRhiCBo"
+          "current_key": "AIzaSyBjtYE1HXtXlDGFmN2Jl_C8r3xNHbXyrOU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "847585068690-74je0ce1r9j6gijli99f5njhm736a555.apps.googleusercontent.com",
+              "client_id": "701689503202-e43oghrsmqlc7tp4lvjif72lqgt8tm03.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

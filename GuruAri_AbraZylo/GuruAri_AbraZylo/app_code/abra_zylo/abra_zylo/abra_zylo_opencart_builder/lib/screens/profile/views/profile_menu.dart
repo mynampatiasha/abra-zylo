@@ -35,8 +35,9 @@ Widget profileMenu(
         icon: AppImages.accountInfoIcon));
     menuItems.add(ProfileMenuItems(
         id: 3,
-        title: _localizations?.translate(AppStringConstant.addressBook) ?? '',
-        icon: AppImages.addressIcon));
+        title: 'Saved Addresses',
+        iconData: Icons.location_on,
+        icon: ""));
     menuItems.add(ProfileMenuItems(
         id: 4,
         title: _localizations?.translate(AppStringConstant.allOrders) ?? '',

@@ -9,7 +9,7 @@ part of 'download_product_model.dart';
 DownloadProductModel _$DownloadProductModelFromJson(
         Map<String, dynamic> json) =>
     DownloadProductModel(
-      error: json['error'] as int?,
+      error: json['error'],
       downloadData: (json['downloadData'] as List<dynamic>?)
           ?.map((e) => DownloadData.fromJson(e as Map<String, dynamic>))
           .toList(),

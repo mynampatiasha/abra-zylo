@@ -8,7 +8,7 @@ part of 'return_order_request.dart';
 
 ReturnOrderRequest _$ReturnOrderRequestFromJson(Map<String, dynamic> json) =>
     ReturnOrderRequest(
-      error: json['error'] as int?,
+      error: json['error'],
       orderId: json['order_id'] as String?,
       dateOrdered: json['date_ordered'] as String?,
       firstname: json['firstname'] as String?,

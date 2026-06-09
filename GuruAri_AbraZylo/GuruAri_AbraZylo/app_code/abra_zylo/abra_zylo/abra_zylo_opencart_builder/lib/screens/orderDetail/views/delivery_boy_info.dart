@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:oc_demo/common_widgets/image_view.dart';
 import 'package:oc_demo/constants/app_constants.dart';
 import 'package:oc_demo/constants/app_routes.dart';

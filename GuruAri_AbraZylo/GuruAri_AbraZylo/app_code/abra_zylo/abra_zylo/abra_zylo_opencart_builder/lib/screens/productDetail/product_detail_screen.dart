@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oc_demo/common_widgets/Tabbar/bottom_tabbar.dart';
 import 'package:oc_demo/common_widgets/custom_loader.dart';
 import 'package:oc_demo/common_widgets/widget_space.dart';
+import 'package:oc_demo/models/address/add_address_request.dart';
 import 'package:oc_demo/models/productDetail/product_detail_screen_model.dart';
 import 'package:oc_demo/screens/productDetail/Bloc/product_detail_bloc.dart';
 import 'package:oc_demo/screens/productDetail/Bloc/product_detail_event.dart';
@@ -21,6 +22,7 @@ import 'package:oc_demo/screens/productDetail/widget/product_detail_feature_widg
 import 'package:oc_demo/screens/productDetail/widget/product_detail_image_widget.dart';
 import 'package:oc_demo/screens/productDetail/widget/product_detail_quantity_widget.dart';
 import 'package:oc_demo/screens/productDetail/widget/product_details_related_products_widget.dart';
+import 'package:oc_demo/screens/productDetail/widget/product_delivery_estimate_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -78,6 +80,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
   double bottomBarButtonVisibilityOffset = 0;
   String? productId1;
   int? index1;
+  bool isAddedToCart = false;
 
   @override
   void initState() {
@@ -212,6 +215,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
           WidgetsBinding.instance?.addPostFrameCallback((_) {
             AlertMessage.showSuccess(
                 currentState.baseModel.message ?? '', context);
+            setState(() {
+              isAddedToCart = true;
+            });
           });
           //selectedProductOptions?.clear();
         } else if (currentState is BuyProductStateSuccess) {
@@ -233,14 +239,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
           WidgetsBinding.instance?.addPostFrameCallback((_) {
             AlertMessage.showSuccess(
                 currentState.baseModel.message ?? '', context);
-            Navigator.pushNamed(context, AppRoute.cart).then((value) {
-              AppSharedPref.getCartCount().then((value) {
-                cartCount = int.parse(value);
-                TabbarController.countController.sink.add(cartCount ?? 0);
+            if (isUserLogin) {
+              Navigator.pushNamed(context, AppRoute.shipping, arguments: getShippingPageArgument(AddAddressRequest(), "", false)).then((value) {
+                AppSharedPref.getCartCount().then((value) {
+                  cartCount = int.parse(value);
+                  TabbarController.countController.sink.add(cartCount ?? 0);
+                });
+                setState(() {});
               });
-              setState(() {});
-            });
-            ;
+            } else {
+              Navigator.pushNamed(context, AppRoute.cart).then((value) {
+                AppSharedPref.getCartCount().then((value) {
+                  cartCount = int.parse(value);
+                  TabbarController.countController.sink.add(cartCount ?? 0);
+                });
+                setState(() {});
+              });
+            }
           });
           //selectedProductOptions?.clear();
         } else if (currentState is AddListProductToWishlistStateSuccess) {
@@ -300,6 +315,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             quantityCounter ?? 0,
             selectedProductOptions,
             productPageData?.options,
+            isAddedToCart: isAddedToCart,
           ),
         ),
       ),
@@ -395,6 +411,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                                 productPageBloc,
                                 product: productPageData,
                               ),
+                              const ProductDeliveryEstimateWidget(),
                             ],
                           )),
 
@@ -488,6 +505,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                                 quantityCounter!,
                                 selectedProductOptions,
                                 productPageData?.options,
+                                isAddedToCart: isAddedToCart,
                               )),
                           //  ),
 
@@ -508,12 +526,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                           widgetSpace(0, AppSizes.size8),
 
                           /*
-                          * If product have review then review tile will show.
+                          * If product have review then review tile will show. Removed as per requirements.
                           * */
-                          if ((productPageData?.reviewData?.reviews?.length ??
-                                  0) >
-                              0)
-                            reviewTile(),
 
                           /*
                           * If product have related product list size greater then 0 then show related products

@@ -102,6 +102,7 @@ import '../screens/rewardTransactionInfoScreen/transaction_info_screen.dart';
 import '../screens/wishlist/bloc/wishlist_bloc.dart';
 import '../screens/wishlist/bloc/wishlist_repository.dart';
 import '../screens/wishlist/wishlist_screen.dart';
+import '../screens/add_edit_address/map_location_picker_screen.dart';
 
 class AppRoute {
   //Argument Constant
@@ -141,6 +142,7 @@ class AppRoute {
   static const String walkThrough = 'walkThrough';
   static const String ordersAndReturns = 'ordersAndReturns';
   static const String productReview = 'productReview';
+  static const String mapLocationPickerScreen = 'mapLocationPickerScreen';
 
   static const String deliveryTrackingScreen = "deliveryTrackingScreen";
 
@@ -321,16 +323,25 @@ class AppRoute {
         );
       case addEditAddress:
         String? id;
+        Map<String, dynamic>? initialLocationData;
         if (settings.arguments != null) {
-          id = (((settings.arguments as Map<String, dynamic>?) ?? <String, dynamic>{}))["addressId"];
+          if (settings.arguments is String) {
+            id = settings.arguments as String?;
+          } else if (settings.arguments is Map) {
+            var map = settings.arguments as Map;
+            id = map["addressId"] as String?;
+            initialLocationData = map["locationData"] as Map<String, dynamic>?;
+          }
         }
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (context) => AddEditAddressScreenBloc(
                 repository: AddEditAddressRepositoryImp()),
-            child: AddEditAddress(id),
+            child: AddEditAddress(id, initialLocationData: initialLocationData),
           ),
         );
+      case mapLocationPickerScreen:
+        return MaterialPageRoute(builder: (_) => const MapLocationPickerScreen());
       case location:
         return MaterialPageRoute(builder: (_) => const LocationScreen());
       case newsLetter:

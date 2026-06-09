@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:oc_demo/screens/razor_pay_payment/model/razor_pay_model.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
@@ -9,7 +10,7 @@ class AbraRazorPay {
   String merchantKeyValue = "";
 
   void initRazorPay(RazorPayModel? payModel,
-      {required Function(PaymentFailureResponse response) onError,
+      {required Function(dynamic response) onError,
       required Function(PaymentSuccessResponse response) onSuccess}) {
     Map<String, dynamic> razorInitData = {
       'key': payModel?.keyId ?? "",
@@ -24,9 +25,18 @@ class AbraRazorPay {
       // }
     };
 
-    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, onError);
-    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, onSuccess);
-    razorpay.open(razorInitData);
+    if (kIsWeb) {
+      onError("Razorpay is not supported on Web in debug mode. Please test on a real device.");
+      return;
+    }
+
+    try {
+      razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, onError);
+      razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, onSuccess);
+      razorpay.open(razorInitData);
+    } catch (e) {
+      onError("Razorpay error: ${e.toString()}");
+    }
   }
 
   // void handlePaymentErrorResponse(PaymentFailureResponse response){

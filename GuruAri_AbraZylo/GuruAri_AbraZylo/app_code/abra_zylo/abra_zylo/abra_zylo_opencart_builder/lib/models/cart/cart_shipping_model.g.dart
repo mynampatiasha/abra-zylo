@@ -8,11 +8,11 @@ part of 'cart_shipping_model.dart';
 
 CartShippingModel _$CartShippingModelFromJson(Map<String, dynamic> json) =>
     CartShippingModel(
-      error: json['error'] as int?,
+      error: json['error'],
       shippingMethod: (json['shippingMethod'] as List<dynamic>?)
           ?.map((e) => ShippingMethod.fromJson(e as Map<String, dynamic>))
           .toList(),
-      message: json['message'] as String?,
+      message: json['message'],
     )
       ..fault = json['fault'] as int?
       ..redirect = json['redirect'] as String?

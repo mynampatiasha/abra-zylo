@@ -25,7 +25,7 @@ OrderDetailModel _$OrderDetailModelFromJson(Map<String, dynamic> json) =>
       histories: (json['histories'] as List<dynamic>?)
           ?.map((e) => OrderHistories.fromJson(e as Map<String, dynamic>))
           .toList(),
-      error: json['error'] as int?,
+      error: json['error'],
       boyName: json['boy_name'] as String?,
       boyImage: json['boy_image'] as String?,
       boyId: json['boy_id'] as String?,

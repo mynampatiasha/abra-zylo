@@ -1,7 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:oc_demo/config/theme.dart';
 import 'package:oc_demo/constants/app_routes.dart';
 import 'package:oc_demo/helper/app_shared_pref.dart';
@@ -15,6 +18,7 @@ import '../../constants/app_string_constant.dart';
 import '../../helper/app_localizations.dart';
 import '../../helper/open_bottom_model_sheet_helper.dart';
 import '../login_signup/bloc/signin_signup_screen_bloc.dart';
+import 'view/google_sign_in_web_button.dart';
 
 class SignInSignUpScreen extends StatefulWidget {
   Map<String, dynamic> arguments;
@@ -59,10 +63,20 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
           AlertMessage.showError(state.message ?? "", context);
         });
       }
-      else if (state is SigninSignupScreenError) {
+      else if (state is LoginState) {
+        _loading = false;
+        var model = state.data;
+        AppSharedPref.setLoginUserData(model);
+        WidgetsBinding.instance?.addPostFrameCallback((_) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoute.bottomTabBAr, (route) => false);
+        });
+      } else if (state is SignupScreenFormSuccess) {
         _loading = false;
         WidgetsBinding.instance?.addPostFrameCallback((_) {
-          AlertMessage.showSuccess(state.message ?? "", context);
+          AlertMessage.showSuccess(state.data.message ?? "", context);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoute.bottomTabBAr, (route) => false);
         });
       }
 
@@ -127,6 +141,28 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
                     ?.copyWith(fontSize: 12),
               ),
             ),
+            if (kIsWeb)
+              GoogleSignInWebButton(onSuccess: _handleGoogleUser)
+            else if (!Platform.isIOS)
+              _GoogleSignInButton(onTap: _signInWithGoogle),
+            SizedBox(
+              height: AppSizes.size16,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Expanded(child: Divider(thickness: 1)),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                      _localizations?.translate(AppStringConstant.or) ?? ''),
+                ),
+                Expanded(child: Divider(thickness: 1)),
+              ],
+            ),
+            SizedBox(
+              height: AppSizes.size16,
+            ),
             commonButton(
               context,
               () {
@@ -154,23 +190,66 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
                 // textColor:Colors.white
                 ),
             SizedBox(height: AppSizes.size16),
-            // Row(
-            //   crossAxisAlignment: CrossAxisAlignment.center,
-            //   children: <Widget>[
-            //     Expanded(child: Divider(thickness: 1)),
-            //     Padding(
-            //       padding: EdgeInsets.symmetric(horizontal: 8.0),
-            //       child: Text(
-            //           _localizations?.translate(AppStringConstant.or) ?? ''),
-            //     ),
-            //     Expanded(child: Divider(thickness: 1)),
-            //   ],
-            // ),
-            SizedBox(
-              height: AppSizes.size16,
-            )
+
           ],
         )),
+      ),
+    );
+  }
+
+  void _signInWithGoogle() async {
+    var wkToken = await AppSharedPref.getWkToken();
+    var fcmToken = await AppSharedPref.getFcmToken();
+    bloc?.add(GoogleSignInEvent(wkToken, fcmToken));
+  }
+
+  void _handleGoogleUser(GoogleSignInAccount user) async {
+    var wkToken = await AppSharedPref.getWkToken();
+    var fcmToken = await AppSharedPref.getFcmToken();
+    bloc?.add(GoogleSignInWebEvent(user, wkToken, fcmToken));
+  }
+}
+
+class _GoogleSignInButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _GoogleSignInButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: OutlinedButton(
+        onPressed: onTap,
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Color(0xFFDDDDDD)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          backgroundColor: Colors.white,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'G',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF4285F4),
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Sign in with Google',
+              style: TextStyle(
+                fontSize: 15,
+                color: Color(0xFF3C4043),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

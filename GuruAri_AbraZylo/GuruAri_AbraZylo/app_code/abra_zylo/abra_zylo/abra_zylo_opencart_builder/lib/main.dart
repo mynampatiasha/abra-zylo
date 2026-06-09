@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -55,6 +56,8 @@ final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
 
 FirebaseDatabase? secondaryDatabase;
+final facebookAppEvents = FacebookAppEvents();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -67,6 +70,7 @@ void main() async {
     await Firebase.initializeApp();
     await notification.init();
     secondaryDatabase = FirebaseDatabase.instance;
+    await facebookAppEvents.setAutoLogAppEventsEnabled(true);
   }
   GlobalData.selectedLanguage = await AppSharedPref.getLanguage();
 

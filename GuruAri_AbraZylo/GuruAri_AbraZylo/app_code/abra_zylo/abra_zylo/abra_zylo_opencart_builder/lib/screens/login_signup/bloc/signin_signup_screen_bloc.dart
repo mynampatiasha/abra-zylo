@@ -1,11 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-// import 'package:google_sign_in/google_sign_in.dart'; // commented out — causes dart:js_interop build failure
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:oc_demo/helper/app_shared_pref.dart';
 import 'package:oc_demo/models/loginModel/login_model.dart';
 import 'package:oc_demo/models/registerAccountModel/register_account_model.dart';
 import 'package:oc_demo/screens/login_signup/bloc/signin_signup_screen_repository.dart';
+import 'package:oc_demo/screens/login_signup/bloc/signin_signup_screen_repository.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 
 import '../../../models/base_model.dart';
 
@@ -17,13 +19,12 @@ class SigninSignupScreenBloc
     extends Bloc<SigninSignupScreenEvent, SigninSignupScreenState> {
   SigninSignupScreenRepository? repository;
 
-  // Google Sign-In client — commented out (google_sign_in disabled)
-  // static final GoogleSignIn _googleSignIn = GoogleSignIn(
-  //   clientId: kIsWeb
-  //       ? '847585068690-74je0ce1r9j6gijli99f5njhm736a555.apps.googleusercontent.com'
-  //       : null,
-  //   scopes: ['email', 'profile'],
-  // );
+  static final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: kIsWeb
+        ? '960143902854-ct0jco0ntkrriu82fvl6m1m83nr8jag4.apps.googleusercontent.com'
+        : null,
+    scopes: ['email', 'profile'],
+  );
 
   SigninSignupScreenBloc({this.repository}) : super(SignupScreenInitial()) {
     on<SigninSignupScreenEvent>(mapEventToState);
@@ -52,6 +53,9 @@ class SigninSignupScreenBloc
           if ((model.error ?? 0) >= 1) {
             emit(SigninSignupScreenError(model.message));
           } else {
+            try {
+              FacebookAppEvents().logEvent(name: "complete_registration");
+            } catch (e) {}
             emit(SignupScreenFormSuccess(model));
             AppSharedPref.setLogin(true);
           }
@@ -85,7 +89,7 @@ class SigninSignupScreenBloc
           } else {
             emit(LoginState(model));
             AppSharedPref.setLogin(true);
-            AppSharedPref.setCustomerId(model.customerId);
+            AppSharedPref.setCustomerId(model.customerId.toString());
           }
         } else {
           emit(SigninSignupScreenError(""));
@@ -132,14 +136,68 @@ class SigninSignupScreenBloc
         emit(CompleteState());
       });
     } else if (event is GoogleSignInEvent) {
-      // Google Sign-In disabled — emit error
-      emit(SigninSignupScreenError("Google sign-in is temporarily unavailable."));
+      try {
+        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+        if (googleUser != null) {
+          String email = googleUser.email;
+          String id = googleUser.id;
+          String displayName = googleUser.displayName ?? '';
+          
+          List<String> names = displayName.split(' ');
+          String firstname = names.isNotEmpty ? names.first : 'User';
+          String lastname = names.length > 1 ? names.sublist(1).join(' ') : '';
+
+          var model = await repository?.googleSignIn(
+              event.wkToken, id, email, firstname, lastname, event.fcmToken);
+              
+          if (model != null) {
+            if ((model.error ?? 0) >= 1) {
+              emit(SigninSignupScreenError(model.message?.toString()));
+            } else {
+              emit(LoginState(model));
+              AppSharedPref.setLogin(true);
+              AppSharedPref.setCustomerId(model.customerId.toString());
+            }
+          } else {
+            emit(SigninSignupScreenError("Failed to sign in with Google."));
+          }
+        } else {
+          emit(SigninSignupScreenError("Google sign-in was canceled."));
+        }
+      } catch (error, _) {
+        emit(SigninSignupScreenError(error.toString()));
+      }
       await Future.delayed(const Duration(seconds: 2), () {
         emit(CompleteState());
       });
     } else if (event is GoogleSignInWebEvent) {
-      // Google Sign-In disabled — emit error
-      emit(SigninSignupScreenError("Google sign-in is temporarily unavailable."));
+      try {
+        final GoogleSignInAccount googleUser = event.user;
+        String email = googleUser.email;
+        String id = googleUser.id;
+        String displayName = googleUser.displayName ?? '';
+        
+        List<String> names = displayName.split(' ');
+        String firstname = names.isNotEmpty ? names.first : 'User';
+        String lastname = names.length > 1 ? names.sublist(1).join(' ') : '';
+
+        var model = await repository?.googleSignIn(
+            event.wkToken, id, email, firstname, lastname, event.fcmToken);
+            
+        if (model != null) {
+          if ((model.error ?? 0) >= 1) {
+            emit(SigninSignupScreenError(model.message?.toString()));
+          } else {
+            emit(LoginState(model));
+            AppSharedPref.setLogin(true);
+            AppSharedPref.setCustomerId(model.customerId.toString());
+          }
+        } else {
+          emit(SigninSignupScreenError("Failed to sign in with Google on Web."));
+        }
+      } catch (error, _) {
+        emit(SigninSignupScreenError(error.toString()));
+      }
       await Future.delayed(const Duration(seconds: 2), () {
         emit(CompleteState());
       });

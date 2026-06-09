@@ -1,6 +1,6 @@
 //============================Map Keys==============================//
 
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:oc_demo/models/address/add_address_request.dart';
 import 'package:oc_demo/models/checkout/checkout_payment_method_model.dart';
 import 'package:oc_demo/screens/productDetail/Bloc/product_detail_bloc.dart';

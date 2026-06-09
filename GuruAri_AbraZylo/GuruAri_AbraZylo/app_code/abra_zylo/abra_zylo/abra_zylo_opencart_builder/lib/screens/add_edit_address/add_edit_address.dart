@@ -14,8 +14,9 @@ import 'package:oc_demo/screens/add_edit_address/widget/address_form.dart';
 import '../../helper/app_shared_pref.dart';
 
 class AddEditAddress extends StatefulWidget {
-  const AddEditAddress(this.addressId, {super.key});
+  const AddEditAddress(this.addressId, {this.initialLocationData, super.key});
   final String? addressId;
+  final Map<String, dynamic>? initialLocationData;
 
   @override
   State<AddEditAddress> createState() => _AddEditAddressState();
@@ -60,11 +61,22 @@ class _AddEditAddressState extends State<AddEditAddress> {
           } else if (state is AddAddressSuccess) {
             _isLoading = false;
             SchedulerBinding.instance?.addPostFrameCallback((_) {
-              if (state.model.error == 0) {
-                AlertMessage.showSuccess(state.model.message ?? '', context);
+              if (state.model.error == 0 || state.model.error == "0") {
+                String successMsg = state.model.message is String ? state.model.message : 'Address saved successfully';
+                AlertMessage.showSuccess(successMsg, context);
                 Navigator.of(context).pop(true);
               } else {
-                AlertMessage.showError(state.model.message ?? '', context);
+                String errorMessage = "Failed to save address.";
+                if (state.model.message is String) {
+                  errorMessage = state.model.message;
+                } else if (state.model.error is Iterable) {
+                  errorMessage = (state.model.error as Iterable).join("\n");
+                } else if (state.model.error is Map) {
+                  errorMessage = (state.model.error as Map).values.join("\n");
+                } else if (state.model.message is Map) {
+                  errorMessage = (state.model.message as Map).values.join("\n");
+                }
+                AlertMessage.showError(errorMessage, context);
               }
             });
           } else if (state is AddEditAddressError) {
@@ -89,7 +101,7 @@ class _AddEditAddressState extends State<AddEditAddress> {
               request.addressId = widget.addressId;
               _bloc?.add(AddAddressEvent(request));
               _bloc?.add(LoadingAddAddressEvent());
-            }, selectedLanguage),
+            }, selectedLanguage, initialLocationData: widget.initialLocationData),
           ),
           Visibility(
             visible: _isLoading,

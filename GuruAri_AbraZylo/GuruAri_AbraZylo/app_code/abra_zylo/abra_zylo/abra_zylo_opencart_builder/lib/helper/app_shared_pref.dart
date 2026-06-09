@@ -158,7 +158,6 @@ class AppSharedPref {
   static setLoginUserData(LoginModel loginModel) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.setString(loginUserData, jsonEncode(loginModel.toJson()));
-    pref.getString(loginModel.customerId ?? "");
   }
 
   static Future<LoginModel?> getLoginUserData() async {

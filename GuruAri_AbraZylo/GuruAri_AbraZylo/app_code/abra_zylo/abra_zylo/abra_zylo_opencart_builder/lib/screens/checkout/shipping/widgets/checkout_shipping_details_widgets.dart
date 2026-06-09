@@ -70,6 +70,17 @@ class _ShippingViewState extends State<ShippingView> {
 
   @override
   Widget build(BuildContext context) {
+    // FORCE AUTO-SELECT FIRST SHIPPING METHOD
+    if (widget.checkoutShippingMethodModel?.shippingMethods?.shippingMethodList?.isNotEmpty == true) {
+      final methods = widget.checkoutShippingMethodModel!.shippingMethods!.shippingMethodList!;
+      if (methods.isNotEmpty && methods[0].quote?.isNotEmpty == true) {
+        if (selectedShippingMethodId == null || selectedShippingMethodId!.isEmpty) {
+          selectedShippingMethodId = methods[0].quote![0].code;
+          AppSharedPref.setSelectedShippingId(selectedShippingMethodId ?? "");
+        }
+      }
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +96,9 @@ class _ShippingViewState extends State<ShippingView> {
           if ((widget.checkoutBillingAddressModel?.shippingRequired == null ||
               widget.checkoutBillingAddressModel?.shippingRequired ==
                   true)) ...[
-            TitleSeparatedCard(
+            Visibility(
+              visible: false, // Flipkart style: hide duplicate shipping address switch
+              child: TitleSeparatedCard(
               (localizations?.translate(AppStringConstant.shippingAddress) ??
                   ""),
               Padding(
@@ -161,8 +174,12 @@ class _ShippingViewState extends State<ShippingView> {
                 ),
               ),
             ),
+            ),
             if (widget.shippingRequired == true) ...[
-              _shippingMethod(),
+              Visibility(
+                visible: false, // Flipkart style: auto-select and hide shipping method
+                child: _shippingMethod(),
+              ),
               // TitleSeparatedCard(
               //   (localizations?.translate(AppStringConstant.comment) ?? ""),
               //   Padding(
@@ -195,7 +212,10 @@ class _ShippingViewState extends State<ShippingView> {
             child: Card(child: guestShipping(widget.savedAddress)),
           ),
           if (widget.shippingRequired == true) ...[
-            _shippingMethod(),
+            Visibility(
+              visible: false,
+              child: _shippingMethod(),
+            ),
             TitleSeparatedCard(
               (localizations?.translate(AppStringConstant.shippingComment) ??
                   ""),
@@ -309,76 +329,23 @@ class _ShippingViewState extends State<ShippingView> {
         ],
       );
 
-  Widget _shippingCard(int type) => Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          if (type == 0) // ) For billing address and 1 for shipping address
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppSizes.size8, vertical: AppSizes.size16),
-              child: Text(
-                type == 0
-                    ? (localizations
-                            ?.translate(AppStringConstant.billingAddress) ??
-                        "")
-                    : (localizations
-                            ?.translate(AppStringConstant.shippingAddress) ??
-                        ""),
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-          const SizedBox(
-            height: 8,
-          ),
-          const Divider(height: 0),
-          ListTile(
-            title: Text(
-              type == 0 ? getSelectedAddress(0) : getSelectedAddress(1),
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(fontSize: AppSizes.size14),
-            ),
-            trailing: const Icon(
-              Icons.arrow_forward_ios,
-              size: AppSizes.size18,
-              color: Colors.grey,
-            ),
-            contentPadding: const EdgeInsets.all(AppSizes.size8),
-            onTap: () async {
-              var addressId = "";
-              if (type == 0) {
-                addressId = await AppSharedPref.getBillingAddressId();
-              } else {
-                addressId = await AppSharedPref.getShippingAddressId();
-              }
-
-              Navigator.of(context)
-                  .pushNamed(AppRoute.addEditAddress,
-                      arguments:
-                          addressId == "0" ? null : {"addressId": addressId})
-                  .then((value) {
-                // var success = value["success"];
-                if (value == true) {
-                  widget.onAddAddressSuccess(true);
-                } else {
-                  widget.onAddAddressSuccess(false);
-                }
-              });
-            },
-          ),
-          const Divider(height: 0),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Expanded(
-                child: CartIconButton(
-                  leadingIcon: Icons.edit,
-                  title: (localizations
-                          ?.translate(AppStringConstant.changeAddress) ??
-                      ""),
-                  onClick: () async {
+  Widget _shippingCard(int type) => Padding(
+        padding: const EdgeInsets.all(AppSizes.size16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Deliver to:",
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                InkWell(
+                  onTap: () async {
                     var result = await showMyModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
@@ -410,30 +377,35 @@ class _ShippingViewState extends State<ShippingView> {
                       }
                     }
                   },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSizes.size12, vertical: AppSizes.size6),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Theme.of(context).primaryColor),
+                      borderRadius: BorderRadius.circular(AppSizes.size4),
+                    ),
+                    child: Text(
+                      "CHANGE",
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: AppSizes.size12,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              Expanded(
-                child: CartIconButton(
-                  leadingIcon: Icons.add,
-                  title:
-                      (localizations?.translate(AppStringConstant.newAddress) ??
-                          ""),
-                  onClick: () {
-                    Navigator.of(context)
-                        .pushNamed(AppRoute.addEditAddress)
-                        .then((value) {
-                      if (value == true) {
-                        widget.onAddAddressSuccess(true);
-                      } else {
-                        widget.onAddAddressSuccess(false);
-                      }
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+            const SizedBox(height: AppSizes.size12),
+            Text(
+              type == 0 ? getSelectedAddress(0) : getSelectedAddress(1),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontSize: AppSizes.size14, height: 1.4),
+            ),
+          ],
+        ),
       );
 
   Widget _shippingMethod() => Card(
@@ -443,11 +415,12 @@ class _ShippingViewState extends State<ShippingView> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.symmetric(
-                  horizontal: AppSizes.size8, vertical: AppSizes.size16),
+                  horizontal: AppSizes.size16, vertical: AppSizes.size16),
               child: Text(
-                (localizations?.translate(AppStringConstant.shippingMethods) ??
-                    ""),
-                style: Theme.of(context).textTheme.titleLarge,
+                "Delivery Options",
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ),
             const Divider(height: 0),
@@ -481,47 +454,38 @@ class _ShippingViewState extends State<ShippingView> {
       );
 
   Widget shippingMethodList(List<Quote>? quote) {
-    // if(selectedShippingMethodId==""){
-    //   selectedShippingMethodId = quote?[0].code;
-    // }
+    if ((selectedShippingMethodId == null || selectedShippingMethodId == "") && quote != null && quote.isNotEmpty) {
+      selectedShippingMethodId = quote[0].code;
+      AppSharedPref.setSelectedShippingId(selectedShippingMethodId ?? "");
+    }
     return ListView.separated(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
         var item = quote?[index];
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(AppSizes.size8),
-              child: Text(
-                "${item?.title}",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            RadioListTile<String?>(
-              contentPadding: const EdgeInsets.all(0),
-              dense: true,
-              visualDensity: const VisualDensity(horizontal: -4.0),
-              title: Text(
-                  quote?[index].title ??
-                      "" + "  (" + (quote?[index].text!)! + ")",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontSize: AppSizes.size16)),
-              value: item?.code,
-              groupValue: selectedShippingMethodId,
-              onChanged: (value) async {
-                setState(() {
-                  selectedShippingMethodId = value;
-                });
-                await AppSharedPref.setSelectedShippingId(
-                    selectedShippingMethodId ?? "");
-              },
-            ),
-          ],
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSizes.size8, vertical: AppSizes.size4),
+          child: RadioListTile<String?>(
+            contentPadding: const EdgeInsets.all(0),
+            dense: true,
+            activeColor: Theme.of(context).primaryColor,
+            visualDensity: const VisualDensity(horizontal: -4.0),
+            title: Text(
+                (item?.title ?? "") + (item?.text != null ? "  (" + item!.text! + ")" : ""),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(fontSize: AppSizes.size14, fontWeight: FontWeight.w500)),
+            value: item?.code,
+            groupValue: selectedShippingMethodId,
+            onChanged: (value) async {
+              setState(() {
+                selectedShippingMethodId = value;
+              });
+              await AppSharedPref.setSelectedShippingId(
+                  selectedShippingMethodId ?? "");
+            },
+          ),
         );
       },
       separatorBuilder: (context, index) => const Divider(height: 0),

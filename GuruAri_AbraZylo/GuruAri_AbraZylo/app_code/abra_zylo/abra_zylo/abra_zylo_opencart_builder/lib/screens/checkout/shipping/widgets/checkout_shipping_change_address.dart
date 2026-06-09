@@ -3,6 +3,7 @@ import 'package:oc_demo/models/checkout/checkout_address_model.dart';
 
 import '../../../../common_widgets/common_outlined_button.dart';
 import '../../../../constants/app_constants.dart';
+import '../../../../constants/app_routes.dart';
 import '../../../../constants/app_string_constant.dart';
 import '../../../../helper/app_localizations.dart';
 import '../../../../helper/app_shared_pref.dart';
@@ -20,8 +21,36 @@ class ChangeAddress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      itemBuilder: (context, index) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(AppSizes.size16),
+          child: SizedBox(
+            width: double.infinity,
+            height: AppSizes.size48,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: AppColors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.size8),
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context); // Close bottom sheet
+                Navigator.pushNamed(context, AppRoute.mapLocationPickerScreen);
+              },
+              icon: const Icon(Icons.add_location_alt),
+              label: const Text(
+                "Add New Address",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: AppSizes.size14),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListView.separated(
+            itemBuilder: (context, index) {
         var address = checkoutAddress?.addresses?[index];
         return Container(
           margin: const EdgeInsets.all(AppSizes.size6),
@@ -90,6 +119,9 @@ class ChangeAddress extends StatelessWidget {
         return const SizedBox(height: AppSizes.size8);
       },
       itemCount: checkoutAddress?.addresses?.length ?? 0,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -143,29 +143,89 @@ class _SplashScreen extends State<SplashScreen> {
                 color: Colors.black,
               ),
             )
-          ]
-          // SizedBox(
-          //     width: AppSizes.deviceWidth.toDouble(),
-          //     height: AppSizes.deviceHeight.toDouble(),
-          //     child: Image.asset(
-          //       // isArabic==false?
-          //       "assets/images/splash_screen.png"  /*"assets/images/marketplace_splash_screen.png" "assets/images/arabic_splash_screen.png" */,
-          //       fit: BoxFit.cover,
-          //     ),
-          //   ),
-        ],
-        Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Visibility(
-              visible: isLoading,
-              child: LinearProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Theme.of(context).colorScheme.onPrimary,
+          ],
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 90,
+                  height: 90,
+                  child: Image.asset(
+                    "assets/images/app_logo.png",
+                    fit: BoxFit.contain,
+                  ),
                 ),
-              ),
-            )),
+                const SizedBox(height: 24),
+                RichText(
+                  text: const TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'ABRA ',
+                        style: TextStyle(
+                          color: Color(0xFF192A56),
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'ZYLO',
+                        style: TextStyle(
+                          color: Color(0xFFE2213A),
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'SMART COMMERCE PLATFORM',
+                  style: TextStyle(
+                    color: Color(0xFFAAAAAA),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 2.5,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(width: 18, height: 2, color: const Color(0xFFE2213A)),
+                    Container(width: 18, height: 2, color: const Color(0xFF192A56)),
+                  ],
+                ),
+                const SizedBox(height: 60),
+                if (isLoading)
+                  SizedBox(
+                    width: 140,
+                    child: LinearProgressIndicator(
+                      backgroundColor: Colors.grey[200],
+                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFE2213A)),
+                      minHeight: 2,
+                    ),
+                  ),
+                const SizedBox(height: 12),
+                if (isLoading)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(width: 5, height: 5, decoration: const BoxDecoration(color: Color(0xFFFF9EAA), shape: BoxShape.circle)),
+                      const SizedBox(width: 6),
+                      Container(width: 7, height: 7, decoration: const BoxDecoration(color: Color(0xFFE2213A), shape: BoxShape.circle)),
+                      const SizedBox(width: 6),
+                      Container(width: 5, height: 5, decoration: const BoxDecoration(color: Color(0xFF192A56), shape: BoxShape.circle)),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        ],
+        // Progress indicator moved to the center layout
       ],
     );
   }

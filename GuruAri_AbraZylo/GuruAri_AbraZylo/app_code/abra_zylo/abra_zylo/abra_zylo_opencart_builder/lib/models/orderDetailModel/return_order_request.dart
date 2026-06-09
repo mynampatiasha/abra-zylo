@@ -5,7 +5,7 @@ part 'return_order_request.g.dart';
 
 @JsonSerializable()
 class ReturnOrderRequest extends BaseModel {
-  int? error;
+  dynamic error;
   @JsonKey(name: "order_id")
   String? orderId;
 

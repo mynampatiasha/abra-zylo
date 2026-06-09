@@ -89,7 +89,13 @@ class _OrderCompleteState extends State<OrderComplete> {
                         child: SizedBox(
                           width: AppSizes.deviceWidth,
                           child: ElevatedButton(
-                            // style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).textTheme.headlineMedium?.color),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              padding: const EdgeInsets.symmetric(vertical: AppSizes.size16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(AppSizes.size8),
+                              ),
+                            ),
                             onPressed: () {
                               Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
@@ -99,9 +105,8 @@ class _OrderCompleteState extends State<OrderComplete> {
                               );
                             },
                             child: Text(
-                              AppStringConstant.continueShopping.localized(),
-                              style: TextStyle(color: Colors.white),
-                              // style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).cardColor),
+                              AppStringConstant.continueShopping.localized().toUpperCase(),
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: AppSizes.size16),
                             ),
                           ),
                         ),
@@ -121,24 +126,29 @@ class _OrderCompleteState extends State<OrderComplete> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            const SizedBox(height: AppSizes.size20),
-            const Icon(
-              Icons.check_circle_rounded,
-              color: Colors.green,
-              size: AppSizes.cartProductSize,
+            const SizedBox(height: AppSizes.size30),
+            Image.asset(
+              'assets/images/success.gif',
+              width: 150,
+              height: 150,
             ),
-            const SizedBox(height: AppSizes.size16),
+            const SizedBox(height: AppSizes.size24),
             Text(
-              AppStringConstant.thankYou.localized(),
+              "Order placed successfully!",
               style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    fontSize: AppSizes.size18,
+                    fontSize: AppSizes.size22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
             ),
+            const SizedBox(height: AppSizes.size8),
             Text(
               "${AppStringConstant.yourOrderNumberIs.localized()} ${widget.orderId}",
-              style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  fontSize: AppSizes.size14, fontWeight: FontWeight.w400),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontSize: AppSizes.size16, fontWeight: FontWeight.w500, color: Colors.black54),
             ),
+            const SizedBox(height: AppSizes.size16),
+            const Divider(),
           ],
         ),
       );

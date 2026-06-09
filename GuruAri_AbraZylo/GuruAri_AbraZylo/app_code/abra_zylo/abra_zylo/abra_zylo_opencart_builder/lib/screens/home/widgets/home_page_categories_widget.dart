@@ -158,7 +158,7 @@ class _HomePageCategoriesState extends State<HomePageCategories> {
                 top: AppSizes.size8,
                 right: AppSizes.size8),
             width: AppSizes.deviceWidth,
-            height: AppSizes.deviceHeight / 7,
+            height: AppSizes.deviceHeight / 5.5,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: widget.categories?.length,

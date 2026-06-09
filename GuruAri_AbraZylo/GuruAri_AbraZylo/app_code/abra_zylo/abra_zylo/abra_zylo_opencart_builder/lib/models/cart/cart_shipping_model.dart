@@ -5,8 +5,8 @@ part 'cart_shipping_model.g.dart';
 
 @JsonSerializable()
 class CartShippingModel extends BaseModel {
-  int? error;
-  String? message;
+  dynamic error;
+  dynamic message;
   List<ShippingMethod>? shippingMethod;
 
   CartShippingModel({this.error, this.shippingMethod, this.message});

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:oc_demo/common_widgets/alert_message.dart';
 import 'package:oc_demo/common_widgets/common_tool_bar.dart';
@@ -29,20 +30,19 @@ class _TrackDeliveryBoyState extends State<TrackDeliveryBoy> {
   AppLocalizations? _localizations;
   bool isLoading = false;
   static const LatLng _center = const LatLng(28.6261248, 77.3685248);
-  final Set<Marker> _markers = {};
-  final Set<Polyline> _polyline = {};
+  final List<Marker> _markers = [];
+  final List<Polyline> _polyline = [];
   LatLng _lastMapPosition = _center;
   LocationModel? _locationModel;
   List<LatLng>? latlng = [];
   List<Track>? latlongs = [];
 
   LatLng startLocation = LatLng(27.6683619, 85.3101895);
-  late GoogleMapController controller;
+  MapController controller = MapController();
   Location _location = Location();
 
-  void _onMapCreated(GoogleMapController controllerParam) {
+  void _onMapCreated() {
     setState(() {
-      controller = controllerParam;
       //uncomment for current location.......
       // _location.onLocationChanged.listen((l) {
       //   controller.animateCamera(
@@ -62,32 +62,17 @@ class _TrackDeliveryBoyState extends State<TrackDeliveryBoy> {
       //
       // ));
       _markers.add(Marker(
-        markerId: MarkerId(latlng?.first.toString() ?? ""),
-        position: latlng?.first ?? _center,
-        // infoWindow: InfoWindow(
-        //   title: 'Really cool place',
-        //   snippet: '5 Star Rating',
-        // ),
-        icon: BitmapDescriptor.defaultMarker,
+        point: latlng?.first ?? _center,
+        child: const Icon(Icons.location_on, color: Colors.red, size: 40.0),
       ));
       _markers.add(Marker(
-        markerId: MarkerId(latlng?.last.toString() ?? ""),
-        position: latlng?.last ?? _center,
-        // infoWindow: InfoWindow(
-        //   title: 'Really cool place',
-        //   snippet: '5 Star Rating',
-        // ),
-        icon: BitmapDescriptor.defaultMarker,
+        point: latlng?.last ?? _center,
+        child: const Icon(Icons.location_on, color: Colors.green, size: 40.0),
       ));
       _polyline.add(Polyline(
-        polylineId: PolylineId(_lastMapPosition.toString()),
-        visible: true,
-        patterns: [PatternItem.dash(10), PatternItem.gap(10)],
-        startCap: Cap.roundCap,
-        endCap: Cap.roundCap,
-        width: 5,
         points: latlng ?? [],
         color: Colors.blue,
+        strokeWidth: 5,
       ));
     });
   }
@@ -139,18 +124,25 @@ class _TrackDeliveryBoyState extends State<TrackDeliveryBoy> {
 
   Widget buildUI() {
     return Container(
-        child: GoogleMap(
-      polylines: _polyline,
-      markers: _markers,
-      onMapCreated: _onMapCreated,
-      myLocationEnabled: true,
-
-      //onCameraMove: _onCameraMove,
-      initialCameraPosition: CameraPosition(
-        target: _center,
-        zoom: 11.0,
+        child: FlutterMap(
+      mapController: controller,
+      options: MapOptions(
+        initialCenter: _center,
+        initialZoom: 11.0,
+        onMapReady: _onMapCreated,
       ),
-      mapType: MapType.normal,
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.abra.zylo.android',
+        ),
+        PolylineLayer(
+          polylines: _polyline,
+        ),
+        MarkerLayer(
+          markers: _markers,
+        ),
+      ],
     ));
   }
 }

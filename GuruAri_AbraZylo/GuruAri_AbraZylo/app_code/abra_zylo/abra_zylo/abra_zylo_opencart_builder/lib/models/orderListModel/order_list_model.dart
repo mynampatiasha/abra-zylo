@@ -17,7 +17,7 @@ class OrderListModel extends BaseModel {
   @HiveField(HiveConstant.Two)
   String? orderTotals;
   @HiveField(HiveConstant.Three)
-  int? error;
+  dynamic error;
 
   OrderListModel({this.orderData, this.orderTotals, this.error});
   factory OrderListModel.fromJson(Map<String, dynamic> json) =>
