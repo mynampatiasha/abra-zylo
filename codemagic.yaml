@@ -1,8 +1,7 @@
 workflows:
   ios-workflow:
     name: Abra Zylo iOS
-    max_build_duration: 60
-    working_directory: GuruAri_AbraZylo/GuruAri_AbraZylo/app_code/abra_zylo/abra_zylo/abra_zylo_opencart_builder
+    max_build_duration: 120
     integrations:
       app_store_connect: Abra App Store Key
     environment:
@@ -12,6 +11,7 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.abralogistic.abrazylo
+    working_directory: GuruAri_AbraZylo/GuruAri_AbraZylo/app_code/abra_zylo/abra_zylo/abra_zylo_opencart_builder
     scripts:
       - name: Get Flutter packages
         script: flutter pub get
@@ -20,13 +20,35 @@ workflows:
       - name: Set up code signing
         script: |
           keychain initialize
-          app-store-connect fetch-signing-files com.abralogistic.abrazylo --type IOS_APP_STORE --create
+          app-store-connect fetch-signing-files com.abralogistic.abrazylo \
+            --type IOS_APP_STORE \
+            --create
           keychain add-certificates
           xcode-project use-profiles
+      - name: Create export options
+        script: |
+          cat > /Users/builder/export_options.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.abralogistic.abrazylo</key>
+              <string>Abra Zylo ios_app_store 1779168219</string>
+            </dict>
+          </dict>
+          </plist>
+          EOF
       - name: Build IPA
-        script: flutter build ipa --release
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
     artifacts:
-      - build/ios/ipa/*.ipa
+      - "**/build/ios/ipa/*.ipa"
+      - "**/*.ipa"
     publishing:
       app_store_connect:
         auth: integration
