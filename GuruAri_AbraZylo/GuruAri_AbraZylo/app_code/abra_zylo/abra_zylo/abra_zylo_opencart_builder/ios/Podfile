@@ -39,6 +39,7 @@ target 'Runner' do
   pod 'GoogleMLKit/ImageLabeling'
   pod 'GoogleMLKit/TextRecognition'
   pod 'SwiftKeychainWrapper'
+  pod 'GoogleMaps'
   pod 'FirebaseCore', :modular_headers => true
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
