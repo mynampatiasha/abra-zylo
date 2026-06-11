@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -258,6 +259,16 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<void> initTracking() async {
+    if (!kIsWeb && Platform.isIOS) {
+      final TrackingStatus status = await AppTrackingTransparency.trackingAuthorizationStatus;
+      if (status == TrackingStatus.notDetermined) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        await AppTrackingTransparency.requestTrackingAuthorization();
+      }
+    }
+  }
+
   @override
   void initState() {
     if (!kIsWeb) {
@@ -267,6 +278,12 @@ class _MyAppState extends State<MyApp> {
       _registerForegroundMessageHandler();
       _registerBackgroundMessageHandler();
     }
+    
+    // Request App Tracking Transparency permission on iOS
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      initTracking();
+    });
+    
     super.initState();
   }
 
