@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 
+import 'dart:async';
+import 'package:app_links/app_links.dart';
+import 'package:http/http.dart' as http;
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -259,6 +262,9 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  late AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
+
   Future<void> initTracking() async {
     if (!kIsWeb && Platform.isIOS) {
       final TrackingStatus status = await AppTrackingTransparency.trackingAuthorizationStatus;
@@ -267,6 +273,65 @@ class _MyAppState extends State<MyApp> {
         await AppTrackingTransparency.requestTrackingAuthorization();
       }
     }
+  }
+
+  Future<void> initDeepLinks() async {
+    _appLinks = AppLinks();
+
+    // Check initial link if app was in cold state (terminated)
+    try {
+      final appLink = await _appLinks.getInitialLink();
+      if (appLink != null) {
+        handleDeepLink(appLink);
+      }
+    } catch (e) {
+      debugPrint("Failed to get initial deep link: \$e");
+    }
+
+    // Handle link when app is in warm state (front or background)
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      handleDeepLink(uri);
+    }, onError: (err) {
+      debugPrint("Deep link error: \$err");
+    });
+  }
+
+  Future<void> handleDeepLink(Uri uri) async {
+    try {
+      debugPrint("Received deep link: \$uri");
+      
+      // Attempt to find product_id in URL directly (if marketing team uses ?product_id=123)
+      String? productId = uri.queryParameters['product_id'];
+
+      // If no product_id in URL, fetch the HTML and scrape the product_id
+      if (productId == null || productId.isEmpty) {
+        final response = await http.get(uri);
+        if (response.statusCode == 200) {
+          // OpenCart usually embeds product_id in a hidden input: <input type="hidden" name="product_id" value="123" />
+          final regex = RegExp(r'name="product_id"\s+value="(\d+)"');
+          final match = regex.firstMatch(response.body);
+          if (match != null && match.groupCount >= 1) {
+            productId = match.group(1);
+          }
+        }
+      }
+
+      // If we successfully found a product_id, navigate to the product page
+      if (productId != null && productId.isNotEmpty) {
+        navigatorKey.currentState?.pushNamed(
+          AppRoute.productPage,
+          arguments: {"product_id": productId},
+        );
+      }
+    } catch (e) {
+      debugPrint("Error handling deep link: \$e");
+    }
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -282,6 +347,7 @@ class _MyAppState extends State<MyApp> {
     // Request App Tracking Transparency permission on iOS
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initTracking();
+      initDeepLinks();
     });
     
     super.initState();
