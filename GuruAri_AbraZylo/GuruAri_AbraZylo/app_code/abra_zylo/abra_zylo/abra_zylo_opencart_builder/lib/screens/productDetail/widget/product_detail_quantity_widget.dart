@@ -43,37 +43,37 @@ class _ProductDetailQuantityWidgetState
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       margin: EdgeInsets.zero,
-      padding: const EdgeInsets.all(AppSizes.size8),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.size16, vertical: AppSizes.size12),
       color: Theme.of(context).cardColor,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            _localizations?.translate(AppStringConstant.quantity) ?? '',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: SchedulerBinding.instance!.window.platformBrightness ==
-                        Brightness.dark
-                    ? AppColors.white
-                    : AppColors.black),
-          ),
-          const SizedBox(
-            height: AppSizes.size8,
-          ),
-          const Divider(),
-          SizedBox(
-            height: AppSizes.deviceWidth / 8,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                /*
-                * Decrement quantity
-                * */
-                Container(
-                  width: AppSizes.deviceWidth / 6,
-                  color: Colors.black,
-                  child: InkWell(
+              Text(
+                _localizations?.translate(AppStringConstant.quantity) ?? 'Quantity *',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w400,
+                    color: SchedulerBinding.instance!.window.platformBrightness ==
+                            Brightness.dark
+                        ? AppColors.white
+                        : AppColors.black),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    /*
+                    * Decrement quantity
+                    * */
+                    InkWell(
+                      borderRadius: const BorderRadius.horizontal(left: Radius.circular(8)),
                       onTap: () {
                         if (widget.counter! > 1 &&
                             widget.counter! > widget.minimum!) {
@@ -85,32 +85,39 @@ class _ProductDetailQuantityWidgetState
                           });
                         }
                       },
-                      child: const Icon(Icons.remove,
-                          size: 30, color: AppColors.white)),
-                ),
-                const Spacer(),
-                /*
-                * quantity
-                * */
-                SizedBox(
-                    width: AppSizes.deviceWidth / 6,
-                    child: TextField(
-                      enabled: false,
-                      controller: controller,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                      keyboardType: TextInputType.number,
-                      decoration:
-                          const InputDecoration(border: InputBorder.none),
-                    )),
-                const Spacer(),
-                /*
-                * Increment quantity
-                * */
-                Container(
-                  width: AppSizes.deviceWidth / 6,
-                  color: Colors.black,
-                  child: InkWell(
+                      child: Container(
+                        width: 40,
+                        alignment: Alignment.center,
+                        child: Icon(Icons.remove, size: 20, color: Colors.grey.shade800),
+                      ),
+                    ),
+                    Container(
+                      width: 1,
+                      color: Colors.grey.shade300,
+                    ),
+                    /*
+                    * quantity
+                    * */
+                    Container(
+                      width: 80,
+                      alignment: Alignment.center,
+                      child: Text(
+                        controller.text,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 1,
+                      color: Colors.grey.shade300,
+                    ),
+                    /*
+                    * Increment quantity
+                    * */
+                    InkWell(
+                      borderRadius: const BorderRadius.horizontal(right: Radius.circular(8)),
                       onTap: () {
                         widget.counter = (widget.counter ?? 1) + 1;
                         controller.text =
@@ -119,17 +126,17 @@ class _ProductDetailQuantityWidgetState
                           widget.counterChangedValue!(widget.counter!);
                         });
                       },
-                      child: Icon(
-                        Icons.add,
-                        size: 30,
-                        color: AppColors.white,
-                      )),
+                      child: Container(
+                        width: 40,
+                        alignment: Alignment.center,
+                        child: Icon(Icons.add, size: 20, color: Colors.grey.shade800),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

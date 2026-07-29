@@ -896,4 +896,18 @@ abstract class ApiClient {
     @Field("android_device_id") String? androidDeviceId,
     @Field("ios_device_id") String? iosDeviceId,
   );
+
+  /// Apple Sign-In — sends Apple ID token + user info to backend
+  @POST(Apis.appleLogin)
+  Future<LoginModel> appleLogin(
+    @Field("wk_token") String wkToken,
+    @Field("apple_id") String appleId,
+    @Field("email") String email,
+    @Field("firstname") String firstname,
+    @Field("lastname") String lastname,
+    @Field("identity_token") String identityToken,
+    @Field("authorization_code") String authorizationCode,
+    @Field("android_device_id") String? androidDeviceId,
+    @Field("ios_device_id") String? iosDeviceId,
+  );
 }

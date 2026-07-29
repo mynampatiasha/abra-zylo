@@ -173,4 +173,6 @@ class Apis {
 
   static const googleLogin =
       "index.php?route=api/wkrestapi/customer/googleLogin";
+  static const appleLogin =
+      "index.php?route=api/wkrestapi/customer/appleLogin";
 }

@@ -11,6 +11,7 @@ import '../../../common_widgets/dialog_helper.dart';
 import '../../../constants/app_constants.dart';
 import '../../../common_widgets/alert_message.dart';
 import '../../../constants/app_routes.dart';
+import '../../../constants/arguments_map.dart';
 import '../../../constants/app_string_constant.dart';
 import '../../../helper/app_localizations.dart';
 import '../../../helper/app_shared_pref.dart';
@@ -39,131 +40,146 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
         child: Container(
           color: Theme.of(context).cardColor,
           child: Container(
-            margin: const EdgeInsets.only(
-                left: 15.0, right: 15, top: 12, bottom: 12),
+            margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
             child: Row(
               children: [
                 Expanded(
                   flex: 1,
+                  child: InkWell(
+                    onTap: () async {
+                      if (await AppSharedPref.isLogin() == true) {
+                        productPageBloc?.add(AddProductToWishListEvent(productId.toString()));
+                        productPageBloc?.emit(ProductDetailStateInitial());
+                      } else {
+                        DialogHelper.wishlistConfirmationDialog(
+                            "${_localizations?.translate(AppStringConstant.wishlistDesc)}",
+                            "${_localizations?.translate(AppStringConstant.loginRequired)}",
+                            context,
+                            _localizations, onConfirm: () async {
+                          Navigator.of(context).pushNamed(AppRoute.login, arguments: getSignInSignUpPageArgument(false, false));
+                        });
+                      }
+                    },
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.favorite_border, color: AppColors.black, size: 24),
+                        SizedBox(height: 2),
+                        Text('WISHLIST', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 1,
                   child: SizedBox(
-                    height: 55,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          side: const BorderSide(
-                            width: 1.0,
-                            color: Colors.black,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(8), // <-- Radius
-                          ),
-
-                          // backgroundColor: Colors.white, // background
-                          // foregroundColor: Colors.black,
-                          foregroundColor:
-                              Theme.of(context).colorScheme.onPrimary,
-                          backgroundColor: MobikulTheme.iconColor),
+                    height: 50,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(width: 1.5, color: Color(0xFF673AB7)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        foregroundColor: const Color(0xFF673AB7),
+                        elevation: 0,
+                      ),
                       onPressed: () async {
                         if (isAddedToCart) {
                           Navigator.pushNamed(context, AppRoute.cart);
                           return;
                         }
-
-                        //productId= await AppSharedPref.getProductId();
-                        /*
-                        * Add to cart labelLarge functionality
-                        * */
-
-                        /*if(await AppSharedPref.isLogin()==true){*/
-                        if (await checkForRequiredCustomField()) {
-                          productPageBloc?.add(AddProductToCartEvent(
-                              productId.toString(),
-                              quantity.toString(),
-                              json.encode(selectedProductOptions).toString()));
-                          productPageBloc?.emit(ProductDetailStateInitial());
-                          try {
-                            FacebookAppEvents().logEvent(
-                              name: 'add_to_cart',
-                              parameters: {
-                                'product_id': productId.toString(),
-                                'quantity': quantity.toString(),
-                              },
-                            );
-                          } catch (e) {}
-                          json.encode(selectedProductOptions);
+                        if (await AppSharedPref.isLogin() == true) {
+                          if (await checkForRequiredCustomField()) {
+                            productPageBloc?.add(AddProductToCartEvent(
+                                productId.toString(),
+                                quantity.toString(),
+                                json.encode(selectedProductOptions).toString()));
+                            productPageBloc?.emit(ProductDetailStateInitial());
+                            try {
+                              FacebookAppEvents().logEvent(
+                                name: 'add_to_cart',
+                                parameters: {'product_id': productId.toString(), 'quantity': quantity.toString()},
+                              );
+                            } catch (e) {}
+                          } else {
+                            GenericMethods.showErrorAlertMessages(context, "${_localizations?.translate(AppStringConstant.pleaseCheckRequiredField)}");
+                          }
                         } else {
-                          GenericMethods.showErrorAlertMessages(context,
-                              "${_localizations?.translate(AppStringConstant.pleaseCheckRequiredField)}");
-                        }
-                      } /*else {
-                         DialogHelper.confirmationDialog(
+                          DialogHelper.wishlistConfirmationDialog(
                               "${_localizations?.translate(AppStringConstant.signInToContinue)}",
+                              "${_localizations?.translate(AppStringConstant.loginRequired)}",
                               context,
                               _localizations, onConfirm: () async {
-                           //Todo: need to add code to move to login screen
-                           // Navigator.pushNamed(context, loginSignup, arguments: false);
+                            Navigator.of(context).pushNamed(AppRoute.login, arguments: getSignInSignUpPageArgument(false, false));
                           });
-                         }*/
-                      // }
-                      ,
-                      child: Center(
-                          child: Text(
-                        isAddedToCart ? "View Cart" : (_localizations
-                                ?.translate(AppStringConstant.addToCart) ??
-                            ''),
-                      )),
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.shopping_cart_outlined, size: 18),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              isAddedToCart ? "VIEW CART" : "ADD TO CART",
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(
-                  width: AppSizes.size15,
-                ),
+                const SizedBox(width: 8),
                 Expanded(
                   flex: 1,
                   child: SizedBox(
-                    height: 55,
+                    height: 50,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8), // <-- Radius
-                        ),
-
-                        // foregroundColor: Colors.white, // background
-                        // backgroundColor: Colors.black, // foreground
+                        backgroundColor: const Color(0xFF673AB7),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        elevation: 0,
                       ),
                       onPressed: () async {
-                        /*
-                        * Buy now labelLarge functionality
-                        * */
-                        //if(await AppSharedPref.isLogin()==true){
-                        // productId= await AppSharedPref.getProductId();
-                        if (await checkForRequiredCustomField()) {
-                          productPageBloc?.add(BuyNowEvent(
-                              productId.toString(),
-                              quantity.toString(),
-                              json.encode(selectedProductOptions).toString()));
-                          productPageBloc?.emit(ProductDetailStateInitial());
-                          json.encode(selectedProductOptions);
+                        if (await AppSharedPref.isLogin() == true) {
+                          if (await checkForRequiredCustomField()) {
+                            productPageBloc?.add(BuyNowEvent(
+                                productId.toString(),
+                                quantity.toString(),
+                                json.encode(selectedProductOptions).toString()));
+                            productPageBloc?.emit(ProductDetailStateInitial());
+                          } else {
+                            GenericMethods.showErrorAlertMessages(context, "${_localizations?.translate(AppStringConstant.pleaseCheckRequiredField)}");
+                          }
                         } else {
-                          GenericMethods.showErrorAlertMessages(context,
-                              "${_localizations?.translate(AppStringConstant.pleaseCheckRequiredField)}");
+                          DialogHelper.wishlistConfirmationDialog(
+                              "${_localizations?.translate(AppStringConstant.signInToContinue)}",
+                              "${_localizations?.translate(AppStringConstant.loginRequired)}",
+                              context,
+                              _localizations, onConfirm: () async {
+                            Navigator.of(context).pushNamed(AppRoute.login, arguments: getSignInSignUpPageArgument(false, false));
+                          });
                         }
-                      } /*else {
-                        DialogHelper.confirmationDialog(
-                        "${_localizations?.translate(AppStringConstant.signInToContinue)}",
-                        context,
-                        _localizations, onConfirm: () async {
-                        //Todo: need to add code to move to login screen
-                        // Navigator.pushNamed(context, loginSignup, arguments: false);
-                        });
-                        }
-                      }*/
-                      ,
-                      child: Center(
-                          child: Text(
-                        _localizations?.translate(AppStringConstant.buyNow) ??
-                            '',
-                      )),
+                      },
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.flash_on, size: 18),
+                          SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              "BUY NOW",
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

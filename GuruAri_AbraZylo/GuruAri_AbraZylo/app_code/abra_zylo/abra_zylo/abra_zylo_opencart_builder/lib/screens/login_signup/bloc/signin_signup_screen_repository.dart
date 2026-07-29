@@ -35,6 +35,10 @@ abstract class SigninSignupScreenRepository {
   Future<LoginModel>? googleSignIn(
       String wkToken, String googleId, String email,
       String firstname, String lastname, String fcmToken);
+
+  Future<LoginModel>? appleSignIn(
+      String wkToken, String appleId, String email,
+      String firstname, String lastname, String identityToken, String authorizationCode, String fcmToken);
 }
 
 class SigninSignupScreenRepositoryImp implements SigninSignupScreenRepository {
@@ -106,6 +110,24 @@ class SigninSignupScreenRepositoryImp implements SigninSignupScreenRepository {
       email,
       firstname,
       lastname,
+      (!kIsWeb && Platform.isAndroid) ? fcmToken : null,
+      (!kIsWeb && Platform.isIOS) ? fcmToken : null,
+    );
+    return model;
+  }
+
+  @override
+  Future<LoginModel>? appleSignIn(
+      String wkToken, String appleId, String email,
+      String firstname, String lastname, String identityToken, String authorizationCode, String fcmToken) async {
+    LoginModel model = await ApiClient().appleLogin(
+      wkToken,
+      appleId,
+      email,
+      firstname,
+      lastname,
+      identityToken,
+      authorizationCode,
       (!kIsWeb && Platform.isAndroid) ? fcmToken : null,
       (!kIsWeb && Platform.isIOS) ? fcmToken : null,
     );

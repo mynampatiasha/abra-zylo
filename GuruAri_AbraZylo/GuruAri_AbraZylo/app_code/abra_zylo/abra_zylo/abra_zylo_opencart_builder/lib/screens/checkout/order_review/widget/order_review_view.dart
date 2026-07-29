@@ -66,22 +66,7 @@ class OrderReviewView extends StatelessWidget {
                         asCard: false,
                       ),
                     ),
-                  SizedBox(
-                    width: AppSizes.deviceWidth,
-                    child: TitleSeparatedCard(
-                      (localizations
-                              ?.translate(AppStringConstant.billingAddress) ??
-                          ""),
-                      Padding(
-                          padding: const EdgeInsets.only(
-                              left: AppSizes.size10, right: AppSizes.size10),
-                          child: _getFormattedBillingAddress(
-                              orderReviewModel?.continu?.orderDetails ??
-                                  OrderDetails())),
-                      showDivider: false,
-                      asCard: false,
-                    ),
-                  ),
+
                   if (isShippingRequired ?? false)
                     SizedBox(
                       width: AppSizes.deviceWidth,

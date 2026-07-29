@@ -130,3 +130,13 @@ class GoogleSignInWebEvent extends SigninSignupScreenEvent {
   List<Object> get props => [wkToken, fcmToken];
 }
 
+class AppleSignInEvent extends SigninSignupScreenEvent {
+  const AppleSignInEvent(this.wkToken, this.fcmToken);
+
+  final String wkToken;
+  final String fcmToken;
+
+  @override
+  List<Object> get props => [wkToken, fcmToken];
+}
+

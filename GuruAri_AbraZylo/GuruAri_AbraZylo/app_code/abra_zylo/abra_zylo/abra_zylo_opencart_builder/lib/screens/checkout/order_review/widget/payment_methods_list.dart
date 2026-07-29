@@ -36,7 +36,10 @@ class _PaymentMethodsListState extends State<PaymentMethodsList> {
         children: <Widget>[
           RadioListTile<String?>(
               contentPadding: const EdgeInsets.all(0),
-              title: Text("${widget.methods[index].title}",
+              title: Text(
+                widget.methods[index].title?.contains('Razorpay') == true
+                    ? "Online Payment"
+                    : "${widget.methods[index].title}",
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge

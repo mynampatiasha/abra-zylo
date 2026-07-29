@@ -172,25 +172,8 @@ class CheckoutShippingScreenState extends State<CheckoutShippingScreen> {
                             context);
                       });
                       return;
-                    } else if ((await AppSharedPref.getSelectedShippingId())
-                            .isEmpty &&
-                        ((checkoutBillingAddressModel != null &&
-                                    checkoutBillingAddressModel
-                                            ?.shippingRequired ==
-                                        true) ||
-                                (checkoutShippingMethodModel != null &&
-                                    checkoutShippingMethodModel
-                                            ?.shippingRequired ==
-                                        true)) ==
-                            true) {
-                      WidgetsBinding.instance
-                          ?.addPostFrameCallback((timeStamp) {
-                        AlertMessage.showWarning(
-                            AppStringConstant.selectShippingMethod.localized(),
-                            context);
-                      });
-                      return;
                     }
+
                     Navigator.of(context).pushNamed(AppRoute.orderReview,
                         arguments: orderReviewScreenMap(
                             shippingComment ?? "",

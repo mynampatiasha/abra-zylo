@@ -51,199 +51,123 @@ class ProductPageBasicDetailsWidgetState
           color: Theme.of(context).cardColor,
           padding: const EdgeInsets.all(AppSizes.size16),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //Stock view
-              // Visibility(
-              //     visible: (widget.product?.stock ?? "").isNotEmpty,
-              //     child: Column(
-              //       children: [
-              //         // Text(widget.product?.stock ?? '',
-              //         //     style: TextStyle(
-              //         //         color:
-              //         //             (((widget.product?.stock ?? "") == "In Stock")
-              //         //                 ? AppColors.green
-              //         //                 : AppColors.red))),
-              //         const SizedBox(height: AppSizes.size8),
-              //       ],
-              //     )),
-              //Show product name
-
-              Text(toTitleCase(widget.product?.name ?? ""),
-                  //  widget.product?.name ?? '',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 15,
-                      )),
-              const SizedBox(height: AppSizes.size12),
-              //Show product price
+              Text(
+                toTitleCase(widget.product?.name ?? ""),
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.black,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 20),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    // mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      if ((widget.product?.formattedSpecial ?? "") != "" &&
-                          (widget.product?.formattedSpecial ?? "") != "0") ...[
-                        Text(
-                          widget.product?.formattedSpecial.toString() ?? '',
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                        const SizedBox(
-                          width: AppSizes.size8,
-                        ),
-                        Text(
-                          widget.product?.price.toString() ?? '',
-                          style: TextStyle(
-                            fontSize: AppSizes.size12,
-                            color: Theme.of(context)
-                                .textTheme
-                                .headlineMedium!
-                                .color,
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
-                      ] else ...[
-                        Text(
-                          widget.product?.price ?? ' ',
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                      ],
-                    ],
-                  ),
-                  Visibility(
-                      visible: (widget.product?.stock ?? "").isNotEmpty,
-                      child: Text(widget.product?.stock ?? '',
-                          style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color:
-                                  (((widget.product?.stock ?? "") == "In Stock")
-                                      ? AppColors.green
-                                      : AppColors.red))
-                          // SizedBox(height: AppSizes.size8),
-
-                          )),
+                  _buildTrustBadge(Icons.verified_outlined, '100%', 'Original'),
+                  _buildTrustBadge(Icons.shield_outlined, 'Secure', 'Payment'),
+                  _buildTrustBadge(Icons.star_border_purple500_outlined, 'Assured', 'Quality'),
                 ],
               ),
-              //ejbwv
-              const SizedBox(height: AppSizes.size12),
-              //Manufacture text
-              if (widget.product?.manufacturer?.isNotEmpty ?? false)
-                Row(
-                  children: [
-                    Text(
-                        "${_localizations?.translate(AppStringConstant.manufacturer)} : ",
-                        style: const TextStyle(
-                            color: AppColors.gray,
-                            fontWeight: FontWeight.w400)),
-                    Text(widget.product?.manufacturer ?? '',
-                        style: TextStyle(
-                            color: Theme.of(context)
-                                .textTheme
-                                .headlineMedium!
-                                .color,
-                            fontWeight: FontWeight.w700))
-                  ],
-                ),
-              /*Text(
-                    "${_localizations?.translate(AppStringConstant.manufacturer)} : ${widget.product?.manufacturer ?? ''}",
-                    style: Theme.of(context).textTheme.bodySmall),*/
-              const SizedBox(height: AppSizes.size12),
-
-              //Model Text
-              if (widget.product?.model?.isNotEmpty ?? false)
-                Row(
-                  children: [
-                    Text(
-                        "${_localizations?.translate(AppStringConstant.model)} : ",
-                        style: const TextStyle(
-                            color: AppColors.gray,
-                            fontWeight: FontWeight.w400)),
-                    Expanded(
-                        child:
-                            // Text("${widget.product?.model ?? ''}",
-                            //     style: TextStyle(
-                            //         // overflow: TextOverflow.clip,
-                            //         color: Theme.of(context).textTheme.headlineMedium!.color,
-                            //         fontWeight: FontWeight.w700)),
-
-                            Text(
-                      widget.product?.model ?? '',
-                      style: TextStyle(
-                        color:
-                            Theme.of(context).textTheme.headlineMedium!.color,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      overflow: TextOverflow
-                          .ellipsis, // This will add an ellipsis (...) if the text overflows
-                      softWrap:
-                          false, // This will prevent the text from wrapping to the next line
-                      maxLines:
-                          1, // This will ensure the text is limited to a single line
-                    ))
-                  ],
-                ),
-              /*   Text(
-                    "${_localizations?.translate(AppStringConstant.model)} : ${widget.product?.model ?? ''}",
-                    style: Theme.of(context).textTheme.bodySmall),*/
-              const SizedBox(height: AppSizes.size8),
-              //Seller Text
-              if (widget.product?.seller_name?.isNotEmpty ?? false)
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      AppRoute.sellerProfile,
-                      arguments: getSellerProfileArgument(
-                          widget.product?.seller_id ?? ''),
-                    );
-                  },
-                  child: Text(
-                      "${_localizations?.translate(AppStringConstant.seller)} : ${widget.product?.seller_name ?? ''}",
-                      style: const TextStyle(
-                          color: AppColors.gray, fontWeight: FontWeight.w400)),
-                ),
-              const SizedBox(height: AppSizes.size8),
-
-              //reward text
-              if (widget.product?.reward?.isNotEmpty ?? false)
-                Row(
-                  children: [
-                    Text(
-                        "${_localizations?.translate(AppStringConstant.rewards)} : ",
-                        style: const TextStyle(
-                            color: AppColors.gray,
-                            fontWeight: FontWeight.w400)),
-                    Text(widget.product?.reward ?? '',
-                        style: TextStyle(
-                            color: Theme.of(context)
-                                .textTheme
-                                .headlineMedium!
-                                .color,
-                            fontWeight: FontWeight.w700))
-                  ],
-                ),
-              /* Text(
-                    "${_localizations?.translate(AppStringConstant.rewards)} : ${widget.product?.reward ?? ''}",
-                    style: Theme.of(context).textTheme.bodySmall),*/
-              SizedBox(height: MediaQuery.of(context).size.height * 0.01
-                  // AppSizes.size10,
-
+              const SizedBox(height: 20),
+              const Divider(height: 1, thickness: 1, color: AppColors.textBorderColor),
+              const SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    (widget.product?.formattedSpecial ?? "") != "" && (widget.product?.formattedSpecial ?? "") != "0" 
+                        ? widget.product?.formattedSpecial ?? ''
+                        : widget.product?.price ?? '',
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.red,
+                    ),
                   ),
-              /*
-              * Guest review/ review count view removed as per requirements
-              * */
-              // const SizedBox(
-              //   height: 12.0,
-              // ),
-              // const Divider(),
-              //  wishListAndShareButtonView(),
+                  const SizedBox(width: 8),
+                  if ((widget.product?.formattedSpecial ?? "") != "" && (widget.product?.formattedSpecial ?? "") != "0")
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.red,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text('SALE', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              if ((widget.product?.formattedSpecial ?? "") != "" && (widget.product?.formattedSpecial ?? "") != "0")
+                Text(
+                  'MRP ${widget.product?.price ?? ''}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: AppColors.gray,
+                    decoration: TextDecoration.lineThrough,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.check_circle, color: AppColors.green, size: 20),
+                  const SizedBox(width: 4),
+                  Text(
+                    (widget.product?.stock ?? "").isNotEmpty ? widget.product!.stock! : 'In Stock',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.green,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              
+              if (widget.product?.manufacturer?.isNotEmpty ?? false)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    children: [
+                      Text("${_localizations?.translate(AppStringConstant.manufacturer)} : ", style: const TextStyle(color: AppColors.gray, fontWeight: FontWeight.w400)),
+                      Text(widget.product?.manufacturer ?? '', style: const TextStyle(color: AppColors.black, fontWeight: FontWeight.w700))
+                    ],
+                  ),
+                ),
+              if (widget.product?.model?.isNotEmpty ?? false)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    children: [
+                      Text("${_localizations?.translate(AppStringConstant.model)} : ", style: const TextStyle(color: AppColors.gray, fontWeight: FontWeight.w400)),
+                      Expanded(
+                        child: Text(
+                          widget.product?.model ?? '',
+                          style: const TextStyle(color: AppColors.black, fontWeight: FontWeight.w700),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        )
+                      )
+                    ],
+                  ),
+                ),
             ],
           ),
         ),
-        wishListAndShareButtonView(),
+      ],
+    );
+  }
+
+  Widget _buildTrustBadge(IconData icon, String line1, String line2) {
+    return Column(
+      children: [
+        Icon(icon, color: AppColors.black, size: 28),
+        const SizedBox(height: 4),
+        Text(line1, style: const TextStyle(fontSize: 12, color: AppColors.black, fontWeight: FontWeight.w600)),
+        Text(line2, style: const TextStyle(fontSize: 11, color: AppColors.gray)),
       ],
     );
   }

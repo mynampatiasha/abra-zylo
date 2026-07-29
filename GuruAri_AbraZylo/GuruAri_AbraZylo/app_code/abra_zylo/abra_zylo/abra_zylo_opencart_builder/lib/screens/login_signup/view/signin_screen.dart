@@ -194,35 +194,52 @@ class _SignInScreenState extends State<SignInScreen> {
                     },
                   ),
                   const SizedBox(height: AppSizes.size16 * 1.5),
-                  commonButton(
-                    context,
-                    _validateForm,
-                    (_localizations?.translate(AppStringConstant.signIn) ?? ""),
-                    //  .toUpperCase(),
-                    // backgroundColor: MobikulTheme.primaryColor,
 
-                    // textColor: Colors.white),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _validateForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF673AB7),
+                        foregroundColor: Colors.white,
+                        elevation: 2,
+                        shadowColor: const Color(0xFF673AB7).withOpacity(0.4),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text(
+                        _localizations?.translate(AppStringConstant.signIn) ?? "Sign In",
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
                   ),
 
                   const SizedBox(height: AppSizes.size16),
 
                   /// Create account
 
-                  commonButton(
-                    context,
-                    () {
-                      Navigator.pop(context);
-                      signInSignUpBottomModalSheet(context, true, false);
-                    },
-                    (_localizations
-                            ?.translate(AppStringConstant.createAnAccount) ??
-                        ""),
-                    // .toUpperCase(),
-                    textColor: AppColors.black,
-                    //Theme.of(context).colorScheme.onPrimary
-                    backgroundColor: MobikulTheme.iconColor,
-
-                    //  backgroundColor: AppColors.white
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        signInSignUpBottomModalSheet(context, true, false);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF673AB7),
+                        side: const BorderSide(color: Color(0xFF673AB7), width: 1.5),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text(
+                        _localizations?.translate(AppStringConstant.createAnAccount) ?? "Create an Account",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Color(0xFF673AB7),
+                        ),
+                      ),
+                    ),
                   ),
 
                   const SizedBox(height: AppSizes.size16),
@@ -230,8 +247,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     Center(
                       child: InkWell(
                         child: Lottie.asset(AppImages.fingerPrintLottie,
-                            width: AppSizes.deviceWidth / 6,
-                            height: AppSizes.deviceWidth / 6,
+                            width: 60,
+                            height: 60,
                             fit: BoxFit.fill,
                             repeat: true),
                         onTap: () {
@@ -256,6 +273,10 @@ class _SignInScreenState extends State<SignInScreen> {
                     Container() // Web disabled for now
                   else if (!Platform.isIOS)
                     _GoogleSignInButton(onTap: _signInWithGoogle),
+                  if (!kIsWeb && Platform.isIOS) ...[
+                    const SizedBox(height: AppSizes.size16),
+                    _AppleSignInButton(onTap: _signInWithApple),
+                  ],
                   const SizedBox(height: AppSizes.size16),
                 ],
               ),
@@ -271,6 +292,13 @@ class _SignInScreenState extends State<SignInScreen> {
     var wkToken = await AppSharedPref.getWkToken();
     var fcmToken = await AppSharedPref.getFcmToken();
     bloc?.add(GoogleSignInEvent(wkToken, fcmToken));
+  }
+
+  //================Handle Apple Sign-In==============//
+  void _signInWithApple() async {
+    var wkToken = await AppSharedPref.getWkToken();
+    var fcmToken = await AppSharedPref.getFcmToken();
+    bloc?.add(AppleSignInEvent(wkToken, fcmToken));
   }
 
   // Called by the web Google button after successful sign-in — disabled
@@ -428,6 +456,48 @@ class _GoogleSignInButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 15,
                 color: Color(0xFF3C4043),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Standalone Apple Sign-In button widget (mobile)
+class _AppleSignInButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _AppleSignInButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.apple,
+              color: Colors.white,
+              size: 24,
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Sign in with Apple',
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
             ),

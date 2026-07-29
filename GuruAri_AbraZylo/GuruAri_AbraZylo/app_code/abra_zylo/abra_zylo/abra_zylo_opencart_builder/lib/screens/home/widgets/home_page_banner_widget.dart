@@ -234,111 +234,90 @@ class _HomePageBannerWidgetState extends State<HomePageBannerWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(
-              left: AppSizes.size8, right: AppSizes.size8),
-          child: Text(widget.title ?? "",
-              style: Theme.of(context).textTheme.headlineMedium),
-        ),
-        Container(
-          margin: const EdgeInsets.only(top: AppSizes.size16),
-          height: AppSizes.deviceWidth / 2,
-          width: AppSizes.deviceWidth.toDouble(),
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: widget.banners.length,
-            itemBuilder: (BuildContext context, int index) {
-              return GestureDetector(
-                onTap: () async {
-                  /* final String response = await rootBundle.loadString('assets/languages/ar.json');
-                  final data = await json.decode(response);
-                  final Map<dynamic,dynamic> dataMap = data.map((key, value) => MapEntry(key.toString(), value));
-                  dataMap.forEach((key, value) {
-                    String f="<string name="+"${key}"+"> ${value}</string>";
-                    print(f);
-                  });*/
-                  // data
-
-                  print("Rishabh Banner");
-                  print(widget.banners);
-                  switch (widget.banners[index].type) {
-                    case "product":
-                      Navigator.of(context).pushNamed(
-                        AppRoute.productPage,
-                        arguments: getProductDataAttributeMap(
-                          widget.banners[index].title ?? '',
-                          widget.banners[index].link ?? '',
-                        ),
-                      );
-                      break;
-                    case "category":
-                      Navigator.of(context).pushNamed(
-                        AppRoute.catalog,
-                        arguments: categoryMap(
-                          widget.banners[index].link ?? "",
-                          widget.banners[index].title ?? "",
-                          "",
-                        ),
-                      );
-                      break;
-                    case "manufacturer":
-                      Navigator.of(context).pushNamed(
-                        AppRoute.catalog,
-                        arguments: categoryMap(
-                          widget.banners[index].link ?? "",
-                          widget.banners[index].title ?? "",
-                          "",
-                        ),
-                      );
-                      break;
-                    case "extenal_link":
-                      final Uri url =
-                          Uri.parse(widget.banners[index].link ?? "");
-                      if (!await launchUrl(url,
-                          mode: LaunchMode.externalApplication)) {
-                        throw 'Could not launch $url';
+        Stack(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: AppSizes.size16),
+              height: AppSizes.deviceWidth * 0.55,
+              width: AppSizes.deviceWidth.toDouble(),
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: widget.banners.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () async {
+                      switch (widget.banners[index].type) {
+                        case "product":
+                          Navigator.of(context).pushNamed(
+                            AppRoute.productPage,
+                            arguments: getProductDataAttributeMap(
+                              widget.banners[index].title ?? '',
+                              widget.banners[index].link ?? '',
+                            ),
+                          );
+                          break;
+                        case "category":
+                          Navigator.of(context).pushNamed(
+                            AppRoute.catalog,
+                            arguments: categoryMap(
+                              widget.banners[index].link ?? "",
+                              widget.banners[index].title ?? "",
+                              "",
+                            ),
+                          );
+                          break;
+                        case "manufacturer":
+                          Navigator.of(context).pushNamed(
+                            AppRoute.catalog,
+                            arguments: categoryMap(
+                              widget.banners[index].link ?? "",
+                              widget.banners[index].title ?? "",
+                              "",
+                            ),
+                          );
+                          break;
+                        case "extenal_link":
+                          final Uri url = Uri.parse(widget.banners[index].link ?? "");
+                          if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                            throw 'Could not launch $url';
+                          }
+                          break;
+                        default:
+                          break;
                       }
-                      break;
-                    default:
-                      break;
-                  }
-                },
-                child: Card(
-                  // color: Colors.red,
-                  margin: const EdgeInsets.symmetric(
-                      horizontal: AppSizes.size8, vertical: AppSizes.size4),
-                  semanticContainer: true,
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.size4),
-                  ),
-                  elevation: AppSizes.size4,
-                  //color: Colors.white,
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(0.0)),
-                        child: ImageView(
-                          url: widget.banners[index].image!,
-                          width: double.infinity,
-                          height: double.infinity,
-                        ),
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.symmetric(horizontal: AppSizes.size16, vertical: 0),
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
                       ),
-                    ],
-                  ),
+                      elevation: 4,
+                      child: ImageView(
+                        url: widget.banners[index].image!,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                },
+                onPageChanged: (int index) {
+                  _currentPageNotifier.value = index;
+                },
+              ),
+            ),
+            if ((widget.banners.length) > 1)
+              Positioned(
+                bottom: 12,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: _buildCircularIndicator(_currentPageNotifier),
                 ),
-              );
-            },
-            onPageChanged: (int index) {
-              _currentPageNotifier.value = index;
-            },
-          ),
-        ),
-        if ((widget.banners.length) > 1)
-          Center(
-            child: _buildCircularIndicator(_currentPageNotifier),
-          )
+              )
+          ],
+        )
       ],
     );
   }

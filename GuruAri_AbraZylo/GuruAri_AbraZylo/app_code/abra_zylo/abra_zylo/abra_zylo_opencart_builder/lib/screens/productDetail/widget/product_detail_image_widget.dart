@@ -32,6 +32,9 @@ class _ProductDetailsImageWidgetState extends State<ProductDetailsImageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.productImages.isEmpty) {
+      return const SizedBox.shrink();
+    }
     return SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,17 +47,15 @@ class _ProductDetailsImageWidgetState extends State<ProductDetailsImageWidget> {
               controller: _pageController,
               itemCount: widget.productImages.length,
               itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ZoomImageView(
-                                productImages: widget.productImages,
-                              )));
-                    },
-                    child: ImageView(
-                      url: widget.productImages[index].popup,
-                      fit: BoxFit.fill,
-                    ));
+                return InteractiveViewer(
+                  panEnabled: true,
+                  minScale: 1,
+                  maxScale: 4,
+                  child: ImageView(
+                    url: widget.productImages[index].popup,
+                    fit: BoxFit.contain,
+                  ),
+                );
               },
               onPageChanged: (int index) {
                 _currentPageNotifier.value = index;
@@ -65,7 +66,7 @@ class _ProductDetailsImageWidgetState extends State<ProductDetailsImageWidget> {
             width: AppSizes.deviceWidth,
             color: Theme.of(context).cardColor,
             child: Center(
-              child: _buildCircularIndicator(_currentPageNotifier),
+              child: _buildThumbnailGallery(),
             ),
           )
         ],
@@ -73,17 +74,49 @@ class _ProductDetailsImageWidgetState extends State<ProductDetailsImageWidget> {
     );
   }
 
-  Widget _buildCircularIndicator(_currentPageNotifier) {
-    return Padding(
-      padding: const EdgeInsets.all(AppSizes.size8),
-      child: CirclePageIndicator(
-        size: 11,
-        selectedSize: 11,
-        dotColor: Colors.grey[300],
-        selectedDotColor:
-            Theme.of(context).bottomAppBarTheme.color ?? Colors.black,
+  Widget _buildThumbnailGallery() {
+    return Container(
+      height: 70,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
         itemCount: widget.productImages.length,
-        currentPageNotifier: _currentPageNotifier,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              _pageController.animateToPage(
+                index,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            },
+            child: ValueListenableBuilder<int>(
+              valueListenable: _currentPageNotifier,
+              builder: (context, currentIndex, child) {
+                bool isSelected = currentIndex == index;
+                return Container(
+                  width: 70,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: isSelected ? Colors.black : Colors.grey.shade300,
+                      width: isSelected ? 2 : 1,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: ImageView(
+                      url: widget.productImages[index].thumb ?? widget.productImages[index].popup,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }

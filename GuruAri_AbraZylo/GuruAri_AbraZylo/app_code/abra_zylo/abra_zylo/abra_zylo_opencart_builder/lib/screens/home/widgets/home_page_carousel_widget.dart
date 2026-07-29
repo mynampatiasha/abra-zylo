@@ -127,44 +127,47 @@ Widget homePageCarouselItem(BuildContext context, ImageManufacturer carousel) {
         ),
       );
     },
-    child: Card(
-      color: Theme.of(context).cardColor,
-      child: SizedBox(
-        width: AppSizes.deviceWidth / 2.8,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Stack(children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Center(
-                  child: ImageView(
-                    url: carousel.image,
-                    width: (AppSizes.deviceWidth / 3.0),
-                    height: (AppSizes.deviceWidth / 3.0),
-                  ),
-                ),
-              ),
-            ]),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: AppSizes.size8,
-                top: AppSizes.size8,
-                bottom: AppSizes.size8,
-              ),
+    child: Container(
+      width: AppSizes.deviceWidth / 2.8,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               child: Center(
-                child: Text(
-                  carousel.name ?? '',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleLarge,
+                child: ImageView(
+                  url: carousel.image,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            child: Center(
+              child: Text(
+                carousel.name ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     ),
   );

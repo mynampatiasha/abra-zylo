@@ -8,9 +8,7 @@ class ApiConstant {
 
   // For local web development, use the CORS proxy (run: lcp --proxyUrl https://abra-zylo.com --port 8010)
   // Switch back to the direct URL for mobile builds.
-  static String get baseUrl => kIsWeb
-      ? "http://localhost:8010/proxy/"
-      : "https://abra-zylo.com/";
+  static String get baseUrl => "https://abra-zylo.com/";
   static const String apiKey = 'abra';
   static const String apiPassword = '79218a25c2a07a92155aeb3c2b95d340';
 
@@ -18,9 +16,11 @@ class ApiConstant {
   /// On mobile, returns the URL unchanged.
   static String imageUrl(String? url) {
     if (url == null || url.isEmpty) return '';
-    if (!kIsWeb) return url;
-    // Replace the direct domain with the proxy
-    return url.replaceFirst('https://abra-zylo.com/', 'http://localhost:8010/proxy/');
+    try {
+      return Uri.encodeFull(Uri.decodeFull(url));
+    } catch (e) {
+      return Uri.encodeFull(url);
+    }
   }
 }
 

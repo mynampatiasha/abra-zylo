@@ -17,94 +17,104 @@ class PriceDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (totals == null || totals!.isEmpty) return const SizedBox();
+    
+    // Find final total to highlight
+    final totalItem = totals!.lastWhere((element) => element.title?.toLowerCase() == 'total', orElse: () => totals!.last);
+    
     return Padding(
-      padding:
-          const EdgeInsets.only(left: AppSizes.size4, right: AppSizes.size4),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
-        color: Theme.of(context).cardColor,
-        margin: const EdgeInsets.only(top: AppSizes.size8),
-        child: Theme(
-          data: ThemeData().copyWith(dividerColor: Colors.transparent),
-          child: ExpansionTile(
-
-              //backgroundColor: AppColors.background,
-              backgroundColor: Theme.of(context).cardColor,
-              initiallyExpanded: true,
-              title: Row(
-                children: [
-                  Icon(Icons.money, color: Theme.of(context).iconTheme.color),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                      localizations
-                              ?.translate(AppStringConstant.priceDetails)
-                              .toUpperCase() ??
-                          '',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: Theme.of(context).textTheme.titleLarge!.color,
-                          fontSize: AppSizes.size14,
-                          fontWeight: FontWeight.w600
-
-                          // Theme.of(context)
-                          //     .textTheme
-                          //     .titleLarge
-                          //     ?.copyWith(color: AppColors.black
-
-                          )),
-                ],
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            )
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Price Summary",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
               ),
+            ),
+            const SizedBox(height: 12),
+            Divider(color: Colors.grey.shade200),
+            const SizedBox(height: 12),
+            ...List.generate(totals!.length, (index) {
+              final item = totals![index];
+              if (item == totalItem) return const SizedBox(); // Skip total for now, add it at the bottom
+              
+              bool isShipping = item.title?.toLowerCase().contains('shipping') ?? false;
+              bool isFree = item.text?.toLowerCase() == 'free' || item.text == '₹0.00' || item.text == '0';
+              
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      item.title ?? '',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      isFree ? 'FREE' : (item.text ?? ''),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: isFree ? FontWeight.w700 : FontWeight.w600,
+                        color: isFree ? Colors.green : Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Divider(
+                color: Colors.grey.shade300,
+                height: 1,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  decoration: const BoxDecoration(
-                      border: Border.symmetric(
-                    horizontal:
-                        BorderSide(color: AppColors.lightGray, width: 0.5),
-                  )),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: AppSizes.size10,
-                        right: AppSizes.size10,
-                        bottom: AppSizes.size10),
-                    child: ListView.separated(
-                        shrinkWrap: true,
-                        physics: const ClampingScrollPhysics(),
-                        itemBuilder: (_, index) {
-                          return _priceItem(totals?[index].title ?? "",
-                              totals?[index].text ?? "", context);
-                        },
-                        separatorBuilder: (BuildContext context, int index) =>
-                            widgetSpace(1, AppSizes.size10),
-                        itemCount: totals?.length ?? 0),
+                const Text(
+                  "Final Payable Amount:",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
                   ),
                 ),
-              ]),
+                Text(
+                  totalItem.text ?? '',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFFC63B10), // Orange/Rust color matching screenshot
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
-
-  Widget _priceItem(String title, String price, BuildContext context) =>
-      Padding(
-        padding: const EdgeInsets.all(AppSizes.size4),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(title,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontSize: AppSizes.size12,
-                    fontWeight: FontWeight.normal,
-                    color: AppColors.darkGray)),
-            Text(price,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: Theme.of(context).textTheme.titleLarge!.color,
-                    fontSize: AppSizes.size14,
-                    fontWeight: FontWeight.w500)
-                // TextStyle(
-                //     fontWeight: FontWeight.w700,
-                //     color: Theme.of(context).textTheme.headlineMedium!.color),
-                )
-          ],
-        ),
-      );
 }

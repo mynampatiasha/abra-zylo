@@ -165,57 +165,68 @@ class DialogHelper {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(
-          localizations?.translate(title) ?? "",
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontSize: AppSizes.size16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+        contentPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        title: Column(
+          children: [
+            const Icon(Icons.lock_outline, size: 48, color: Color(0xFF673AB7)),
+            const SizedBox(height: 16),
+            Text(
+              localizations?.translate(title) ?? "",
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+            ),
+          ],
         ),
         content: Text(
           localizations?.translate(text) ?? "",
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(fontSize: AppSizes.size14),
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 14, color: Colors.black54),
         ),
         actions: <Widget>[
-          OutlinedButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-            },
-            style: OutlinedButton.styleFrom(
-                side: const BorderSide(
-                  color: AppColors.black,
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: Text(
+                    AppStringConstant.cancel.localized().toUpperCase(),
+                    style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                  ),
                 ),
-                backgroundColor: AppColors.white),
-            child: Text(
-              AppStringConstant.cancel.localized().toUpperCase(),
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(color: Colors.black),
-            ),
-          ),
-          OutlinedButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              if (onConfirm != null) {
-                onConfirm();
-              }
-            },
-            style: OutlinedButton.styleFrom(
-              side: const BorderSide(
-                color: AppColors.black,
               ),
-            ),
-            child: Text(
-              AppStringConstant.ok.localized().toUpperCase(),
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(color: Colors.white),
-            ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    if (onConfirm != null) {
+                      onConfirm();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    backgroundColor: const Color(0xFF673AB7),
+                    foregroundColor: Colors.white,
+                    elevation: 2,
+                    shadowColor: const Color(0xFF673AB7).withOpacity(0.4),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: Text(
+                    AppStringConstant.ok.localized().toUpperCase(),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

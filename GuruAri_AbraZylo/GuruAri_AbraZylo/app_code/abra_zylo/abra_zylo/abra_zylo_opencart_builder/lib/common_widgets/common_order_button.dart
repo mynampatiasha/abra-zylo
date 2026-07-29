@@ -10,62 +10,74 @@ Widget commonOrderButton(BuildContext context, AppLocalizations? _localizations,
     {Color color = MobikulTheme.accentColor,
     String title = AppStringConstant.proceed}) {
   return Container(
-    height: 60,
-    color: Theme.of(context).cardColor,
-    padding: const EdgeInsets.only(left: AppSizes.size8, right: AppSizes.size8),
-    child: Row(
-      children: <Widget>[
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                _localizations?.translate(AppStringConstant.amountToBePaid) ??
-                    "",
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontSize: AppSizes.size12, color: AppColors.darkGray),
-              ),
-              Text(amount,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall
-                      ?.copyWith(fontWeight: FontWeight.bold))
-            ],
-          ),
-        ),
-        Expanded(
-          child: ElevatedButton(
-              onPressed: onPressed,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: AppSizes.size12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  // shape: const RoundedRectangleBorder(
-                  //
-                  //     borderRadius: BorderRadius.zero
-                ),
-                elevation: 0,
-              ),
-              // style: Theme.of(context).elevatedButtonTheme.style?.copyWith(
-              //       // backgroundColor: MaterialStatePropertyAll(Colors.black),
-              //       padding: MaterialStateProperty.all<EdgeInsets>(
-              //           const EdgeInsets.all(AppSizes.size12)),
-              //     ),
-              child: Text(
-                (_localizations?.translate(title) ?? "").toUpperCase(),
-              )
-
-              // ElevatedButton.styleFrom(
-              //     padding: const EdgeInsets.symmetric( vertical: AppSizes.size16),
-              //     // shape: const RoundedRectangleBorder(
-              //     //     borderRadius: BorderRadius.zero
-              //     // ),
-              //     elevation: 0,
-              //     primary: color),
-              ),
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    decoration: BoxDecoration(
+      color: Theme.of(context).cardColor,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.05),
+          offset: const Offset(0, -4),
+          blurRadius: 10,
         )
       ],
+    ),
+    child: SafeArea(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+            flex: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  _localizations?.translate(AppStringConstant.amountToBePaid) ?? "Amount to be paid",
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
+                Text(amount,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black,
+                    )),
+                Text(
+                  "(Inclusive of all taxes)",
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 5,
+            child: SizedBox(
+              height: 48,
+              child: ElevatedButton(
+                  onPressed: onPressed,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF673AB7), // Purple theme color
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        (_localizations?.translate(title) ?? "PROCEED TO CHECKOUT").toUpperCase(),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white),
+                    ],
+                  )
+              ),
+            ),
+          )
+        ],
+      ),
     ),
   );
 }

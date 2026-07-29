@@ -41,147 +41,110 @@ class _CartScreenVoucherWidgetState extends State<CartScreenVoucherWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          const EdgeInsets.only(left: AppSizes.size8, right: AppSizes.size8),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(8.0),
-          ),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            )
+          ],
         ),
-        color: Theme.of(context).cardColor,
-        // color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.only(
-              bottom: AppSizes.size14,
-              left: AppSizes.size8,
-              right: AppSizes.size8),
-          child: Theme(
-            data: Theme.of(context).copyWith(
-              dividerColor: Colors.transparent,
-              listTileTheme: ListTileTheme.of(context).copyWith(
-                dense: true,
+        child: Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            initiallyExpanded: false,
+            iconColor: const Color(0xFF673AB7),
+            collapsedIconColor: const Color(0xFF673AB7),
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF673AB7).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.local_offer_outlined,
+                color: Color(0xFF673AB7),
+                size: 20,
               ),
             ),
-            child: ListTileTheme(
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: AppSizes.size8),
-              child: ExpansionTile(
-                childrenPadding:
-                    const EdgeInsets.symmetric(horizontal: AppSizes.size8),
-                initiallyExpanded: true,
-                title: Text(
-                    widget.localizations
-                            ?.translate(AppStringConstant.voucherCode) ??
-                        "",
-                    style: TextStyle(
-                        fontSize: AppSizes.size14,
-                        color:
-                            Theme.of(context).textTheme.headlineMedium!.color,
-                        fontWeight: FontWeight.w700)),
-                children: <Widget>[
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 8),
-                    child: Divider(
-                      color: AppColors.darkGray,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 40,
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: TextField(
-                            style: const TextStyle(fontSize: AppSizes.size14),
-                            controller: voucherTextController,
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.fromLTRB(
-                                  AppSizes.size16,
-                                  AppSizes.size4,
-                                  AppSizes.size4,
-                                  AppSizes.size4),
-                              hintText: widget.localizations?.translate(
-                                      AppStringConstant.enterVoucherCode) ??
-                                  "",
-                              hintStyle: TextStyle(
-                                fontSize: AppSizes.size12,
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .headlineMedium!
-                                    .color,
-                              ),
-                              border: const OutlineInputBorder(
-                                  //  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(
-                                color: AppColors.darkGray,
-                              )),
-                              focusedBorder: const OutlineInputBorder(
-                                  //  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(
-                                color: AppColors.darkGray,
-                              )),
-                              disabledBorder: const OutlineInputBorder(
-                                  // borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(
-                                color: AppColors.darkGray,
-                              )),
-                              enabledBorder: const OutlineInputBorder(
-                                  // borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(
-                                color: AppColors.darkGray,
-                              )),
+            title: Text(
+              widget.localizations?.translate(AppStringConstant.voucherCode) ?? "Voucher Code",
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
+              ),
+            ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 48,
+                        child: TextField(
+                          controller: voucherTextController,
+                          decoration: InputDecoration(
+                            hintText: widget.localizations?.translate(AppStringConstant.enterVoucherCode) ?? "Enter Voucher Code",
+                            hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(color: Color(0xFF673AB7)),
                             ),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        SizedBox(
-                          width: AppSizes.deviceWidth / 4,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(8), // <-- Radius
-                              ),
-                            ),
-                            // style: ElevatedButton.styleFrom(
-                            //   backgroundColor: Theme.of(context).textTheme.titleLarge?.color,
-                            //     padding: EdgeInsets.symmetric( vertical: buttonPadding),
-                            //     // shape: RoundedRectangleBorder(
-                            //     //     borderRadius: BorderRadius.zero
-                            //     // ),
-                            //     surfaceTintColor: AppColors.black),
-                            onPressed: () async {
-                              var voucher = voucherTextController.text;
-
-                              if (voucher != "") {
-                                Helper.hideSoftKeyBoard();
-                                widget.bloc?.add(ApplyVoucherEvent(voucher));
-                                widget.bloc?.emit(CartScreenStateInitial());
-                                voucherTextController.text = "";
-                              } else {
-                                AlertMessage.showError(
-                                    widget.localizations?.translate(
-                                            AppStringConstant
-                                                .pleaseEnterVoucherCode) ??
-                                        "",
-                                    context);
-                              }
-                            },
-                            child: Text(
-                              widget.localizations
-                                      ?.translate(AppStringConstant.apply) ??
-                                  "",
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-
-                  //    SizedBox(height:8)
-                ],
+                    const SizedBox(width: 12),
+                    SizedBox(
+                      height: 48,
+                      width: 100,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF673AB7),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          elevation: 0,
+                        ),
+                        onPressed: () {
+                          var voucher = voucherTextController.text;
+                          if (voucher.isNotEmpty) {
+                            Helper.hideSoftKeyBoard();
+                            widget.bloc?.add(ApplyVoucherEvent(voucher));
+                            widget.bloc?.emit(CartScreenStateInitial());
+                            voucherTextController.text = "";
+                          } else {
+                            AlertMessage.showError(
+                                widget.localizations?.translate(AppStringConstant.pleaseEnterVoucherCode) ?? "",
+                                context);
+                          }
+                        },
+                        child: Text(
+                          widget.localizations?.translate(AppStringConstant.apply) ?? "Apply",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),

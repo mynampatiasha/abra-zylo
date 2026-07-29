@@ -25,6 +25,7 @@ import 'package:oc_demo/screens/productDetail/widget/product_details_related_pro
 import 'package:oc_demo/screens/productDetail/widget/product_delivery_estimate_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:confetti/confetti.dart';
 
 import '../../common_widgets/alert_message.dart';
 import '../../common_widgets/app_bar.dart';
@@ -81,6 +82,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
   String? productId1;
   int? index1;
   bool isAddedToCart = false;
+  late ConfettiController _confettiController;
 
   @override
   void initState() {
@@ -104,11 +106,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     //call product detail api
     productPageBloc?.add(GetProductDetailEvent(widget.arguments[productIdKey]));
     _scrollController = ScrollController()..addListener(_scrollListener);
+    _confettiController = ConfettiController(duration: const Duration(seconds: 1));
     super.initState();
   }
 
   @override
   void dispose() {
+    _confettiController.dispose();
     routeObserver.unsubscribe(this);
     super.dispose();
   }
@@ -218,6 +222,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             setState(() {
               isAddedToCart = true;
             });
+            _confettiController.play();
           });
           //selectedProductOptions?.clear();
         } else if (currentState is BuyProductStateSuccess) {
@@ -240,7 +245,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             AlertMessage.showSuccess(
                 currentState.baseModel.message ?? '', context);
             if (isUserLogin) {
-              Navigator.pushNamed(context, AppRoute.shipping, arguments: getShippingPageArgument(AddAddressRequest(), "", false)).then((value) {
+              Navigator.pushNamed(context, AppRoute.cart).then((value) {
                 AppSharedPref.getCartCount().then((value) {
                   cartCount = int.parse(value);
                   TabbarController.countController.sink.add(cartCount ?? 0);
@@ -368,6 +373,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
           ]),
       body: SafeArea(
         child: Stack(
+          alignment: Alignment.topCenter,
           children: [
             Visibility(
                 //visible: (!isLoading),
@@ -393,8 +399,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                                   Padding(
                                     padding:
                                         const EdgeInsets.all(AppSizes.size0),
-                                    child: ProductDetailsImageWidget(
-                                        productPageData?.images ?? []),
+                                    child: Builder(
+                                      builder: (context) {
+                                        List<Images> combinedImages = [];
+                                        if (productPageData?.popup != null || productPageData?.thumb != null) {
+                                          combinedImages.add(Images(
+                                            popup: productPageData?.popup,
+                                            thumb: productPageData?.thumb,
+                                            dominantColor: productPageData?.dominantColor,
+                                          ));
+                                        }
+                                        if (productPageData?.images != null) {
+                                          combinedImages.addAll(productPageData!.images!);
+                                        }
+                                        return ProductDetailsImageWidget(combinedImages);
+                                      }
+                                    ),
                                   ),
                                   if (getArStatus())
                                     InkWell(
@@ -555,7 +575,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                         ],
                       ),
                     ))),
-            Visibility(visible: isLoading, child: LoaderUtil.showCoverLoader())
+            Visibility(visible: isLoading, child: LoaderUtil.showCoverLoader()),
+            Align(
+              alignment: Alignment.topCenter,
+              child: ConfettiWidget(
+                confettiController: _confettiController,
+                blastDirection: 3.14159 / 2, // radial value - down
+                emissionFrequency: 0.05,
+                numberOfParticles: 50,
+                maxBlastForce: 20,
+                minBlastForce: 5,
+                gravity: 0.3,
+                shouldLoop: false,
+                colors: const [
+                  Colors.green,
+                  Colors.blue,
+                  Colors.pink,
+                  Colors.orange,
+                  Colors.purple
+                ],
+              ),
+            ),
           ],
         ),
       ),

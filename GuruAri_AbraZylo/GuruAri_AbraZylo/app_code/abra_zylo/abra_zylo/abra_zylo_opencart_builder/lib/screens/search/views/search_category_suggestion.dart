@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:oc_demo/constants/app_constants.dart';
 import 'package:oc_demo/constants/app_routes.dart';
@@ -20,15 +21,27 @@ Widget getSearchCategorySuggestion(List<Categories>? categories) {
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.all(AppSizes.size8),
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: AppSizes.size6),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSizes.size8),
-                        color: AppColors.black),
+                      color: const Color(0xFF673AB7).withOpacity(0.08),
+                      border: Border.all(color: const Color(0xFF673AB7).withOpacity(0.2)),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.02),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        )
+                      ],
+                    ),
                     child: Text(
                       e.name ?? "",
-                      style: const TextStyle(color: AppColors.white),
+                      style: const TextStyle(
+                        color: Color(0xFF673AB7),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 );

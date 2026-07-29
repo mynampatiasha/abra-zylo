@@ -28,15 +28,18 @@ import '../../hive/prefetch_service.dart';
 import '../../models/ApiLoginResponse/api_login_response.dart';
 import '../../models/homPage/home_screen_model.dart';
 import '../../screens/home/widgets/home_page_banner_widget.dart';
+import '../../screens/home/widgets/home_page_trust_badges_widget.dart';
 import '../../screens/home/widgets/home_page_categories_widget.dart';
+import '../../screens/home/widgets/home_page_promo_banner_widget.dart';
 import '../../screens/home/widgets/home_page_product_collection_view.dart';
 import '../../screens/home/widgets/reach_bottom_view.dart';
 import 'bloc/home_screen_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen(this.moveToCategory, {Key? key}) : super(key: key);
+  const HomeScreen(this.moveToCategory, {this.moveToTab, Key? key}) : super(key: key);
 
   final Function(int, int) moveToCategory;
+  final Function(int)? moveToTab;
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -78,15 +81,135 @@ class _HomeScreenState extends State<HomeScreen> {
     // print(homePageModel.carousels)
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: commonAppBar(
-            _localizations?.translate(AppConstant.isMarketPlace
-                    ? AppStringConstant.appNameMarketplace
-                    : AppStringConstant.appNameBuilder) ??
-                '',
-            context,
-            hideSearch: true,
-            hideNotification: true,
-            isHomeEnable: true),
+        drawer: Drawer(
+          child: Container(
+            color: Colors.white,
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                DrawerHeader(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF673AB7), Color(0xFF8E24AA)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 8,
+                              offset: Offset(0, 4),
+                            )
+                          ]
+                        ),
+                        child: Image.asset('assets/images/app_logo.png', height: 40),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Welcome to Abra Zylo!',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                _buildDrawerItem(
+                  icon: Icons.home_outlined,
+                  text: _localizations?.translate(AppStringConstant.home) ?? 'Home',
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (widget.moveToTab != null) widget.moveToTab!(0);
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.category_outlined,
+                  text: _localizations?.translate(AppStringConstant.categories) ?? 'Categories',
+                  onTap: () {
+                    Navigator.pop(context);
+                    widget.moveToCategory(0, -1);
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.shopping_cart_outlined,
+                  text: _localizations?.translate(AppStringConstant.cart) ?? 'Cart',
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (widget.moveToTab != null) widget.moveToTab!(2);
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.account_circle_outlined,
+                  text: _localizations?.translate(AppStringConstant.profile) ?? 'Profile',
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (widget.moveToTab != null) widget.moveToTab!(3);
+                  },
+                ),
+                const Divider(height: 40, thickness: 1, indent: 20, endIndent: 20),
+              ],
+            ),
+          ),
+        ),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: Builder(
+            builder: (context) {
+              return IconButton(
+                icon: const Icon(Icons.menu, color: Colors.black),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              );
+            }
+          ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset('assets/images/app_logo.png', height: 24),
+              const SizedBox(width: 8),
+              const Text(
+                'Abra Zylo',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ],
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search, color: Colors.black),
+              onPressed: () {
+                Navigator.of(context).pushNamed(AppRoute.searchScreen);
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.notifications_none, color: Colors.black),
+              onPressed: () {
+                notificationBottomModelSheet(context);
+              },
+            ),
+          ],
+        ),
         body: BlocBuilder<HomeScreenBloc, HomeScreenState>(
           builder: (context, currentState) {
             print("Rishabh" + currentState.toString());
@@ -165,6 +288,37 @@ class _HomeScreenState extends State<HomeScreen> {
               controller: _scrollController,
               child: Column(
                 children: [
+                  // --- NEW SEARCH BAR ---
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(AppRoute.searchScreen);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.search, color: Colors.grey),
+                            const SizedBox(width: 8),
+                            const Expanded(
+                              child: Text(
+                                "Search for products, brands & more...",
+                                style: TextStyle(color: Colors.grey, fontSize: 14),
+                              ),
+                            ),
+                            Icon(Icons.qr_code_scanner, color: Colors.grey.shade600),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // -----------------------
                   ...getWidgets()
                   //  widgetSpace(),
                   /*  Builder(
@@ -220,6 +374,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> getWidgets() {
     List<Widget> widgets = [];
+    bool hasAddedTrustBadges = false;
 
     if ((homePageModel?.home_sequence?.length ?? 0) > 0)
       for (int i = 0; i < homePageModel!.home_sequence!.length; i++) {
@@ -230,22 +385,29 @@ class _HomeScreenState extends State<HomeScreen> {
               if (homePageModel!.carousels![j].type == "Image" &&
                   homePageModel!.carousels![j].imageSubType ==
                       "image_carousel") {
-                if (homePageModel!.carousels![j].slider?.length != 0)
+                if (homePageModel!.carousels![j].slider?.length != 0) {
                   widgets.add(HomePageBannerWidget(
                     homePageModel?.carousels![j].slider ?? [],
                     homePageModel?.carousels![j].title ?? "",
                   ));
+                  if (!hasAddedTrustBadges) {
+                    widgets.add(const HomePageTrustBadgesWidget());
+                    hasAddedTrustBadges = true;
+                  }
+                }
                 break;
               } else if (homePageModel!.carousels![j].type == "Image" &&
                   homePageModel!.carousels![j].imageSubType ==
                       "image_all_parrent_category") {
                 if (homePageModel!
                         .carousels![j].imageTypeCategoryCarousal?.length !=
-                    0)
+                    0) {
                   widgets.add(HomePageCategories(
                       homePageModel?.carousels![j].title ?? "",
                       homePageModel?.carousels![j].imageTypeCategoryCarousal,
                       (index, path) => widget.moveToCategory(index, path)));
+                  widgets.add(const HomePagePromoBanner());
+                }
                 break;
               } else if (homePageModel!.carousels![j].type == "Image" &&
                   homePageModel!.carousels![j].imageSubType ==
@@ -271,11 +433,7 @@ class _HomeScreenState extends State<HomeScreen> {
               } else if (homePageModel!.carousels![j].type == "Image" &&
                   homePageModel!.carousels![j].imageSubType ==
                       "image_catagory") {
-                if (homePageModel!.carousels![j].imageCatagory?.length != 0)
-                  widgets.add(HomePageCategories(
-                      homePageModel?.carousels![j].title ?? "",
-                      homePageModel?.carousels![j].imageCatagory,
-                      (index, path) => widget.moveToCategory(index, path)));
+                // Duplicate category section removed — only showing image_all_parrent_category above
                 break;
               } else if (homePageModel!.carousels![j].type == "Product") {
                 if (homePageModel!.carousels![j].product?.length != 0)
@@ -303,5 +461,26 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     return widgets;
+  }
+
+  Widget _buildDrawerItem({required IconData icon, required String text, required VoidCallback onTap}) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        leading: Icon(icon, color: AppColors.black, size: 26),
+        title: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: AppColors.black,
+          ),
+        ),
+        hoverColor: AppColors.background,
+        splashColor: const Color(0xFF673AB7).withOpacity(0.2),
+        onTap: onTap,
+      ),
+    );
   }
 }

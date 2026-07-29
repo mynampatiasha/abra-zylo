@@ -57,7 +57,7 @@ class _CartScreenRewardsWidgetState extends State<CartScreenRewardsWidget> {
               child: ExpansionTile(
                 childrenPadding:
                     const EdgeInsets.symmetric(horizontal: AppSizes.size8),
-                initiallyExpanded: true,
+                initiallyExpanded: false,
                 title: Text(widget.model?.reward?.headingTitle ?? "" ?? "",
                     style: const TextStyle(
                         fontSize: AppSizes.size14,

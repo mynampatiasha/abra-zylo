@@ -63,6 +63,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: Colors.grey.shade100,
           appBar: commonToolBar(
               _localizations?.translate(AppStringConstant.notifications) ?? '',
               context,
@@ -71,11 +72,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
           body: (data != null)
               ? (data?.notifications?.isNotEmpty ?? false)
                   ? ListView.builder(
+                      padding: const EdgeInsets.only(top: 12, bottom: 24),
                       itemCount: data?.notifications?.length ?? 0,
                       itemBuilder: (context, index) => NotificationItem(
-                              data?.notifications?[index], (id, isRead) {
-                            // _notificationBloc?.add(NotificationReadEvent(id , isRead));
-                          }))
+                              data?.notifications?[index], (id, isRead) {}))
                   : emptyNotification()
               : Container(),
         ),
@@ -89,14 +89,37 @@ class _NotificationScreenState extends State<NotificationScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
-            Icons.notifications,
-            size: 160,
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: const Color(0xFF673AB7).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.notifications_none_outlined,
+              size: 52,
+              color: Color(0xFF673AB7),
+            ),
           ),
+          const SizedBox(height: 20),
+          const Text(
+            "No Notifications Yet",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
           Text(
-            _localizations?.translate(AppStringConstant.emptyNotification) ??
-                '',
-            style: Theme.of(context).textTheme.headlineMedium,
+            "You're all caught up! We'll notify\nyou when something new arrives.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade600,
+              height: 1.5,
+            ),
           ),
         ],
       ),

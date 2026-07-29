@@ -189,24 +189,76 @@ class _CreateAnAccountState extends State<CreateAnAccount> {
 
   Widget _buildContent() {
     return Scaffold(
-      backgroundColor: Theme.of(context).cardColor,
+      backgroundColor: Colors.grey.shade100,
       appBar: commonToolBar(
           _localizations?.translate(AppStringConstant.createAnAccount) ?? "",
           context,
           isLeadingEnable: true),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSizes.size8),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
           child: Form(
             key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const SizedBox(
-                    height: AppSizes.size8,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                // Header info card
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF673AB7), Color(0xFF9C27B0)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
                   ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.person_add_outlined, color: Colors.white, size: 26),
+                      ),
+                      const SizedBox(width: 14),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Create Your Account',
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 17)),
+                            SizedBox(height: 2),
+                            Text('Join thousands of happy customers',
+                                style: TextStyle(color: Colors.white70, fontSize: 12)),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Form card
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
                   CommonTextField(
                     focusNode: _firstnameFocusNode,
                     controller: _firstNameController,
@@ -397,63 +449,58 @@ class _CreateAnAccountState extends State<CreateAnAccount> {
                     _localizations?.translate(AppStringConstant.privacyPolicy),
                     registerDataModel?.agreeInfo?.data?.description,
                   ),
-                  const SizedBox(height: AppSizes.size16),
-                  commonButton(
-                    context,
-                    _validateForm,
-
-                    _localizations
-                            ?.translate(AppStringConstant.createAnAccount) ??
-                        "",
-                    // (_localizations?.translate(
-                    //             AppStringConstant.createAnAccount) ??
-                    //         "")
-                    //     .toUpperCase(),
-                    //backgroundColor: Colors.white,
-                  ),
-
-                  const SizedBox(height: AppSizes.size16),
-
-                  /// Loging
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                          _localizations
-                                  ?.translate(
-                                      AppStringConstant.alreadyHaveAccount)
-                                  .toUpperCase() ??
-                              '',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall
-                              ?.copyWith(
-                                  fontWeight: FontWeight.w400, fontSize: 13)),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          signInSignUpBottomModalSheet(context, false, false);
-                        },
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: _validateForm,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF673AB7),
+                          foregroundColor: Colors.white,
+                          elevation: 2,
+                          shadowColor: const Color(0xFF673AB7).withOpacity(0.4),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
                         child: Text(
-                          (_localizations
-                                      ?.translate(AppStringConstant.signIn) ??
-                                  '')
-                              .toUpperCase(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall
-                              ?.copyWith(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 13,
-                                  color: AppColors.blue),
+                          _localizations?.translate(AppStringConstant.createAnAccount) ?? "Create an Account",
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                       ),
-                    ],
+                    ),
+                  ],
                   ),
+                ),
+                const SizedBox(height: 16),
 
-                  const SizedBox(height: AppSizes.size16),
-                ],
-              ),
+                // Sign in link
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                        _localizations
+                                ?.translate(AppStringConstant.alreadyHaveAccount)
+                                .toUpperCase() ??
+                            '',
+                        style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        signInSignUpBottomModalSheet(context, false, false);
+                      },
+                      child: Text(
+                        (_localizations?.translate(AppStringConstant.signIn) ?? '').toUpperCase(),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                          color: Color(0xFF673AB7),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+              ],
             ),
           ),
         ),

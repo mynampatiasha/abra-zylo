@@ -23,7 +23,7 @@ class ViewAllHeader extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 12.0),
             child: Text(
-              AppStringConstant.bestProduct.localized(),
+              title ?? AppStringConstant.bestProduct.localized(),
               style: Theme.of(context).textTheme.headlineMedium,
             ),
           ),

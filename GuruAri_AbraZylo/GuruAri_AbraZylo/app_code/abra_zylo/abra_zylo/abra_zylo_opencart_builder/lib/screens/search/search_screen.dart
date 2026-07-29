@@ -13,6 +13,8 @@ import 'package:speech_to_text/speech_recognition_result.dart';
 import '../../common_widgets/alert_message.dart';
 import '../../common_widgets/dialog_helper.dart';
 import '../../constants/app_constants.dart';
+import '../../constants/app_routes.dart';
+import '../../constants/arguments_map.dart';
 import '../../constants/app_string_constant.dart';
 import '../../helper/app_localizations.dart';
 import '../../helper/app_shared_pref.dart';
@@ -138,6 +140,16 @@ class _SearchScreenState extends State<SearchScreen> {
               });
               print("Search key ---> " + searchKey);
             },
+            onSubmitted: (searchKey) {
+              if (searchKey.trim().isNotEmpty) {
+                Helper.hideSoftKeyBoard();
+                Navigator.of(context).pushNamed(
+                  AppRoute.catalog,
+                  arguments: categoryMap(searchKey, searchKey, AppStringConstant.search),
+                );
+              }
+            },
+            textInputAction: TextInputAction.search,
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText:
@@ -207,28 +219,12 @@ class _SearchScreenState extends State<SearchScreen> {
                   valueColor: AlwaysStoppedAnimation(AppColors.white),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(AppSizes.size16,
-                    AppSizes.size16, AppSizes.size16, AppSizes.size8),
-                child: Text(
-                  _localizations?.translate(AppStringConstant.categories) ?? "",
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-              ),
-              getSearchCategorySuggestion(GlobalData.rootCategories),
               Visibility(
                 visible: !isLoading,
                 child: ((searchData?.searchData ?? []).isNotEmpty)
                     ? suggestionList(
                         context, _localizations, searchData?.searchData)
-                    : Padding(
-                        padding: const EdgeInsets.all(AppSizes.size8),
-                        child: Center(
-                          child: Text(_localizations
-                                  ?.translate(AppStringConstant.noResult) ??
-                              ''),
-                        ),
-                      ),
+                    : Container(),
               )
             ],
           ),

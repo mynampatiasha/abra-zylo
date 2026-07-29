@@ -3401,6 +3401,55 @@ class _ApiClient implements ApiClient {
     return value;
   }
 
+  @override
+  Future<LoginModel> appleLogin(
+    String wkToken,
+    String appleId,
+    String email,
+    String firstname,
+    String lastname,
+    String identityToken,
+    String authorizationCode,
+    String? androidDeviceId,
+    String? iosDeviceId,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'wk_token': wkToken,
+      'apple_id': appleId,
+      'email': email,
+      'firstname': firstname,
+      'lastname': lastname,
+      'identity_token': identityToken,
+      'authorization_code': authorizationCode,
+      'android_device_id': androidDeviceId,
+      'ios_device_id': iosDeviceId,
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<LoginModel>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'index.php?route=api/wkrestapi/customer/appleLogin',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = LoginModel.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

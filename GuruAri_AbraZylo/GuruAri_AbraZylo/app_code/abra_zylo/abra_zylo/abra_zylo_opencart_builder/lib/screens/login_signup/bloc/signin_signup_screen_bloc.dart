@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:oc_demo/helper/app_shared_pref.dart';
 import 'package:oc_demo/models/loginModel/login_model.dart';
 import 'package:oc_demo/models/registerAccountModel/register_account_model.dart';
@@ -194,6 +195,42 @@ class SigninSignupScreenBloc
           }
         } else {
           emit(SigninSignupScreenError("Failed to sign in with Google on Web."));
+        }
+      } catch (error, _) {
+        emit(SigninSignupScreenError(error.toString()));
+      }
+      await Future.delayed(const Duration(seconds: 2), () {
+        emit(CompleteState());
+      });
+    } else if (event is AppleSignInEvent) {
+      try {
+        final credential = await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+        );
+
+        String email = credential.email ?? '';
+        String id = credential.userIdentifier ?? '';
+        String firstname = credential.givenName ?? 'User';
+        String lastname = credential.familyName ?? '';
+        String identityToken = credential.identityToken ?? '';
+        String authorizationCode = credential.authorizationCode ?? '';
+
+        var model = await repository?.appleSignIn(
+            event.wkToken, id, email, firstname, lastname, identityToken, authorizationCode, event.fcmToken);
+
+        if (model != null) {
+          if ((model.error ?? 0) >= 1) {
+            emit(SigninSignupScreenError(model.message?.toString()));
+          } else {
+            emit(LoginState(model));
+            AppSharedPref.setLogin(true);
+            AppSharedPref.setCustomerId(model.customerId.toString());
+          }
+        } else {
+          emit(SigninSignupScreenError("Failed to sign in with Apple."));
         }
       } catch (error, _) {
         emit(SigninSignupScreenError(error.toString()));

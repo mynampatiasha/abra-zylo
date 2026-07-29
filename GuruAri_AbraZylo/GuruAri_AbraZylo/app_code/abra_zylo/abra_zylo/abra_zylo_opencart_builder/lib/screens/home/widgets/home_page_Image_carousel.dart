@@ -41,95 +41,74 @@ class _HomePageImageCarouselState extends State<HomePageImageCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        // Padding(
-        //   padding: const EdgeInsets.only(left: AppSizes.size8,right: AppSizes.size8,top: AppSizes.size8),
-        //   child: Text((widget.banner?.title??""),style: Theme.of(context).textTheme.headlineMedium),
-        // ),
-        // widgetSpace(0, AppSizes.size8),
-        Padding(
-          padding: const EdgeInsets.only(
-              left: AppSizes.size8, right: AppSizes.size8, top: AppSizes.size8),
-          child: GestureDetector(
-            onTap: () async {
-              switch (widget.banner?.type) {
-                case "product":
-                  Navigator.of(context).pushNamed(
-                    AppRoute.productPage,
-                    arguments: getProductDataAttributeMap(
-                      widget.banner?.title ?? '',
-                      widget.banner?.link ?? '',
-                    ),
-                  );
-                  break;
-                case "category":
-                  Navigator.of(context).pushNamed(
-                    AppRoute.catalog,
-                    arguments: categoryMap(
-                      widget.banner?.link ?? "",
-                      widget.banner?.title ?? "",
-                      "",
-                    ),
-                  );
-                  break;
-                case "manufacturer":
-                  Navigator.of(context).pushNamed(
-                    AppRoute.catalog,
-                    arguments: categoryMap(
-                      widget.banner?.link ?? "",
-                      widget.banner?.title ?? "",
-                      "",
-                    ),
-                  );
-                  break;
-                case "external_link":
-                  final Uri url = Uri.parse(widget.banner?.link ?? "");
-                  if (!await launchUrl(url,
-                      mode: LaunchMode.externalApplication)) {
-                    throw 'Could not launch $url';
-                  }
-                  break;
-                default:
-                  break;
-              }
-            },
-            child: Column(
-              children: [
-                Card(
-                  margin: const EdgeInsets.symmetric(
-                      horizontal: AppSizes.size4, vertical: AppSizes.size4),
-                  // semanticContainer: true,
-                  // clipBehavior: Clip.antiAliasWithSaveLayer,
-                  color: Theme.of(context).cardColor,
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(0.0)),
-                        child: ImageView(
-                          url: widget.banner?.image ?? "",
-                          width: double.infinity,
-                          height: AppSizes.deviceWidth / 2,
-                        ),
-                      ),
-                    ],
-                  ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: GestureDetector(
+        onTap: () async {
+          switch (widget.banner?.type) {
+            case "product":
+              Navigator.of(context).pushNamed(
+                AppRoute.productPage,
+                arguments: getProductDataAttributeMap(
+                  widget.banner?.title ?? '',
+                  widget.banner?.link ?? '',
                 ),
-                // Container(
-                //   width: AppSizes.deviceWidth,
-                //   color: Theme.of(context).cardColor,
-                //   child: Center(
-                //     child: _buildCircularIndicator(_currentPageNotifier),
-                //   ),
-                // )
-              ],
+              );
+              break;
+            case "category":
+              Navigator.of(context).pushNamed(
+                AppRoute.catalog,
+                arguments: categoryMap(
+                  widget.banner?.link ?? "",
+                  widget.banner?.title ?? "",
+                  "",
+                ),
+              );
+              break;
+            case "manufacturer":
+              Navigator.of(context).pushNamed(
+                AppRoute.catalog,
+                arguments: categoryMap(
+                  widget.banner?.link ?? "",
+                  widget.banner?.title ?? "",
+                  "",
+                ),
+              );
+              break;
+            case "external_link":
+              final Uri url = Uri.parse(widget.banner?.link ?? "");
+              if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                throw 'Could not launch $url';
+              }
+              break;
+            default:
+              break;
+          }
+        },
+        child: Container(
+          width: double.infinity,
+          height: AppSizes.deviceWidth * 0.45,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16.0),
+            child: ImageView(
+              url: widget.banner?.image ?? "",
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
             ),
           ),
-        )
-      ],
+        ),
+      ),
     );
   }
 

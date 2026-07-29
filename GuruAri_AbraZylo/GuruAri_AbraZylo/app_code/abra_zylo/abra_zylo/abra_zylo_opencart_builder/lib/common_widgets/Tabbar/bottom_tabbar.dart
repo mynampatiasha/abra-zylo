@@ -95,7 +95,14 @@ class _BottomTabbarWidgetState extends State<BottomTabbarWidget> {
             ),
           ),
         ],
-        child: HomeScreen(moveToCategory),
+        child: HomeScreen(
+          moveToCategory,
+          moveToTab: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+        ),
       ),
       (mAppStoragePref.getIsTabCategoryView() == "0")
           ? MultiBlocProvider(
@@ -148,13 +155,18 @@ class _BottomTabbarWidgetState extends State<BottomTabbarWidget> {
             ],
           ),*/
           child: BottomNavigationBar(
-            backgroundColor:
-                Theme.of(context).navigationBarTheme.backgroundColor,
-            selectedItemColor: Theme.of(context).textTheme.titleLarge?.color,
-            selectedFontSize: 14,
-            selectedIconTheme: const IconThemeData(/*color: AppColors.black*/),
+            backgroundColor: Colors.white,
+            selectedItemColor: const Color(0xFF673AB7), // Purple theme color
+            unselectedItemColor: Colors.grey,
+            selectedFontSize: 12,
+            unselectedFontSize: 12,
+            showUnselectedLabels: true,
+            selectedIconTheme: const IconThemeData(color: Color(0xFF673AB7)),
+            unselectedIconTheme: const IconThemeData(color: Colors.grey),
             selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
+            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
             type: BottomNavigationBarType.fixed,
+            elevation: 8,
             currentIndex: _selectedIndex,
             onTap: (index) => setState(() => _selectedIndex = index),
             items: [

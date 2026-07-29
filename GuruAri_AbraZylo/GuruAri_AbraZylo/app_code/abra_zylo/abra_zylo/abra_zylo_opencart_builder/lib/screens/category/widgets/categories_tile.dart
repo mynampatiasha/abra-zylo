@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:oc_demo/constants/app_string_constant.dart';
 import 'package:oc_demo/constants/arguments_map.dart';
 import 'package:oc_demo/helper/app_localizations.dart';
-import 'package:oc_demo/screens/category/widgets/view_all_card.dart';
 
 import '../../../common_widgets/image_view.dart';
 import '../../../constants/app_constants.dart';
@@ -25,103 +24,152 @@ class CategoriesTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var subcategory = category;
-    return ExpansionTile(
-      initiallyExpanded: true,
-      title: Text(
-        AppStringConstant.categories.localized(),
-        style: Theme.of(context).textTheme.headlineMedium,
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Divider(
-          height: 1,
-          color: AppColors.dividerColor,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                AppStringConstant.categories.localized(),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).pushNamed(
+                    AppRoute.catalog,
+                    arguments: categoryMap(rootCategoryId ?? "", title ?? "", ""),
+                  );
+                },
+                child: const Text(
+                  "View All >",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF673AB7),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: AppSizes.size6),
+        const SizedBox(height: 8),
         GridView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 0.78,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 0.85,
           ),
-          itemCount: (subcategory?.length ?? 0) + 1,
+          itemCount: subcategory?.length ?? 0,
           itemBuilder: (BuildContext context, int itemIndex) {
-            //Prefetch category data
             preFetchData(itemIndex, subcategory);
-            return (itemIndex == (subcategory?.length ?? 0))
-                ? ViewAllCard(title, categoryId: rootCategoryId)
-                : Card(
-                    //color: Colors.red,
-                    color: Theme.of(context).cardColor,
-                    shape: BeveledRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0)),
-                    //color: Theme.of(context).cardColor,
-                    child: InkWell(
-                      onTap: () {
-                        if (subcategory?[itemIndex].childStatus == true) {
-                          Navigator.pushNamed(
-                            context,
-                            AppRoute.subCategory,
-                            arguments: categoryMap(
-                                subcategory?[itemIndex].path ?? '',
-                                subcategory?[itemIndex].name ?? '',
-                                ""),
-                          );
-                        } else {
-                          Navigator.of(context).pushNamed(
-                            AppRoute.catalog,
-                            arguments: categoryMap(
-                                subcategory?[itemIndex].path ?? "",
-                                subcategory?[itemIndex].name ?? "",
-                                ""),
-                          );
-                        }
-                      },
+            
+            return Card(
+              color: Colors.white,
+              elevation: 2,
+              shadowColor: Colors.black12.withOpacity(0.05),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12.0),
+                onTap: () {
+                  if (subcategory?[itemIndex].childStatus == true) {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoute.subCategory,
+                      arguments: categoryMap(
+                          subcategory?[itemIndex].path ?? '',
+                          subcategory?[itemIndex].name ?? '',
+                          ""),
+                    );
+                  } else {
+                    Navigator.of(context).pushNamed(
+                      AppRoute.catalog,
+                      arguments: categoryMap(
+                          subcategory?[itemIndex].path ?? "",
+                          subcategory?[itemIndex].name ?? "",
+                          ""),
+                    );
+                  }
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(12.0)),
+                        child: Container(
+                          color: const Color(0xFFF9F9F9),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ImageView(
+                              url: subcategory?[itemIndex].image ?? "",
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Flexible(
-                              flex: 2,
-                              child: ImageView(
-                                url: subcategory?[itemIndex].image ?? "",
-                                // url:"https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg",
-                                height: double.infinity,
-                                width: double.infinity,
+                            Text(
+                              subcategory?[itemIndex].name ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: Colors.black87,
                               ),
                             ),
-                            const SizedBox(height: AppSizes.size2),
-                            Flexible(
-                              flex: 1,
-                              child: Text(
-                                subcategory?[itemIndex].name ?? "",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.labelSmall,
+                            const SizedBox(height: 2),
+                            Text(
+                              "Explore Collection",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade600,
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                  );
+                  ],
+                ),
+              ),
+            );
           },
         ),
-        SizedBox(height: 30)
+        const SizedBox(height: 30)
       ],
     );
   }
 
   void preFetchData(int itemIndex, List<Categories>? subcategory) {
-    if (itemIndex == ((subcategory?.length ?? 0))) {
-      PrefetchService.preFetchCategoryData(rootCategoryId);
-    } else {
-      PrefetchService.preFetchCategoryData(subcategory?[itemIndex].path ?? '');
+    if (subcategory != null && itemIndex < subcategory.length) {
+      PrefetchService.preFetchCategoryData(subcategory[itemIndex].path ?? '');
     }
   }
 }
+

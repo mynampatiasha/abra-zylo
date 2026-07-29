@@ -99,144 +99,144 @@ class CartMainView extends StatelessWidget {
               CartScreenRewardsWidget(bloc, localizations, model),
           ],
         ),
+
+        // Update Shopping Cart
         Padding(
-          padding: const EdgeInsets.only(left: 4.0, right: 4, top: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              // /color: Colors.red,
-              color: Theme.of(context).cardColor,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: AppSizes.size10),
-                  child: Container(
-                    // width: MediaQuery.of(context).size.width*0.05,
-                    // color: Colors.amber,
-                    child: Image.asset(
-                      "assets/icons/editbutton.png",
-                      height: 22,
-                      width: 18,
-                      color: Theme.of(context).textTheme.headlineMedium!.color,
-                    ),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+          child: InkWell(
+            onTap: () {
+              bloc?.add(CartUpdateEvent(getQuantityJson()));
+              bloc?.emit(CartScreenStateInitial());
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.02),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  )
+                ],
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF673AB7).withOpacity(0.1),
+                    shape: BoxShape.circle,
                   ),
+                  child: const Icon(Icons.refresh_outlined, color: Color(0xFF673AB7), size: 20),
                 ),
-                TextButton(
-                    onPressed: () {
-                      bloc?.add(const GetCountryDataEvent());
-                      bloc?.emit(CartScreenStateInitial());
-                    },
-                    child: Text(
-                        localizations
-                                ?.translate(
-                                    AppStringConstant.estimateShippingTax)
-                                .toUpperCase() ??
-                            "",
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: Theme.of(context)
-                                .textTheme
-                                .headlineMedium!
-                                .color,
-                            fontSize: AppSizes.size12,
-                            fontWeight: FontWeight.bold)))
-
-                //assets/icons/
-                // CartIconButton(
-                //   // leadingIcon: Icons.edit_square,
-                //   title: localizations
-                //           ?.translate(AppStringConstant.estimateShippingTax)
-                //           .toUpperCase() ??
-                //       "",
-                //   onClick: () {
-                //     bloc?.add(const GetCountryDataEvent());
-                //     bloc?.emit(CartScreenStateInitial());
-                //   },
-                // ),
-              ],
+                title: Text(
+                  localizations?.translate(AppStringConstant.updateShoppingCart) ?? "Update Shopping Cart",
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.black87),
+                ),
+                subtitle: Text(
+                  "Recalculate items and apply latest changes",
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
+                trailing: const Icon(Icons.chevron_right, color: Color(0xFF673AB7)),
+              ),
             ),
           ),
         ),
 
-        /*    Update cart Button
-    * Onclick: cart will update
-    * */
-
+        // Empty Cart
         Padding(
-          padding: const EdgeInsets.only(left: 4.0, right: 4, top: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-            ),
-            child: CartIconButton(
-              leadingIcon: Icons.update,
-              title: localizations
-                      ?.translate(AppStringConstant.updateShoppingCart)
-                      .toUpperCase() ??
-                  "",
-              onClick: () {
-                bloc?.add(CartUpdateEvent(getQuantityJson()));
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+          child: InkWell(
+            onTap: () {
+              confirmationDialog(
+                  AppStringConstant.emptyCartText,
+                  context,
+                  localizations,
+                  AppStringConstant.areYouSureTOEmptyCart, onConfirm: () {
+                bloc?.add(const EmptyCartEvent());
                 bloc?.emit(CartScreenStateInitial());
-              },
+              });
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.02),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  )
+                ],
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.delete_forever_outlined, color: Colors.grey.shade700, size: 20),
+                ),
+                title: Text(
+                  localizations?.translate(AppStringConstant.emptyCart) ?? "Empty Cart",
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.grey.shade700),
+                ),
+                trailing: Icon(Icons.chevron_right, color: Colors.grey.shade400),
+              ),
             ),
           ),
         ),
-
         /*
-        * Empty cart labelLarge view
-        * on click: all product will remove from cart
-        * */
-        Padding(
-          padding: const EdgeInsets.only(left: 4.0, right: 4, top: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-            ),
-            child: CartIconButton(
-              leadingIcon: Icons.delete_forever,
-              title:
-                  localizations?.translate(AppStringConstant.emptyCart) ?? "",
-              onClick: () {
-                confirmationDialog(
-                    AppStringConstant.emptyCartText,
-                    context,
-                    localizations,
-                    AppStringConstant.areYouSureTOEmptyCart, onConfirm: () {
-                  bloc?.add(const EmptyCartEvent());
-                  bloc?.emit(CartScreenStateInitial());
-                });
-              },
-            ),
-          ),
-        ),
-        /*
-        * Continue shopping labelLarge view
+        * Continue shopping
         * onClick: move to homepage
         * */
         Padding(
-          padding: const EdgeInsets.only(left: 4.0, right: 4, top: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-            ),
-            child: CartIconButton(
-              leadingIcon: Icons.arrow_forward,
-              title: localizations
-                      ?.translate(AppStringConstant.continueShopping) ??
-                  "",
-              onClick: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  /*MaterialPageRoute(
-                            builder: (context) => const BottomTabbarWidget(),
-                          ),*/
-                  AppRoute.bottomTabBAr,
-                  (route) => false,
-                );
-                // Navigator.pushNamed(context, navBar);
-              },
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRoute.bottomTabBAr,
+                (route) => false,
+              );
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.02),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  )
+                ],
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF673AB7).withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.shopping_bag_outlined, color: Color(0xFF673AB7), size: 20),
+                ),
+                title: Text(
+                  localizations?.translate(AppStringConstant.continueShopping) ?? "Continue Shopping",
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.black87),
+                ),
+                trailing: const Icon(Icons.chevron_right, color: Color(0xFF673AB7)),
+              ),
             ),
           ),
         ),
+        const SizedBox(height: 12),
 
         //Price details view
         PriceDetails(

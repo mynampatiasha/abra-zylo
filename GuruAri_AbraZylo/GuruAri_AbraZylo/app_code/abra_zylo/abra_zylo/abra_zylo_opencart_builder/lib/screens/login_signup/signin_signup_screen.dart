@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:oc_demo/config/theme.dart';
 import 'package:oc_demo/constants/app_routes.dart';
 import 'package:oc_demo/helper/app_shared_pref.dart';
@@ -145,6 +146,15 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
               GoogleSignInWebButton(onSuccess: _handleGoogleUser)
             else if (!Platform.isIOS)
               _GoogleSignInButton(onTap: _signInWithGoogle),
+            
+            const SizedBox(height: AppSizes.size16),
+            SizedBox(
+              height: 48,
+              child: SignInWithAppleButton(
+                onPressed: _signInWithApple,
+                style: SignInWithAppleButtonStyle.black,
+              ),
+            ),
             SizedBox(
               height: AppSizes.size16,
             ),
@@ -201,6 +211,12 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
     var wkToken = await AppSharedPref.getWkToken();
     var fcmToken = await AppSharedPref.getFcmToken();
     bloc?.add(GoogleSignInEvent(wkToken, fcmToken));
+  }
+
+  void _signInWithApple() async {
+    var wkToken = await AppSharedPref.getWkToken();
+    var fcmToken = await AppSharedPref.getFcmToken();
+    bloc?.add(AppleSignInEvent(wkToken, fcmToken));
   }
 
   void _handleGoogleUser(GoogleSignInAccount user) async {
