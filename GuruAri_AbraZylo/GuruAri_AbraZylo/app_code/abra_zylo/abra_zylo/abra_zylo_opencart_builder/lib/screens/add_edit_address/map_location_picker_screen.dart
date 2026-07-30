@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -62,17 +64,42 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
     }
 
     try {
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 12),
+      );
       setState(() {
         _currentPosition = LatLng(position.latitude, position.longitude);
         _isLoading = false;
       });
       mapController.move(_currentPosition!, 16.0);
       _getAddressFromLatLng(position.latitude, position.longitude);
+    } on TimeoutException catch (_) {
+      // High-accuracy fix took too long (e.g. weak GPS signal indoors) -
+      // fall back to the last known position instead of failing outright.
+      Position? lastKnown;
+      try {
+        lastKnown = await Geolocator.getLastKnownPosition();
+      } catch (_) {}
+
+      if (lastKnown != null) {
+        setState(() {
+          _currentPosition = LatLng(lastKnown!.latitude, lastKnown.longitude);
+          _isLoading = false;
+        });
+        mapController.move(_currentPosition!, 16.0);
+        _getAddressFromLatLng(lastKnown.latitude, lastKnown.longitude);
+      } else {
+        setState(() {
+          _isLoading = false;
+          _address = "Couldn't get a precise location. Move the map or search for your address below.";
+          _currentPosition = const LatLng(12.9716, 77.5946); // Bangalore
+        });
+      }
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _address = "Failed to get location";
+        _address = "Couldn't get your location. Move the map or search for your address below.";
         // Default to a central location if GPS fails
         _currentPosition = const LatLng(12.9716, 77.5946); // Bangalore
       });
@@ -116,10 +143,7 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Confirm Delivery Location", style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        elevation: 1,
+        title: const Text("Confirm Delivery Location"),
       ),
       body: _isLoading 
         ? const Center(child: CircularProgressIndicator())
@@ -239,7 +263,7 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
                     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                     boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)]
                   ),
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + MediaQuery.of(context).padding.bottom),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,22 +286,29 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
                         height: 48,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).primaryColor,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                           ),
-                          onPressed: () {
-                            // Forward the address data to the manual form to capture House No. / Building name
-                            Navigator.pushReplacementNamed(
-                              context, 
+                          onPressed: () async {
+                            // Forward the address data to the manual form to capture House No. / Building name.
+                            // Uses an awaited push (not pushReplacement) so the save result can be
+                            // relayed back to whoever opened this screen (e.g. checkout's "Add New
+                            // Address" flow), which needs to know a new address was actually saved
+                            // so it can refresh shipping/payment methods for it.
+                            final result = await Navigator.pushNamed(
+                              context,
                               AppRoute.addEditAddress,
                               arguments: {
-                                "addressId": null, 
+                                "addressId": null,
                                 "locationData": {
                                   "address_string": _address,
                                   "address": _addressMap ?? {}
                                 }
                               }
                             );
+                            if (result != null && mounted) {
+                              Navigator.pop(context, result);
+                            }
                           },
                           child: const Text("Enter Complete Address", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                         ),

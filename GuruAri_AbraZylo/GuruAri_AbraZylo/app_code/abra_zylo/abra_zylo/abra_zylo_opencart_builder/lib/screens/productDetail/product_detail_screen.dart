@@ -398,7 +398,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                                 children: [
                                   Padding(
                                     padding:
-                                        const EdgeInsets.all(AppSizes.size0),
+                                        const EdgeInsets.only(top: AppSizes.size12),
                                     child: Builder(
                                       builder: (context) {
                                         List<Images> combinedImages = [];
@@ -576,24 +576,26 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                       ),
                     ))),
             Visibility(visible: isLoading, child: LoaderUtil.showCoverLoader()),
-            Align(
-              alignment: Alignment.topCenter,
-              child: ConfettiWidget(
-                confettiController: _confettiController,
-                blastDirection: 3.14159 / 2, // radial value - down
-                emissionFrequency: 0.05,
-                numberOfParticles: 50,
-                maxBlastForce: 20,
-                minBlastForce: 5,
-                gravity: 0.3,
-                shouldLoop: false,
-                colors: const [
-                  Colors.green,
-                  Colors.blue,
-                  Colors.pink,
-                  Colors.orange,
-                  Colors.purple
-                ],
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.center,
+                child: ConfettiWidget(
+                  confettiController: _confettiController,
+                  blastDirectionality: BlastDirectionality.explosive,
+                  emissionFrequency: 0.05,
+                  numberOfParticles: 50,
+                  maxBlastForce: 20,
+                  minBlastForce: 5,
+                  gravity: 0.1,
+                  shouldLoop: false,
+                  colors: const [
+                    Colors.green,
+                    Colors.blue,
+                    Colors.pink,
+                    Colors.orange,
+                    Colors.purple
+                  ],
+                ),
               ),
             ),
           ],

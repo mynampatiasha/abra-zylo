@@ -9,11 +9,11 @@ class AlertMessage {
         context,
         message,
         const Icon(
-          Icons.error,
+          Icons.error_outline,
           color: Colors.white,
-          size: 40,
+          size: 24,
         ),
-        AppColors.error);
+        const Color(0xFF333333)); // Sleek dark gray
   }
 
   static showSuccess(String message, BuildContext context) {
@@ -59,34 +59,36 @@ class ToastUtils {
       BuildContext context, String message, Icon icon, Color color) {
     return OverlayEntry(
       builder: (context) => Positioned(
-        top: MediaQuery.of(context).padding.top,
-        width: AppSizes.deviceWidth,
+        top: MediaQuery.of(context).padding.top + kToolbarHeight + 12,
+        left: 16,
+        right: 16,
         child: SlideInToastMessageAnimation(Material(
+          color: Colors.transparent,
           child: Container(
-            padding:
-                const EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 8),
-            decoration: BoxDecoration(color: color),
-            child: Align(
-              alignment: Alignment.center,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  icon,
-                  const SizedBox(
-                    width: 8,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4)),
+              ],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                IconTheme(data: const IconThemeData(size: 24), child: icon),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    message,
+                    softWrap: true,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Color(0xFFFFFFFF),
+                    ),
                   ),
-                  SizedBox(
-                      width: AppSizes.deviceWidth - 75,
-                      child: Text(
-                        message,
-                        softWrap: true,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          color: Color(0xFFFFFFFF),
-                        ),
-                      ))
-                ],
-              ),
+                )
+              ],
             ),
           ),
         )),

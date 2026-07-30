@@ -442,9 +442,9 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                   ),
                   style: OutlinedButton.styleFrom(
                       side: BorderSide(
-                        color: AppColors.red,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      backgroundColor: AppColors.red),
+                      backgroundColor: Theme.of(context).colorScheme.primary),
                 ),
                 OutlinedButton(
                   onPressed: () async {
@@ -489,9 +489,9 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                   ),
                   style: OutlinedButton.styleFrom(
                       side: BorderSide(
-                        color: AppColors.red,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      backgroundColor: AppColors.red),
+                      backgroundColor: Theme.of(context).colorScheme.primary),
                 )
                 /*  TextButton(
 

@@ -263,9 +263,18 @@ class _LocationScreenState extends State<LocationScreen> {
         final Map<String, dynamic> addressData = result['address'] ?? {};
         final Map<String, dynamic> map = {};
         
-        String street = addressData['road'] ?? '';
-        String area = addressData['suburb'] ?? addressData['neighbourhood'] ?? '';
-        String locality = addressData['city'] ?? addressData['town'] ?? addressData['village'] ?? '';
+        String houseNumber = addressData['house_number'] ?? '';
+        String building = addressData['building'] ?? '';
+        String road = addressData['road'] ?? '';
+        
+        List<String> streetParts = [];
+        if (building.isNotEmpty) streetParts.add(building);
+        if (houseNumber.isNotEmpty) streetParts.add(houseNumber);
+        if (road.isNotEmpty) streetParts.add(road);
+        String street = streetParts.join(', ');
+        
+        String area = addressData['suburb'] ?? addressData['neighbourhood'] ?? addressData['residential'] ?? '';
+        String locality = addressData['city'] ?? addressData['town'] ?? addressData['village'] ?? addressData['county'] ?? '';
         String state = addressData['state'] ?? '';
         String zip = addressData['postcode'] ?? '';
         String country = addressData['country'] ?? '';

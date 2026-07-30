@@ -36,12 +36,12 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
     _localizations = AppLocalizations.of(context);
     return Container(
         decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
-        height: AppSizes.deviceHeight / 11,
-        child: Container(
-          color: Theme.of(context).cardColor,
+        child: SafeArea(
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
-            child: Row(
+            color: Theme.of(context).cardColor,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
+              child: Row(
               children: [
                 Expanded(
                   flex: 1,
@@ -139,7 +139,7 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
                     height: 50,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF673AB7),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         elevation: 0,
@@ -186,7 +186,9 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
               ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
 /*

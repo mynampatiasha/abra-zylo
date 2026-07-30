@@ -36,9 +36,21 @@ class ChangeAddress extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppSizes.size8),
                 ),
               ),
-              onPressed: () {
-                Navigator.pop(context); // Close bottom sheet
-                Navigator.pushNamed(context, AppRoute.mapLocationPickerScreen);
+              onPressed: () async {
+                // Wait for the add-address flow (map picker -> address form) to finish
+                // before closing this sheet, so a successful save can tell the caller to
+                // refresh shipping/payment methods for the new address. Closing the sheet
+                // immediately (as before) silently dropped that signal.
+                final result =
+                    await Navigator.pushNamed(context, AppRoute.mapLocationPickerScreen);
+                if (result == true) {
+                  if (onAddressUpdate != null) {
+                    onAddressUpdate!();
+                  }
+                  Navigator.of(context).pop(true);
+                } else {
+                  Navigator.of(context).pop();
+                }
               },
               icon: const Icon(Icons.add_location_alt),
               label: const Text(

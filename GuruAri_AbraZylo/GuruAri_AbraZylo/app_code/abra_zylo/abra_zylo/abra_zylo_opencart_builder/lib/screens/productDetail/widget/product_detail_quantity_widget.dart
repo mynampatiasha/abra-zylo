@@ -51,7 +51,9 @@ class _ProductDetailQuantityWidgetState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
               Text(
-                _localizations?.translate(AppStringConstant.quantity) ?? 'Quantity *',
+                (_localizations?.translate(AppStringConstant.quantity) ?? 'Quantity *').isEmpty 
+                    ? 'Quantity *' 
+                    : (_localizations?.translate(AppStringConstant.quantity) ?? 'Quantity *'),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w400,
                     color: SchedulerBinding.instance!.window.platformBrightness ==

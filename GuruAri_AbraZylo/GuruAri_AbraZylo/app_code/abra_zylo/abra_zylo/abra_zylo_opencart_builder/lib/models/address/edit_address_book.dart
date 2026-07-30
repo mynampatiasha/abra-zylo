@@ -39,21 +39,23 @@ class EditAddressBook extends BaseModel {
   });
 
   CountryDatum? getCountryById(String? id) {
+    if (id == null) return null;
     for (var country in (countryData ?? <CountryDatum?>[])) {
       if (country?.countryId == id) {
         return country;
       }
     }
-    return countryData?.isNotEmpty == true ? countryData?.elementAt(0) : null;
+    return null;
   }
 
   CountryDatum? getCountryByName(String? countryName) {
+    if (countryName == null) return null;
     for (var country in (countryData ?? <CountryDatum?>[])) {
-      if (country?.name?.toLowerCase() == countryName?.toLowerCase()) {
+      if (country?.name?.toLowerCase() == countryName.toLowerCase()) {
         return country;
       }
     }
-    return countryData?.isNotEmpty == true ? countryData?.elementAt(0) : null;
+    return null;
   }
 
   factory EditAddressBook.fromJson(Map<String, dynamic> json) =>

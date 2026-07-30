@@ -69,6 +69,11 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
         var model = state.data;
         AppSharedPref.setLoginUserData(model);
         WidgetsBinding.instance?.addPostFrameCallback((_) {
+          AlertMessage.showSuccess(
+              (model.firstname?.isNotEmpty ?? false)
+                  ? "Welcome back, ${model.firstname}! Thanks for signing in."
+                  : "Welcome back! Thanks for signing in.",
+              context);
           Navigator.of(context).pushNamedAndRemoveUntil(
               AppRoute.bottomTabBAr, (route) => false);
         });
@@ -182,10 +187,8 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
                   //.toUpperCase()
                   ??
                   "",
-              // backgroundColor: MobikulTheme.primaryColor,
-              //   textColor: Theme.of(context).cardColor
-
-              // textColor: Colors.white),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              textColor: Colors.white,
             ),
             SizedBox(height: AppSizes.size16),
             commonButton(context, () {

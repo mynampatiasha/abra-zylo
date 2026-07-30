@@ -93,6 +93,11 @@ class _SignInScreenState extends State<SignInScreen> {
           var model = state.data;
           AppSharedPref.setLoginUserData(model);
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            AlertMessage.showSuccess(
+                (model.firstname?.isNotEmpty ?? false)
+                    ? "Welcome back, ${model.firstname}! Thanks for signing in."
+                    : "Welcome back! Thanks for signing in.",
+                context);
             if (widget.isComingFromCartPage == true) {
               loginFromFingerPrint
                   ? Navigator.of(context)
@@ -201,10 +206,10 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: ElevatedButton(
                       onPressed: _validateForm,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF673AB7),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                         elevation: 2,
-                        shadowColor: const Color(0xFF673AB7).withOpacity(0.4),
+                        shadowColor: Theme.of(context).colorScheme.primary.withOpacity(0.4),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       child: Text(
@@ -227,16 +232,17 @@ class _SignInScreenState extends State<SignInScreen> {
                         signInSignUpBottomModalSheet(context, true, false);
                       },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF673AB7),
-                        side: const BorderSide(color: Color(0xFF673AB7), width: 1.5),
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: Theme.of(context).colorScheme.primary,
+                        side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       child: Text(
                         _localizations?.translate(AppStringConstant.createAnAccount) ?? "Create an Account",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: Color(0xFF673AB7),
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ),

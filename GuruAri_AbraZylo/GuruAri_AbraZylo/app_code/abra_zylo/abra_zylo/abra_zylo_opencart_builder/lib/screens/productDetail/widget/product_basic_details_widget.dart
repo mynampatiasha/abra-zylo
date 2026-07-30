@@ -56,7 +56,7 @@ class ProductPageBasicDetailsWidgetState
               Text(
                 toTitleCase(widget.product?.name ?? ""),
                 style: const TextStyle(
-                  fontSize: 22,
+                  fontSize: 21,
                   fontWeight: FontWeight.w700,
                   color: AppColors.black,
                   height: 1.2,

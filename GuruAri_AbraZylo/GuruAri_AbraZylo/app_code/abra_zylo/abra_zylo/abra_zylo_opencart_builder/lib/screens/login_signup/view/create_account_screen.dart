@@ -456,10 +456,10 @@ class _CreateAnAccountState extends State<CreateAnAccount> {
                       child: ElevatedButton(
                         onPressed: _validateForm,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF673AB7),
+                          backgroundColor: Theme.of(context).colorScheme.primary,
                           foregroundColor: Colors.white,
                           elevation: 2,
-                          shadowColor: const Color(0xFF673AB7).withOpacity(0.4),
+                          shadowColor: Theme.of(context).colorScheme.primary.withOpacity(0.4),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         child: Text(

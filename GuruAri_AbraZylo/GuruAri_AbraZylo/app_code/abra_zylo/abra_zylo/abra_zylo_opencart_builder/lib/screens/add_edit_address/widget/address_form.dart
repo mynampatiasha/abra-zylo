@@ -65,8 +65,7 @@ class _AddressFormState extends State<AddressForm> {
     _zip = TextEditingController(text: "");
     _selectedCountryName = "";
     _selectedZoneName = "";
-    // For United Kingdom
-    _selectedCountry = "222";
+    _selectedCountry = null;
     _default = "0";
 
     _prepareTextFields();
@@ -126,9 +125,9 @@ class _AddressFormState extends State<AddressForm> {
         }
       }
 
-      // If we couldn't match a country from the map data, fallback to default logic
+      // If we couldn't match a country from the map data, fallback to the store's configured default country
       if (_selectedCountry == null) {
-        var country = widget.model?.getCountryById(_selectedCountry);
+        var country = widget.model?.getCountryById(widget.model?.countryId);
         if (country != null) {
           _selectedCountry = country.countryId;
           _selectedCountryName = country.name;
@@ -231,6 +230,7 @@ class _AddressFormState extends State<AddressForm> {
                           _localizations?.translate(
                                   AppStringConstant.pleseSelectStateErrorMsg) ??
                               "");
+                      return;
                     }
 
                     if (_selectedZoneName?.compareTo(_localizations?.translate(
@@ -242,6 +242,16 @@ class _AddressFormState extends State<AddressForm> {
                           _localizations?.translate(
                                   AppStringConstant.pleseSelectStateErrorMsg) ??
                               "please select");
+                      return;
+                    }
+
+                    if (_selectedZone == null || _selectedZone!.isEmpty) {
+                      GenericMethods.showErrorAlertMessages(
+                          context,
+                          _localizations?.translate(
+                                  AppStringConstant.pleseSelectStateErrorMsg) ??
+                              "Please select a state before saving.");
+                      return;
                     }
                     var validate = _formKey.currentState?.validate();
                     if (validate == true) {
@@ -270,7 +280,9 @@ class _AddressFormState extends State<AddressForm> {
                         ));
                       }
                     }
-                  }, AppStringConstant.saveAddress.localized().toUpperCase()),
+                  }, AppStringConstant.saveAddress.localized().toUpperCase(),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      textColor: Colors.white),
 
                   //fieldItem(_controller, "First Name", true),
                 ],
@@ -402,16 +414,29 @@ class _AddressFormState extends State<AddressForm> {
           });
         }
       },
-      child: const SizedBox(
-        width: 35.0,
-        height: 35.0,
-        /* decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.onPrimary,
-            borderRadius: const BorderRadius.all(Radius.circular(100))),*/
-        child: Icon(
-          Icons.my_location,
-          // color: AppColors.black,
-          size: 30,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary,
+          borderRadius: const BorderRadius.all(Radius.circular(100)),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.my_location,
+              color: Colors.white,
+              size: 20,
+            ),
+            SizedBox(width: 8),
+            Text(
+              "Use Current Location",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -118,6 +118,14 @@ class _OrderReviewState extends State<OrderReview> {
                   "0"));
             } else {
               AppSharedPref.setSelectedPaymentId("");
+              if (_paymentMethods?.paymentMethods?.errorWarning?.isNotEmpty !=
+                  true) {
+                WidgetsBinding.instance?.addPostFrameCallback((_) {
+                  AlertMessage.showError(
+                      "No payment or shipping methods are available for the selected address. Please go back and choose a different address.",
+                      context);
+                });
+              }
             }
             if (_paymentMethods?.paymentMethods?.errorWarning?.isNotEmpty ==
                 true) {
@@ -155,10 +163,38 @@ class _OrderReviewState extends State<OrderReview> {
     );
   }
 
+  bool get _hasPaymentMethods =>
+      (_paymentMethods?.paymentMethods?.paymentMethodList?.length ?? 0) > 0;
+
   Widget _buildUI() => Stack(
         children: <Widget>[
           Visibility(
-            visible: _paymentMethods != null,
+            visible: _paymentMethods != null && !_hasPaymentMethods && !_loading,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.local_shipping_outlined,
+                        size: 48, color: Theme.of(context).colorScheme.primary),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "We couldn't find any payment or shipping methods for the selected address.",
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text("Choose a different address"),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: _paymentMethods != null && _hasPaymentMethods,
             child: Column(
               children: <Widget>[
                 Expanded(
