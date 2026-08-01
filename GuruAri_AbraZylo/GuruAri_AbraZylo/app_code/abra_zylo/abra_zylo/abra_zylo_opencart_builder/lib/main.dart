@@ -320,7 +320,7 @@ class _MyAppState extends State<MyApp> {
       if (productId != null && productId.isNotEmpty) {
         navigatorKey.currentState?.pushNamed(
           AppRoute.productPage,
-          arguments: {"product_id": productId},
+          arguments: {"productId": productId},
         );
       }
     } catch (e) {
