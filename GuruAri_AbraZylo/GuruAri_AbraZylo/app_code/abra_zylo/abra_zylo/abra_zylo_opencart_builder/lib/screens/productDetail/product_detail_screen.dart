@@ -10,6 +10,7 @@ import 'package:oc_demo/common_widgets/custom_loader.dart';
 import 'package:oc_demo/common_widgets/widget_space.dart';
 import 'package:oc_demo/models/address/add_address_request.dart';
 import 'package:oc_demo/models/productDetail/product_detail_screen_model.dart';
+import 'widget/add_to_cart_toast.dart';
 import 'package:oc_demo/screens/productDetail/Bloc/product_detail_bloc.dart';
 import 'package:oc_demo/screens/productDetail/Bloc/product_detail_event.dart';
 import 'package:oc_demo/screens/productDetail/Bloc/product_detail_state.dart';
@@ -217,8 +218,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
           ));
           AppSharedPref.setCartCount(currentState.baseModel.cartTotal!);
           WidgetsBinding.instance?.addPostFrameCallback((_) {
-            AlertMessage.showSuccess(
-                currentState.baseModel.message ?? '', context);
+            CustomAddToCartToast.show(
+              context,
+              productPageData?.name ?? '',
+              productPageData?.price ?? '',
+              productPageData?.formattedSpecial ?? '',
+            );
             setState(() {
               isAddedToCart = true;
             });
@@ -576,26 +581,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                       ),
                     ))),
             Visibility(visible: isLoading, child: LoaderUtil.showCoverLoader()),
-            Positioned.fill(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: ConfettiWidget(
-                  confettiController: _confettiController,
-                  blastDirectionality: BlastDirectionality.explosive,
-                  emissionFrequency: 0.05,
-                  numberOfParticles: 50,
-                  maxBlastForce: 20,
-                  minBlastForce: 5,
-                  gravity: 0.1,
-                  shouldLoop: false,
-                  colors: const [
-                    Colors.green,
-                    Colors.blue,
-                    Colors.pink,
-                    Colors.orange,
-                    Colors.purple
-                  ],
-                ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: ConfettiWidget(
+                confettiController: _confettiController,
+                blastDirectionality: BlastDirectionality.explosive,
+                emissionFrequency: 0.05,
+                numberOfParticles: 50,
+                maxBlastForce: 20,
+                minBlastForce: 5,
+                gravity: 0.2,
+                shouldLoop: false,
+                colors: const [
+                  Color(0xffffd75e),
+                  Colors.white,
+                  Color(0xffc8abec),
+                  Color(0xff8ee6c4)
+                ],
               ),
             ),
           ],

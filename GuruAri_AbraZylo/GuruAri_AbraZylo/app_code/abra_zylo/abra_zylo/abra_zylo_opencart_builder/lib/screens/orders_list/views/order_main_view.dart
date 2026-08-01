@@ -30,104 +30,188 @@ Widget orderMainView(
 
 Widget orderItem(BuildContext context, OrderListData? item,
     AppLocalizations? localizations, Function(String) callback) {
-  return Card(
-    color: Theme.of(context).cardColor,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8.0),
+  
+  Color getStatusBgColor(String status) {
+    if (status.toUpperCase() == 'COMPLETE' || status.toUpperCase() == 'DELIVERED') {
+      return const Color(0xFFe8fbf3);
+    } else if (status.toUpperCase() == 'SHIPPED') {
+      return const Color(0xFFe6f0ff);
+    } else if (status.toUpperCase() == 'PROCESSING' || status.toUpperCase() == 'PENDING') {
+      return const Color(0xFFfff3e0);
+    }
+    return const Color(0xFFf0f0f0);
+  }
+
+  Color getStatusTextColor(String status) {
+    if (status.toUpperCase() == 'COMPLETE' || status.toUpperCase() == 'DELIVERED') {
+      return const Color(0xFF109655);
+    } else if (status.toUpperCase() == 'SHIPPED') {
+      return const Color(0xFF0057ff);
+    } else if (status.toUpperCase() == 'PROCESSING' || status.toUpperCase() == 'PENDING') {
+      return const Color(0xFFe67a00);
+    }
+    return const Color(0xFF555555);
+  }
+
+  return Container(
+    margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
+    padding: const EdgeInsets.all(18),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(color: const Color(0x145232a8)),
+      boxShadow: const [
+        BoxShadow(
+          color: Color(0x145232a8),
+          blurRadius: 24,
+          spreadRadius: -10,
+          offset: Offset(0, 8),
+        ),
+      ],
     ),
-    /*   padding: const EdgeInsets.only(
-        top: AppSizes.size8,
-        left: AppSizes.size8,
-        right: AppSizes.size8),*/
-    margin: const EdgeInsets.only(
-        top: AppSizes.size16, left: AppSizes.size16, right: AppSizes.size16),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(
-              left: AppSizes.size10, top: AppSizes.size24),
-          child: Text(
-            "#${item?.orderId.toString() ?? " "}",
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-        ),
-        const SizedBox(height: AppSizes.size12),
-        if ((item?.image ?? '').isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(left: AppSizes.size10),
-            child: CachedNetworkImage(
-              imageUrl: ApiConstant.imageUrl(item!.image),
-              width: AppSizes.deviceWidth / 4,
-              height: AppSizes.deviceWidth / 4,
-              fit: BoxFit.cover,
-              errorWidget: (context, url, error) => const Icon(Icons.image_not_supported),
-              placeholder: (context, url) => const SizedBox(
-                width: 60,
-                height: 60,
-                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: getStatusBgColor(item?.status ?? ''),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                (item?.status ?? 'Processing').toUpperCase(),
+                style: TextStyle(
+                  fontFamily: 'Karla',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 11,
+                  letterSpacing: 0.5,
+                  color: getStatusTextColor(item?.status ?? ''),
+                ),
               ),
             ),
-          ),
-        const SizedBox(height: AppSizes.size12),
-        Padding(
-          padding: const EdgeInsets.only(left: AppSizes.size10),
-          child: statusContainer(context, item?.status ?? ''),
+            Text(
+              item?.dateAdded ?? '',
+              style: const TextStyle(
+                fontFamily: 'Karla',
+                fontSize: 13,
+                color: Color(0xFF8f889c),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: AppSizes.size8),
-        Padding(
-          padding: const EdgeInsets.only(left: AppSizes.size10),
-          child: Text(item?.dateAdded ?? '',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall
-                  ?.copyWith(fontWeight: FontWeight.w400)),
+        const SizedBox(height: 14),
+        Row(
+          children: [
+            if ((item?.image ?? '').isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: CachedNetworkImage(
+                  imageUrl: ApiConstant.imageUrl(item!.image),
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => Container(
+                    width: 60,
+                    height: 60,
+                    color: const Color(0xFFf4f0fb),
+                    child: const Icon(Icons.image_not_supported, color: Color(0xFFc8abec)),
+                  ),
+                  placeholder: (context, url) => Container(
+                    width: 60,
+                    height: 60,
+                    color: const Color(0xFFf4f0fb),
+                    child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                  ),
+                ),
+              )
+            else
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFf4f0fb),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.shopping_bag, color: Color(0xFFc8abec)),
+              ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Order #${item?.orderId ?? ''}",
+                    style: const TextStyle(
+                      fontFamily: 'Baloo 2',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 17,
+                      color: Color(0xFF2b2540),
+                      height: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    item?.total ?? "0.00",
+                    style: const TextStyle(
+                      fontFamily: 'Karla',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: Color(0xFF5232a8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: AppSizes.size12),
-        Padding(
-          padding: const EdgeInsets.only(left: AppSizes.size10),
-          child: Text(item?.total ?? "0.00",
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.w500)),
-        ),
-        const SizedBox(height: AppSizes.size26),
-        const Divider(
-          thickness: 1,
-          height: 1,
-          color: AppColors.lightGray,
-        ),
-        // Padding(
-        //   padding: const EdgeInsets.all(8.0),
-        //   child:
-        //   Container(
-        //     child: Center(
-        //       child: Text(
-        //           localizations!.translate(AppStringConstant.writeAReview),
-        //
-        //           //    "Order Date : ",
-        //           style: Theme.of(context).textTheme.displaySmall?.copyWith(
-        //               fontWeight: FontWeight.w500, fontSize: 18)),
-        //     ),
-        //   ),
-        // ),
-        actionContainer(
-          context,
-          () {
-            Navigator.of(context).pushNamed(
-              AppRoute.orderDetail,
-              arguments: item?.orderId ?? "",
-            );
-          },
-          () {
-            callback(item?.orderId ?? '');
-          },
-          titleRight: localizations?.translate(AppStringConstant.reviews),
-          titleLeft: localizations?.translate(AppStringConstant.details),
-          iconRight: Icons.rate_review_outlined,
-          iconLeft: Icons.arrow_forward_sharp,
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  callback(item?.orderId ?? '');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFf4f0fb),
+                  foregroundColor: const Color(0xFF5232a8),
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text(
+                  "Reviews",
+                  style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 13.5),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(
+                    AppRoute.orderDetail,
+                    arguments: item?.orderId ?? "",
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF5232a8),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text(
+                  "Details",
+                  style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 13.5),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     ),

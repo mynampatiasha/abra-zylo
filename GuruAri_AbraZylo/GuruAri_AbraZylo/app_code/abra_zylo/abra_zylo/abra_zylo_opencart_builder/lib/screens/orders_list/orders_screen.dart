@@ -43,6 +43,29 @@ class _OrderScreenState extends State<OrderScreen> {
     super.didChangeDependencies();
   }
 
+  String selectedTab = 'All';
+  final List<String> orderTabs = ['All', 'Pending', 'Processing', 'Complete', 'Cancelled'];
+
+  int getStatusCount(String tab) {
+    if (tab == 'All') return recentOrders.length;
+    return recentOrders.where((o) {
+      String st = (o.status ?? '').toLowerCase();
+      if (tab == 'Complete' && (st == 'complete' || st == 'delivered')) return true;
+      if (tab == 'Cancelled' && (st == 'cancelled' || st == 'canceled')) return true;
+      return st == tab.toLowerCase();
+    }).length;
+  }
+
+  List<OrderListData> getFilteredOrders() {
+    if (selectedTab == 'All') return recentOrders;
+    return recentOrders.where((o) {
+      String st = (o.status ?? '').toLowerCase();
+      if (selectedTab == 'Complete' && (st == 'complete' || st == 'delivered')) return true;
+      if (selectedTab == 'Cancelled' && (st == 'cancelled' || st == 'canceled')) return true;
+      return st == selectedTab.toLowerCase();
+    }).toList();
+  }
+
   @override
   void initState() {
     _orderScreenBloc = context.read<OrderScreenBloc>();
@@ -60,6 +83,7 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFf4f0fb),
       appBar: (widget.isFromDashboard)
           ? null
           : commonToolBar(
@@ -106,35 +130,96 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   Widget _buildUI() {
-    return Stack(
+    List<OrderListData> filteredOrders = getFilteredOrders();
+    return Column(
       children: [
         if (recentOrders.isNotEmpty)
-          orderMainView(context, recentOrders, _localizations, (orderId) {
-            _orderScreenBloc?.add(OrderDetailsFetchEvent(orderId));
-          }, _scrollController,
-              scrollPhysics: widget.isFromDashboard
-                  ? const AlwaysScrollableScrollPhysics()
-                  : const AlwaysScrollableScrollPhysics()),
-        Visibility(
-          visible: (recentOrders.isEmpty && (!isLoading)),
-          child: Center(
-            child: LottieAnimation(
-                lottiePath: AppImages.emptyOrderLottie,
-                title:
-                    _localizations?.translate(AppStringConstant.noOrders) ?? "",
-                subtitle: _localizations
-                        ?.translate(AppStringConstant.noOrdersMessage) ??
-                    "",
-                buttonTitle: _localizations
-                        ?.translate(AppStringConstant.continueShopping) ??
-                    '',
-                onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      AppRoute.bottomTabBAr, (route) => false);
-                }),
+          Container(
+            height: 54,
+            padding: const EdgeInsets.only(top: 10, bottom: 4),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: orderTabs.length,
+              itemBuilder: (context, index) {
+                String tab = orderTabs[index];
+                bool isActive = tab == selectedTab;
+                int count = getStatusCount(tab);
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        selectedTab = tab;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isActive ? const Color(0xFF5232a8) : Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: isActive ? const Color(0xFF5232a8) : const Color(0xFFece7f3),
+                            width: 1.5),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            tab,
+                            style: TextStyle(
+                              fontFamily: 'Karla',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                              color: isActive ? Colors.white : const Color(0xFF8f889c),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            count.toString(),
+                            style: TextStyle(
+                              fontFamily: 'Karla',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              color: isActive ? Colors.white.withOpacity(0.7) : const Color(0xFF8f889c).withOpacity(0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        Expanded(
+          child: Stack(
+            children: [
+              if (filteredOrders.isNotEmpty)
+                orderMainView(context, filteredOrders, _localizations, (orderId) {
+                  _orderScreenBloc?.add(OrderDetailsFetchEvent(orderId));
+                }, _scrollController,
+                    scrollPhysics: widget.isFromDashboard
+                        ? const AlwaysScrollableScrollPhysics()
+                        : const AlwaysScrollableScrollPhysics()),
+              Visibility(
+                visible: (filteredOrders.isEmpty && (!isLoading)),
+                child: Center(
+                  child: LottieAnimation(
+                      lottiePath: AppImages.emptyOrderLottie,
+                      title: _localizations?.translate(AppStringConstant.noOrders) ?? "",
+                      subtitle: _localizations?.translate(AppStringConstant.noOrdersMessage) ?? "",
+                      buttonTitle: _localizations?.translate(AppStringConstant.continueShopping) ?? '',
+                      onPressed: () {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            AppRoute.bottomTabBAr, (route) => false);
+                      }),
+                ),
+              ),
+              Visibility(visible: isLoading, child: Loader())
+            ],
           ),
         ),
-        Visibility(visible: isLoading, child: Loader())
       ],
     );
   }

@@ -120,128 +120,153 @@ class _profileState extends State<ProfileScreen> {
   }
 
   Widget buildUI() {
-    return (isUserLogin)
-        ?
-
-        // collapseProfileAppBar(
-        //         context,
-        //         HeaderProfileView(),
-        //         SingleChildScrollView(
-        //           child: Stack(children: [
-        //             Visibility(
-        //               visible: !isLoading,
-        //               child: Column(
-        //                 children: [
-        //                   profileMenu(() {}, _localizations, () {
-        //                     setState(() {});
-        //                   }, () {
-        //                     requestForSellerBottomSheet();
-        //                   }, isUserLogin, isPartner, partnerApproveRequired),
-        //                   widgetSpace(),
-        //                   loginLogoutButton(false)
-        //                 ],
-        //               ),
-        //             ),
-        //             Visibility(visible: isLoading, child: const Loader()),
-        //           ]),
-        //         ),
-        //         AppSizes.size60 + 100)
-
-        Scaffold(
-            appBar: AppBar(
-              title: Text(
-                  _localizations?.translate(AppStringConstant.profile) ?? ""),
-            ),
-            body: Stack(children: [
-              Visibility(
-                visible: !isLoading,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      HeaderProfileView(),
-                      profileMenu(() {}, _localizations, () {
-                        setState(() {});
-                      }, () {
-                        requestForSellerBottomSheet();
-                      }, isUserLogin, isPartner, partnerApproveRequired),
-                      widgetSpace(),
-                      loginLogoutButton(false)
-                    ],
-                  ),
+    return Scaffold(
+      backgroundColor: Colors.transparent, // Background will be handled by a container
+      body: Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFFf4f0fb), // Fallback
+          // We can use a Stack with Positioned containers with blur for the exact gradient effect,
+          // but a simple LinearGradient is often enough. For exact match, let's use a subtle gradient:
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFefe6ff), Color(0xFFe8fbf3)],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Custom AppBar
+              Container(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFc8abec), // Lavender
+                ),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Color(0xFF5232a8), // Violet 900
+                          size: 19,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _localizations?.translate(AppStringConstant.profile) ?? "Profile",
+                        style: const TextStyle(
+                          fontFamily: 'Baloo 2',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 19,
+                          color: Color(0xFF5232a8),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Visibility(visible: isLoading, child: const Loader()),
-            ]),
-          )
-        : Scaffold(
-            appBar: AppBar(
-              title: Text(
-                  _localizations?.translate(AppStringConstant.profile) ?? ""),
-            ),
-            body: Stack(children: [
-              Visibility(
-                visible: !isLoading,
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      profileMenu(() {}, _localizations, () {
-                        setState(() {});
-                      }, () {
-                        requestForSellerBottomSheet();
-                      }, isUserLogin, isPartner, partnerApproveRequired),
-                      widgetSpace(),
-                      loginLogoutButton(true)
-                    ],
-                  ),
+              // Body
+              Expanded(
+                child: Stack(
+                  children: [
+                    Visibility(
+                      visible: !isLoading,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            if (isUserLogin) HeaderProfileView(),
+                            profileMenu(() {}, _localizations, () {
+                              setState(() {});
+                            }, () {
+                              requestForSellerBottomSheet();
+                            }, isUserLogin, isPartner, partnerApproveRequired),
+                            widgetSpace(),
+                            if (isUserLogin)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                child: ElevatedButton.icon(
+                                  onPressed: () async {
+                                    var wkToken = await AppSharedPref.getWkToken();
+                                    await ApiClient().logoutUser(wkToken);
+                                    HiveService.getHive().deleteBox(HiveConstant.getAddress);
+                                    await AppSharedPref.logoutUser();
+                                    Navigator.of(context).pushNamedAndRemoveUntil(
+                                        AppRoute.bottomTabBAr, (route) => false);
+                                  },
+                                  icon: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFffe6ea),
+                                      borderRadius: BorderRadius.circular(11),
+                                    ),
+                                    child: const Icon(Icons.logout, size: 19, color: Color(0xFFe0405f)),
+                                  ),
+                                  label: const Text(
+                                    'Log out',
+                                    style: TextStyle(
+                                      fontFamily: 'Karla',
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14.5,
+                                      color: Color(0xFFe0405f),
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    foregroundColor: const Color(0xFFe0405f),
+                                    shadowColor: Colors.transparent,
+                                    alignment: Alignment.centerLeft,
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  ),
+                                ),
+                              ),
+                            if (!isUserLogin)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                child: ElevatedButton.icon(
+                                  onPressed: () async {
+                                    Navigator.of(context).pushNamed(AppRoute.login, arguments: getSignInSignUpPageArgument(false, false));
+                                  },
+                                  icon: const Icon(Icons.login, size: 17, color: Colors.white),
+                                  label: Text(
+                                    _localizations?.translate(AppStringConstant.signIn) ?? 'Sign in',
+                                    style: const TextStyle(
+                                      fontFamily: 'Karla',
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14.5,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF5232a8),
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                    minimumSize: const Size(double.infinity, 50),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Visibility(visible: isLoading, child: const Loader()),
+                  ],
                 ),
               ),
-              Visibility(visible: isLoading, child: const Loader()),
-            ]),
-          );
-  }
-
-  Widget loginLogoutButton(bool isLogin) {
-    return Padding(
-      padding: const EdgeInsets.all(AppSizes.size8),
-      child: ElevatedButton.icon(
-          onPressed: () async {
-            if (isLogin) {
-              Navigator.of(context).pushNamed(AppRoute.login,
-                  arguments: getSignInSignUpPageArgument(false, false));
-            } else {
-              var wkToken = await AppSharedPref.getWkToken();
-              await ApiClient().logoutUser(wkToken);
-              HiveService.getHive().deleteBox(HiveConstant.getAddress);
-              //await Hive.deleteFromDisk();
-              await AppSharedPref.logoutUser();
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  AppRoute.bottomTabBAr, (route) => false);
-            }
-          },
-          icon: isLogin
-              ? const Icon(
-                  // <-- Icon
-                  Icons.login,
-                  size: AppSizes.size24,
-                  // color: Theme.of(context).textTheme.titleLarge?.color,
-                )
-              : const Icon(
-                  // <-- Icon
-                  Icons.logout,
-                  size: AppSizes.size24,
-                  // color: Theme.of(context).textTheme.titleLarge?.color,
-                ),
-          label: Text(
-              isLogin
-                  ? _localizations?.translate(AppStringConstant.signIn) ?? ''
-                  : _localizations?.translate(AppStringConstant.signOut) ?? '',
-              style: TextStyle(fontSize: 17)),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            minimumSize: Size(AppSizes.deviceWidth, AppSizes.deviceHeight / 16),
-          )),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

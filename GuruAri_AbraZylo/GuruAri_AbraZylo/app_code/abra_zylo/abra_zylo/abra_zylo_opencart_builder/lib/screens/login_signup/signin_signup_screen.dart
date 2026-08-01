@@ -107,113 +107,196 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
   }
 
   Widget _buildUI() {
-    /*  Future.delayed(const Duration(milliseconds: 500), () {
-      if(widget.isFromCartForLogin){
-        _openBottomModalSheet(ModalType.signin);
-      }
-
-      if(widget.isFromCartForSignup){
-        _openBottomModalSheet(ModalType.createAccount);
-      }
-    });*/
-
     return Scaffold(
-      appBar: commonAppBar(
-          _localizations?.translate(
-                AppStringConstant.signInRegister,
-              ) ??
-              '',
-          context,
-          isLeadingEnable: false, onPressed: () {
-        Navigator.pop(context);
-      }),
+      backgroundColor: const Color(0xFFf4f0fb),
       body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: AppSizes.size8),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFefe6ff), Color(0xFFf4f0fb), Color(0xFFe8fbf3)],
+            stops: [0.0, 0.5, 1.0],
+          ),
+        ),
         child: SafeArea(
-            child: Column(
-          children: <Widget>[
-            Expanded(
-              child: Center(
-                child: Text(
-                  _localizations?.translate(AppConstant.isMarketPlace
-                          ? AppStringConstant.appNameMarketplace
-                          : AppStringConstant.appNameBuilder) ??
-                      "",
-                  style: Theme.of(context).textTheme.displayLarge,
+          child: Column(
+            children: <Widget>[
+              Container(
+                color: const Color(0xFFc8abec),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Row(
+                  children: [
+                    InkWell(
+                      onTap: () => Navigator.pop(context),
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Center(
+                          child: Icon(Icons.arrow_back_ios_new, size: 19, color: Color(0xFF5232a8)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      _localizations?.translate(AppStringConstant.signInRegister) ?? "Sign in or register",
+                      style: const TextStyle(
+                        fontFamily: 'Baloo 2',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 19,
+                        color: Color(0xFF5232a8),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: AppSizes.size12),
-              child: Text(
-                ((_localizations?.translate(AppStringConstant.signInRegister) ??
-                        "")
-                    .toUpperCase()),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall
-                    ?.copyWith(fontSize: 12),
-              ),
-            ),
-            if (kIsWeb)
-              GoogleSignInWebButton(onSuccess: _handleGoogleUser)
-            else if (!Platform.isIOS)
-              _GoogleSignInButton(onTap: _signInWithGoogle),
-            
-            const SizedBox(height: AppSizes.size16),
-            SizedBox(
-              height: 48,
-              child: SignInWithAppleButton(
-                onPressed: _signInWithApple,
-                style: SignInWithAppleButtonStyle.black,
-              ),
-            ),
-            SizedBox(
-              height: AppSizes.size16,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Expanded(child: Divider(thickness: 1)),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                      _localizations?.translate(AppStringConstant.or) ?? ''),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(26),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: MediaQuery.of(context).size.height - 180, // Approximate height minus appbar to center content if possible
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                _localizations?.translate(AppConstant.isMarketPlace
+                                    ? AppStringConstant.appNameMarketplace
+                                    : AppStringConstant.appNameBuilder) ?? "Abra Zylo",
+                                style: const TextStyle(
+                                  fontFamily: 'Baloo 2',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 32,
+                                  color: Color(0xFF2b2540),
+                                  letterSpacing: 0.1,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            (_localizations?.translate(AppStringConstant.signInRegister) ?? "SIGN IN OR REGISTER").toUpperCase(),
+                            style: const TextStyle(
+                              fontFamily: 'Karla',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 11.5,
+                              letterSpacing: 1.1,
+                              color: Color(0xFF8f889c),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          // Google Button
+                          if (kIsWeb)
+                            GoogleSignInWebButton(onSuccess: _handleGoogleUser)
+                          else if (!Platform.isIOS)
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: _signInWithGoogle,
+                                icon: const Icon(Icons.g_mobiledata, size: 24, color: Color(0xFF2b2540)), // Placeholder icon
+                                label: const FittedBox(child: Text("Sign in with Google", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 14))),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: const Color(0xFF2b2540),
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(13),
+                                    side: const BorderSide(color: Color(0xFFece7f3), width: 1.5),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (!kIsWeb && !Platform.isIOS)
+                            const SizedBox(height: 14),
+                          // Apple Button
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: _signInWithApple,
+                              icon: const Icon(Icons.apple, size: 21, color: Colors.white),
+                              label: const FittedBox(child: Text("Sign in with Apple", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 14))),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(13),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(_localizations?.translate(AppStringConstant.or) ?? "Or", 
+                            style: const TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF8f889c))
+                          ),
+                          const SizedBox(height: 16),
+                          // Email Button
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                signInSignUpBottomModalSheet(context, false, false, isFromProductDetail: widget.arguments["isFromProductDetailForLogin"] == true);
+                              },
+                              child: FittedBox(
+                                child: Text(_localizations?.translate(AppStringConstant.signInWithEmail) ?? "Sign in with email", 
+                                  style: const TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 14)
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF5232a8),
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(13),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          // Create Account Button
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                signInSignUpBottomModalSheet(context, true, false, isFromProductDetail: widget.arguments["isFromProductDetailForLogin"] == true);
+                              },
+                              child: FittedBox(
+                                child: Text(_localizations?.translate(AppStringConstant.createAnAccount) ?? "Create an account", 
+                                  style: const TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 14)
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: const Color(0xFF2b2540),
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(13),
+                                  side: const BorderSide(color: Color(0xFF2b2540), width: 1.5),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                Expanded(child: Divider(thickness: 1)),
-              ],
-            ),
-            SizedBox(
-              height: AppSizes.size16,
-            ),
-            commonButton(
-              context,
-              () {
-                signInSignUpBottomModalSheet(context, false, false, isFromProductDetail: widget.arguments["isFromProductDetailForLogin"] == true);
-              },
-              _localizations?.translate(AppStringConstant.signInWithEmail)
-                  //.toUpperCase()
-                  ??
-                  "",
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              textColor: Colors.white,
-            ),
-            SizedBox(height: AppSizes.size16),
-            commonButton(context, () {
-              signInSignUpBottomModalSheet(context, true, false, isFromProductDetail: widget.arguments["isFromProductDetailForLogin"] == true);
-            },
-                _localizations?.translate(AppStringConstant.createAnAccount)
-                    //  .toUpperCase()
-                    ??
-                    "",
-                backgroundColor: Colors.white,
-                textColor: Colors.black
-                // textColor:Colors.white
-                ),
-            SizedBox(height: AppSizes.size16),
-
-          ],
-        )),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

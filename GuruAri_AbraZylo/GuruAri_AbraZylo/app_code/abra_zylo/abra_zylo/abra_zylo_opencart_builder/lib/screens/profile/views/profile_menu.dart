@@ -4,8 +4,11 @@ import 'package:oc_demo/constants/arguments_map.dart';
 import 'package:oc_demo/constants/global_data.dart';
 import 'package:oc_demo/helper/app_shared_pref.dart';
 import 'package:oc_demo/models/homPage/home_screen_model.dart';
+import 'package:oc_demo/screens/profile/views/currencies_selection_bottomsheet.dart';
 import 'package:oc_demo/screens/profile/views/language_selection_bottomsheet.dart';
+import 'package:oc_demo/screens/profile/views/profile_detail_screen.dart';
 import 'package:oc_demo/screens/profile/views/profile_menu_items.dart';
+
 
 import '../../../common_widgets/dialog_helper.dart';
 import '../../../constants/app_constants.dart';
@@ -52,11 +55,11 @@ Widget profileMenu(
         title: _localizations?.translate(AppStringConstant.myWishlist) ?? '',
         icon: AppImages.wishlistsIcon));
 
-    menuItems.add(ProfileMenuItems(
-        id: 6,
-        title: _localizations?.translate(AppStringConstant.loginUSingQr) ?? '',
-        icon: AppImages.wishlistsIcon,
-        iconData: Icons.qr_code));
+    // menuItems.add(ProfileMenuItems(
+    //     id: 6,
+    //     title: _localizations?.translate(AppStringConstant.loginUSingQr) ?? '',
+    //     icon: AppImages.wishlistsIcon,
+    //     iconData: Icons.qr_code));
     menuItems.add(ProfileMenuItems(
         id: 7,
         title: _localizations?.translate(
@@ -190,15 +193,8 @@ Widget profileMenu(
       physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (BuildContext context, i) {
         var menuItem = menuItems[i];
-        return Container(
-          decoration: const BoxDecoration(
-            // color: Colors.amber,
-            border:
-                Border(bottom: BorderSide(color: AppColors.gray, width: 0.1)),
-          ),
-          child: profileTiles(context, logoutFunction, menuItem, _localizations,
-              setState, showSellerRequestBottomSheet, isUserLogin),
-        );
+        return profileTiles(context, logoutFunction, menuItem, _localizations,
+            setState, showSellerRequestBottomSheet, isUserLogin);
       });
 }
 
@@ -211,51 +207,59 @@ Widget dropdownProfileTile(
     VoidCallback showSellerRequestBottomSheet,
     bool? isUserLogin,
     List<ProfileMenuItems> children) {
-  return Theme(
-    data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-    child: ExpansionTile(
-      iconColor: Theme.of(context).iconTheme.color,
-      tilePadding: EdgeInsets.zero,
-      childrenPadding: EdgeInsets.zero,
-      title: Row(
-        children: [
-          if (data.id == 14) // Add an icon for title ID 14
-            Padding(
-                padding: EdgeInsets.symmetric(horizontal: AppSizes.size16),
-                child: CircleAvatar(
-                  backgroundColor: AppColors.lightGray.withAlpha(50),
-                  child: Icon(
-                    Icons.settings,
-                    size: AppSizes.size22,
-                    // color: Colors.black
-                  ),
-                )),
-          if (data.id == 15) // Add an icon for title ID 15
-            Padding(
-                padding: EdgeInsets.symmetric(horizontal: AppSizes.size16),
-                child: CircleAvatar(
-                  backgroundColor: AppColors.lightGray.withAlpha(50),
-                  child: Icon(
-                    Icons.info,
-                    size: AppSizes.size22,
-                    // color: Colors.black
-                  ),
-                )),
-          Text(data.title, style: Theme.of(context).textTheme.titleLarge),
-        ],
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    child: Theme(
+      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        iconColor: const Color(0xFF8f889c),
+        collapsedIconColor: const Color(0xFF8f889c),
+        tilePadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        childrenPadding: EdgeInsets.zero,
+        title: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: const Color(0xFFefebf8),
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Center(
+                child: Icon(
+                  data.id == 14 ? Icons.settings : Icons.info,
+                  size: 19,
+                  color: const Color(0xFF5232a8),
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                data.title,
+                style: const TextStyle(
+                  fontFamily: 'Karla',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14.5,
+                  color: Color(0xFF2b2540),
+                ),
+              ),
+            ),
+          ],
+        ),
+        children: children
+            .map((e) => expansionChildren(
+                context,
+                e.title,
+                e.id,
+                logoutFunction,
+                _localizations,
+                setState,
+                showSellerRequestBottomSheet,
+                isUserLogin,
+                e.cmsData))
+            .toList(),
       ),
-      children: children
-          .map((e) => expansionChildren(
-              context,
-              e.title,
-              e.id,
-              logoutFunction,
-              _localizations,
-              setState,
-              showSellerRequestBottomSheet,
-              isUserLogin,
-              e.cmsData))
-          .toList(),
     ),
   );
 }
@@ -311,22 +315,22 @@ List<ProfileMenuItems> getSettingsChildren(AppLocalizations? _localizations) {
         title: _localizations?.translate(AppStringConstant.language) ?? '',
         icon: "",
         iconData: Icons.language),
-    ProfileMenuItems(
-        id: 18,
-        title: _localizations?.translate(AppStringConstant.currency) ?? '',
-        icon: "",
-        iconData: Icons.money)
+    // ProfileMenuItems(
+    //     id: 18,
+    //     title: _localizations?.translate(AppStringConstant.currency) ?? '',
+    //     icon: "",
+    //     iconData: Icons.money)
   ];
 }
 
 List<ProfileMenuItems> getAboutChildren() {
-  int lastIndex = 18;
   var cmsList = <ProfileMenuItems>[];
-  for (FooterMenu cms in GlobalData.cmsPageData ?? []) {
-    lastIndex++;
-    cmsList.add(ProfileMenuItems(
-        id: lastIndex, title: cms.title ?? '', icon: "", cmsData: cms));
-  }
+  cmsList.addAll([
+    ProfileMenuItems(id: 100, title: 'About Us', icon: ""),
+    ProfileMenuItems(id: 101, title: 'Delivery Information', icon: ""),
+    ProfileMenuItems(id: 102, title: 'Privacy Policy', icon: ""),
+    ProfileMenuItems(id: 103, title: 'Terms & Conditions', icon: ""),
+  ]);
   return cmsList;
 }
 
@@ -396,7 +400,7 @@ Widget profileTiles(
     bool? isUserLogin,
     {double iconWidth = AppSizes.size20,
     double? iconHeight = AppSizes.size20}) {
-  return item.id == 14 || item.id == 15 // Check if the item is a dropdown menu
+  Widget childWidget = item.id == 14 || item.id == 15 // Check if the item is a dropdown menu
       ? dropdownProfileTile(
           context,
           item,
@@ -408,31 +412,102 @@ Widget profileTiles(
           item.id == 14
               ? getSettingsChildren(_localizations)
               : getAboutChildren())
-      : ListTile(
-          onTap: () {
-            callBack(context, item.id, logoutFunction, _localizations, setState,
-                showSellerRequestBottomSheet, isUserLogin);
-          },
-          leading: item.iconData != null
-              ? CircleAvatar(
-                  backgroundColor: AppColors.lightGray.withAlpha(50),
-                  child: Icon(item.iconData!,
-                      size: iconHeight,
-                      color: Theme.of(context).iconTheme.color),
-                )
-              : CircleAvatar(
-                  backgroundColor: AppColors.lightGray.withAlpha(50),
-                  //backgroundColor: Colors.red,
-                  child: Image.asset(
-                    item.icon,
-                    height: iconHeight,
-                    width: iconWidth,
-                    color: Theme.of(context).textTheme.titleLarge?.color,
+      : Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          child: InkWell(
+            onTap: () {
+              callBack(context, item.id, logoutFunction, _localizations, setState,
+                  showSellerRequestBottomSheet, isUserLogin);
+            },
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
+              child: Row(
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFefebf8),
+                      borderRadius: BorderRadius.circular(11),
+                    ),
+                    child: Center(
+                      child: item.iconData != null
+                          ? Icon(item.iconData!,
+                              size: 19,
+                              color: const Color(0xFF5232a8))
+                          : Image.asset(
+                              item.icon,
+                              height: 19,
+                              width: 19,
+                              color: const Color(0xFF5232a8),
+                            ),
+                    ),
                   ),
-                ),
-          title:
-              Text(item.title, style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      item.title,
+                      style: const TextStyle(
+                        fontFamily: 'Karla',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14.5,
+                        color: Color(0xFF2b2540),
+                      ),
+                    ),
+                  ),
+                  const Icon(Icons.arrow_forward_ios, size: 14, color: Color(0xFF8f889c)),
+                ],
+              ),
+            ),
+          ),
         );
+
+  if (isUserLogin == true) {
+    if (item.id == 1) { // Dashboard is the first item in the Account section
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(22, 14, 12, 6),
+            child: Text(
+              "ACCOUNT",
+              style: TextStyle(
+                fontFamily: 'Karla',
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.1,
+                color: Color(0xFF8f889c),
+              ),
+            ),
+          ),
+          childWidget,
+        ],
+      );
+    } else if (item.id == 4) { // All Orders is the first item in the Orders section
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.fromLTRB(22, 14, 12, 6),
+            child: Text(
+              "ORDERS",
+              style: TextStyle(
+                fontFamily: 'Karla',
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.1,
+                color: Color(0xFF8f889c),
+              ),
+            ),
+          ),
+          childWidget,
+        ],
+      );
+    }
+  }
+
+  return childWidget;
 }
 
 void callBack(
@@ -556,6 +631,82 @@ void callBack(
         Navigator.of(context)
             .pushNamed(AppRoute.productReview, arguments: false);
         break;
+      case 100:
+        Navigator.push(context, MaterialPageRoute(builder: (_) => 
+          ProfileDetailScreen(
+            title: 'About Us',
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text("Who we are", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
+                SizedBox(height: 8),
+                Text("Abra Zylo started as a two-person operation packing orders on a kitchen table, and grew into a store that ships across the country without losing that same attention to detail. We pick every product we sell, not just what sells fastest.", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
+                SizedBox(height: 20),
+                Text("What we care about", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
+                SizedBox(height: 8),
+                Text("• Honest pricing — the price you see on the product page is the price you pay.\n• Quality checked before it leaves our warehouse, not after you complain.\n• Real people answering support messages, not a bot loop.", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
+              ]
+            )
+          )
+        ));
+        break;
+      case 101:
+        Navigator.push(context, MaterialPageRoute(builder: (_) => 
+          ProfileDetailScreen(
+            title: 'Delivery Information',
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text("Delivery times", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
+                SizedBox(height: 8),
+                Text("• Metro cities: 1–3 business days\n• Other cities & towns: 3–6 business days\n• Remote / rural pin codes: 5–8 business days", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
+                SizedBox(height: 20),
+                Text("Shipping charges", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
+                SizedBox(height: 8),
+                Text("Orders above ₹499 ship free. Orders below that carry a flat ₹49 delivery fee, shown at checkout before you pay.", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
+              ]
+            )
+          )
+        ));
+        break;
+      case 102:
+        Navigator.push(context, MaterialPageRoute(builder: (_) => 
+          ProfileDetailScreen(
+            title: 'Privacy Policy',
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text("What we collect", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
+                SizedBox(height: 8),
+                Text("We collect the details you give us directly — name, address, phone, and payment information — plus basic usage data like pages viewed, to keep the app working smoothly and to personalize recommendations.", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
+                SizedBox(height: 20),
+                Text("How we use it", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
+                SizedBox(height: 8),
+                Text("• Processing and delivering your orders\n• Sending order updates and, if you opt in, offers\n• Improving search and product recommendations", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
+              ]
+            )
+          )
+        ));
+        break;
+      case 103:
+        Navigator.push(context, MaterialPageRoute(builder: (_) => 
+          ProfileDetailScreen(
+            title: 'Terms & Conditions',
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text("Using this app", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
+                SizedBox(height: 8),
+                Text("By creating an account or placing an order, you agree to use Abra Zylo for personal, lawful shopping only — not for resale or bulk commercial purchase without our written consent.", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
+                SizedBox(height: 20),
+                Text("Returns & refunds", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
+                SizedBox(height: 8),
+                Text("Most items can be returned within 7 days of delivery in original condition. Refunds are issued to your original payment method within 5–7 business days of us receiving the return.", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
+              ]
+            )
+          )
+        ));
+        break;
       /* case 19:
         await AppSharedPref.getLoginUserData().then((value) {
           var email = value?.email;
@@ -599,21 +750,31 @@ Widget expansionChildren(
     VoidCallback showSellerRequestBottomSheet,
     bool? isUserLogin,
     FooterMenu? cmsData) {
-  return ListTile(
-    dense: true,
-    horizontalTitleGap: 0,
-    contentPadding: EdgeInsets.zero,
+  return InkWell(
     onTap: () {
       callBack(context, id, logoutFunction, _localizations, setState,
           showSellerRequestBottomSheet, isUserLogin,
           cmsData: cmsData);
     },
-
-    title: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 72),
-      child: Text(_localizations?.translate(title) ?? '',
-          style: Theme.of(context).textTheme.bodyMedium),
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 11),
+      child: Row(
+        children: [
+          const SizedBox(width: 38), // Indent to align with text above
+          Expanded(
+            child: Text(
+              _localizations?.translate(title) ?? title,
+              style: const TextStyle(
+                fontFamily: 'Karla',
+                fontWeight: FontWeight.w600,
+                fontSize: 13.5,
+                color: Color(0xFF8f889c),
+              ),
+            ),
+          ),
+          const Icon(Icons.arrow_forward_ios, size: 12, color: Color(0xFF8f889c)),
+        ],
+      ),
     ),
-    // leading: Icon(Icons.home),
   );
 }

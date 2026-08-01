@@ -46,14 +46,14 @@ void signInSignUpBottomModalSheet(
 
 void reviewBottomModalSheet(BuildContext context, String productName,
     String thumbNail, String productId) {
-  showMyModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      builder: (context) => BlocProvider(
-            create: (context) =>
-                AddReviewScreenBloc(repository: AddReviewRepositoryImp()),
-            child: AddReviewScreen(productName, thumbNail, productId),
-          ));
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => BlocProvider(
+                create: (context) =>
+                    AddReviewScreenBloc(repository: AddReviewRepositoryImp()),
+                child: AddReviewScreen(productName, thumbNail, productId),
+              )));
 }
 
 /*

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
 
 class NominatimHelper {
   static const String _baseUrl = 'https://nominatim.openstreetmap.org';
@@ -12,7 +13,7 @@ class NominatimHelper {
       final url = Uri.parse('$_baseUrl/reverse?lat=$lat&lon=$lon&format=json&addressdetails=1');
       final response = await http.get(
         url,
-        headers: {'User-Agent': 'com.abra.zylo.android'},
+        headers: kIsWeb ? {} : {'User-Agent': 'com.abra.zylo.android'},
       );
 
       if (response.statusCode == 200) {
@@ -38,7 +39,7 @@ class NominatimHelper {
       final url = Uri.parse('$_baseUrl/search?q=${Uri.encodeComponent(query)}&format=json&addressdetails=1&limit=5');
       final response = await http.get(
         url,
-        headers: {'User-Agent': 'com.abra.zylo.android'},
+        headers: kIsWeb ? {} : {'User-Agent': 'com.abra.zylo.android'},
       );
 
       if (response.statusCode == 200) {

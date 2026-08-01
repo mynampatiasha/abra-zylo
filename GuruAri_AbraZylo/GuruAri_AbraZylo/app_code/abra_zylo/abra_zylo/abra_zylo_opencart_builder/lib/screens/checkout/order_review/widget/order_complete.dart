@@ -321,32 +321,32 @@ class _OrderCompleteState extends State<OrderComplete> with TickerProviderStateM
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 12),
-                              SizedBox(
-                                width: double.infinity,
-                                height: 50,
-                                child: OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                    side: const BorderSide(color: Color(0xFFe7e2f2), width: 1.5),
-                                    backgroundColor: Colors.transparent,
-                                  ),
-                                  onPressed: () {
-                                     Navigator.of(context).pushAndRemoveUntil(
-                                      MaterialPageRoute(builder: (context) => BottomTabbarWidget()),
-                                      (route) => false,
-                                    );
-                                  },
-                                  child: Text(
-                                    "View order history",
-                                    style: TextStyle(
-                                      color: inkSoft,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              // const SizedBox(height: 12),
+                              // SizedBox(
+                              //   width: double.infinity,
+                              //   height: 50,
+                              //   child: OutlinedButton(
+                              //     style: OutlinedButton.styleFrom(
+                              //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                              //       side: const BorderSide(color: Color(0xFFe7e2f2), width: 1.5),
+                              //       backgroundColor: Colors.transparent,
+                              //     ),
+                              //     onPressed: () {
+                              //        Navigator.of(context).pushAndRemoveUntil(
+                              //         MaterialPageRoute(builder: (context) => BottomTabbarWidget()),
+                              //         (route) => false,
+                              //       );
+                              //     },
+                              //     child: Text(
+                              //       "View order history",
+                              //       style: TextStyle(
+                              //         color: inkSoft,
+                              //         fontWeight: FontWeight.w700,
+                              //         fontSize: 15,
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),

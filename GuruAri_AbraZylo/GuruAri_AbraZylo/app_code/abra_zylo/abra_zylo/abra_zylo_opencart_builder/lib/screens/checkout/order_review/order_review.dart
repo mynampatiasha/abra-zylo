@@ -105,14 +105,15 @@ class _OrderReviewState extends State<OrderReview> {
             _loading = false;
             _paymentMethods = currentState.model;
 
-            if ((_paymentMethods?.paymentMethods?.paymentMethodList?.length ?? 0) == 0) {
-              _paymentMethods ??= CheckoutPaymentMethodModel();
-              _paymentMethods?.paymentMethods ??= PaymentMethods();
+            if (_paymentMethods?.paymentMethods?.paymentMethodList == null ||
+                _paymentMethods!.paymentMethods!.paymentMethodList!.isEmpty) {
               _paymentMethods?.paymentMethods?.paymentMethodList = [
-                PaymentMethod(code: "cod", title: "Cash On Delivery", terms: "", sortOrder: "1"),
-                PaymentMethod(code: "free_checkout", title: "Free Checkout", terms: "", sortOrder: "2"),
+                PaymentMethod(
+                    code: 'cod',
+                    title: 'Cash On Delivery',
+                    terms: '',
+                    sortOrder: '1')
               ];
-              _paymentMethods?.paymentMethods?.errorWarning = "";
             }
 
             if ((_paymentMethods?.paymentMethods?.paymentMethodList?.length ??
@@ -134,18 +135,18 @@ class _OrderReviewState extends State<OrderReview> {
               if (_paymentMethods?.paymentMethods?.errorWarning?.isNotEmpty !=
                   true) {
                 WidgetsBinding.instance?.addPostFrameCallback((_) {
-                  AlertMessage.showError(
-                      "No payment or shipping methods are available for the selected address. Please go back and choose a different address.",
-                      context);
+                  // AlertMessage.showError(
+                  //     "No payment or shipping methods are available for the selected address. Please go back and choose a different address.",
+                  //     context);
                 });
               }
             }
             if (_paymentMethods?.paymentMethods?.errorWarning?.isNotEmpty ==
                 true) {
               WidgetsBinding.instance?.addPostFrameCallback((_) {
-                AlertMessage.showError(
-                    _paymentMethods?.paymentMethods?.errorWarning ?? '',
-                    context);
+                // AlertMessage.showError(
+                //     _paymentMethods?.paymentMethods?.errorWarning ?? '',
+                //     context);
               });
             }
           } else if (currentState is OrderPlaceState) {
@@ -185,7 +186,7 @@ class _OrderReviewState extends State<OrderReview> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
-            "Unable to load order review.\nPlease go back and ensure a shipping method is selected.",
+            "Unable to load order review.\nError: ${_paymentMethods?.paymentMethods?.errorWarning ?? 'Backend rejected the order or payment method'}",
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.red, fontSize: 16),
           ),

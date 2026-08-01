@@ -16,6 +16,7 @@ import 'package:oc_demo/models/accountItemsListModel/account_items_list_model.da
 import 'package:oc_demo/network_manager/apis.dart';
 import '../../../common_widgets/image_view.dart';
 import '../../../constants/app_constants.dart';
+import '../../../constants/app_routes.dart';
 import '../../../helper/app_localizations.dart';
 import '../../../helper/app_shared_pref.dart';
 import '../../../helper/generic_methods.dart';
@@ -69,54 +70,103 @@ class _HeaderProfileViewState extends State<HeaderProfileView> {
   @override
   Widget build(BuildContext context) {
     getDetails();
-    return SizedBox(
-      width: AppSizes.deviceWidth,
-      child: Card(
-          elevation: 0,
-          color: Theme.of(context).cardColor,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSizes.size24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(
-                  height: 80,
-                  width: 80,
-                  child: ClipOval(
+    String initials = name.isNotEmpty ? name[0].toUpperCase() : "U";
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 30, 20, 26),
+      decoration: const BoxDecoration(
+        color: Colors.transparent, // Background handles the gradient
+        border: Border(bottom: BorderSide(color: Color(0xFFece7f3), width: 1)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            width: 84,
+            height: 84,
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFFc8abec), Color(0xFF5232a8)],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF5232a8).withOpacity(0.45),
+                  blurRadius: 22,
+                  spreadRadius: -10,
+                  offset: const Offset(0, 12),
+                )
+              ],
+            ),
+            alignment: Alignment.center,
+            child: (profileImage != null && profileImage!.isNotEmpty)
+                ? ClipOval(
                     child: ImageView(
                       url: profileImage,
                       fit: BoxFit.cover,
+                      width: 84,
+                      height: 84,
+                    ),
+                  )
+                : Text(
+                    initials,
+                    style: const TextStyle(
+                      fontFamily: 'Baloo 2',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 30,
+                      color: Colors.white,
                     ),
                   ),
-                ),
-                const SizedBox(height: AppSizes.size16),
-                Text(
-                  name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall
-                      ?.copyWith(
-                        fontSize: AppSizes.size20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                const SizedBox(
-                  height: AppSizes.size4,
-                ),
-                Text(
-                  email,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(
-                        fontSize: AppSizes.size14,
-                        color: Colors.grey,
-                      ),
-                ),
-              ],
+          ),
+          Text(
+            name.isNotEmpty ? name : "User",
+            style: const TextStyle(
+              fontFamily: 'Baloo 2',
+              fontWeight: FontWeight.w700,
+              fontSize: 19,
+              color: Color(0xFF5232a8),
             ),
-          )),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            email.isNotEmpty ? email : "user@email.com",
+            style: const TextStyle(
+              fontFamily: 'Karla',
+              fontSize: 13.5,
+              color: Color(0xFF8f889c),
+            ),
+          ),
+          const SizedBox(height: 18),
+          OutlinedButton.icon(
+            onPressed: () {
+              Navigator.of(context).pushNamed(AppRoute.accountInfo);
+            },
+            icon: const Icon(Icons.edit, size: 14),
+            label: const Text(
+              "Edit profile",
+              style: TextStyle(
+                fontFamily: 'Karla',
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFF5232a8),
+              backgroundColor: const Color(0xFFefebf8),
+              side: const BorderSide(color: Color(0xFFefebf8), width: 1.5),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(11),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

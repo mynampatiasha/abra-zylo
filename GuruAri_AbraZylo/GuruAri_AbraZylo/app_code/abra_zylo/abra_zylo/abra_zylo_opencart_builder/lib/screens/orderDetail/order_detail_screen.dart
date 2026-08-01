@@ -16,6 +16,9 @@ import 'package:oc_demo/screens/orderDetail/views/order_id_date_view.dart';
 import 'package:oc_demo/screens/orderDetail/views/order_item_card.dart';
 import 'package:oc_demo/screens/orderDetail/views/order_price_details.dart';
 import 'package:oc_demo/screens/orderDetail/views/order_shipping_payment_info.dart';
+import 'package:oc_demo/screens/addReview/add_review_screen.dart';
+import 'package:oc_demo/screens/addReview/bloc/add_review_screen_bloc.dart';
+import 'package:oc_demo/screens/addReview/bloc/add_review_screen_repository.dart';
 
 class OrderDetails extends StatefulWidget {
   String orderId;
@@ -103,6 +106,8 @@ class _OrderDetailState extends State<OrderDetails> {
                         children: [
                           orderPlaceDateContainer(
                               context, _orderModel, _localizations),
+                          if (['PENDING', 'PROCESSING'].contains((_orderModel?.histories?.isNotEmpty == true ? _orderModel!.histories!.last.status : '')?.toUpperCase()))
+                            trackingStrip((_orderModel?.histories?.isNotEmpty == true ? _orderModel!.histories!.last.status : '') ?? ''),
                           const SizedBox(
                             height: AppSizes.normalPadding,
                           ),
@@ -178,7 +183,6 @@ class _OrderDetailState extends State<OrderDetails> {
                             _orderModel?.products?[index].orderProductId ??
                                 ""));
                         _orderBloc?.emit(OrderDetailInitial());
-                        //callback(item?.orderId ?? '');
                       },
                       titleRight: _localizations
                           ?.translate(AppStringConstant.addToCart),
@@ -187,6 +191,40 @@ class _OrderDetailState extends State<OrderDetails> {
                       iconRight: Icons.add_shopping_cart,
                       iconLeft: Icons.assignment_return_outlined,
                     ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BlocProvider(
+                                  create: (context) => AddReviewScreenBloc(repository: AddReviewRepositoryImp()),
+                                  child: AddReviewScreen(
+                                    _orderModel?.products?[index].name ?? '',
+                                    '',
+                                    _orderModel?.products?[index].productId ?? ""
+                                  ),
+                                )
+                              )
+                            );
+                          },
+                          icon: const Icon(Icons.star_border, size: 18),
+                          label: const Text("Write a Review", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFf4f0fb),
+                            foregroundColor: const Color(0xFF5232a8),
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     const Divider(
                       thickness: 1,
                       height: 1,
@@ -196,7 +234,50 @@ class _OrderDetailState extends State<OrderDetails> {
               }),
         ));
   }
+  
+  Widget trackingStrip(String status) {
+    bool isProcessing = status.toUpperCase() == 'PROCESSING';
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("Shipment Progress", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 15, color: Color(0xFF2b2540))),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _buildTrackStep("Pending", true),
+              Expanded(child: Container(height: 2, color: isProcessing ? const Color(0xFF5232a8) : const Color(0xFFece7f3))),
+              _buildTrackStep("Processing", isProcessing),
+              Expanded(child: Container(height: 2, color: const Color(0xFFece7f3))),
+              _buildTrackStep("Shipped", false),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTrackStep(String label, bool active) {
+    return Column(
+      children: [
+        Container(
+          width: 20, height: 20,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: active ? const Color(0xFF5232a8) : Colors.white,
+            border: Border.all(color: active ? const Color(0xFF5232a8) : const Color(0xFFece7f3), width: 2)
+          ),
+          child: active ? const Icon(Icons.check, size: 12, color: Colors.white) : null,
+        ),
+        const SizedBox(height: 4),
+        Text(label, style: TextStyle(fontFamily: 'Karla', fontSize: 11, color: active ? const Color(0xFF5232a8) : const Color(0xFF8f889c))),
+      ],
+    );
+  }
 }
+
 
 Widget actionContainer(
     BuildContext context, VoidCallback leftCallback, VoidCallback rightCallback,
