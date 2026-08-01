@@ -42,51 +42,135 @@ class OrderReviewView extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        if (isGuestCheckout == false /*paymentMethod?.account!="guest"*/) ...[
-          TitleSeparatedCard(
-              (localizations?.translate(AppStringConstant.shippingInfo) ?? ""),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  if (isShippingRequired ?? false)
-                    SizedBox(
-                      width: AppSizes.deviceWidth,
-                      child: TitleSeparatedCard(
-                        (localizations?.translate(
-                                AppStringConstant.shippingAddress) ??
-                            ""),
-                        Padding(
-                            padding: const EdgeInsets.only(
-                                left: AppSizes.size10, right: AppSizes.size10),
-                            child: _getFormattedShippingAddress(
-                                orderReviewModel?.continu?.orderDetails ??
-                                    OrderDetails())),
-                        showDivider: false,
-                        asCard: false,
+                if (isGuestCheckout == false && (isShippingRequired ?? false)) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  localizations?.translate(AppStringConstant.shippingInfo) ?? "Shipping Info",
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Shipping Address Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.grey.shade200),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.location_on_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            localizations?.translate(AppStringConstant.shippingAddress) ?? "Shipping Address",
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-
-                  if (isShippingRequired ?? false)
-                    SizedBox(
-                      width: AppSizes.deviceWidth,
-                      child: TitleSeparatedCard(
-                        (localizations
-                                ?.translate(AppStringConstant.shippingMethod) ??
-                            ""),
-                        Padding(
-                          padding: const EdgeInsets.all(AppSizes.size8),
-                          child: Text(orderReviewModel
-                                  ?.continu?.orderDetails?.shippingMethod ??
-                              ""),
+                      const SizedBox(height: 12),
+                      if (orderReviewModel?.continu?.orderDetails == null)
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 16, height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text("Loading address...", style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
+                          ],
+                        )
+                      else
+                        _getFormattedShippingAddress(orderReviewModel!.continu!.orderDetails!),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Shipping Method Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.grey.shade200),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.local_shipping_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            localizations?.translate(AppStringConstant.shippingMethod) ?? "Shipping Method",
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      if (orderReviewModel?.continu?.orderDetails?.shippingMethod == null ||
+                          (orderReviewModel?.continu?.orderDetails?.shippingMethod?.isEmpty ?? true))
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 16, height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text("Loading method...", style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
+                          ],
+                        )
+                      else
+                        Text(
+                          orderReviewModel!.continu!.orderDetails!.shippingMethod ?? "",
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey.shade700,
+                            height: 1.5,
+                          ),
                         ),
-                        showDivider: false,
-                        asCard: false,
-                      ),
-                    ),
-                ],
-              )),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
         ],
+
 
         // payments methods
         TitleSeparatedCard(
@@ -156,44 +240,132 @@ class OrderReviewView extends StatelessWidget {
         ),
 
         // price details
-        TitleSeparatedCard(
-            (localizations?.translate(AppStringConstant.priceDetails) ?? ""),
-            ListView.separated(
-                shrinkWrap: true,
-                physics: const ClampingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return _priceItem(
-                      orderReviewModel?.continu?.totals?[index].title ?? "",
-                      orderReviewModel?.continu?.totals?[index].text
-                              .toString() ??
-                          "",
-                      context);
-                },
-                separatorBuilder: (BuildContext context, int index) =>
-                    widgetSpace(1, AppSizes.size8),
-                itemCount: orderReviewModel?.continu?.totals?.length ?? 0)),
+        if (orderReviewModel?.continu?.totals != null && orderReviewModel!.continu!.totals!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  )
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    localizations?.translate(AppStringConstant.priceDetails) ?? "Price Summary",
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Divider(color: Colors.grey.shade200),
+                  const SizedBox(height: 12),
+                  ...List.generate(orderReviewModel!.continu!.totals!.length, (index) {
+                    final item = orderReviewModel!.continu!.totals![index];
+                    final isTotal = item.title?.toLowerCase() == 'total';
+                    if (isTotal) return const SizedBox(); // Skip total for now
+                    
+                    bool isFree = item.text?.toLowerCase() == 'free' || item.text == '₹0.00' || item.text == '0' || item.text == '₹0';
+                    String title = item.title ?? '';
+                    if (title.toLowerCase() == 'sub-total') title = 'Total MRP';
+                    
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade700,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            isFree ? 'FREE' : (item.text ?? ''),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: isFree ? FontWeight.w700 : FontWeight.w600,
+                              color: isFree ? Colors.green : (title.toLowerCase().contains('discount') ? Colors.green : Colors.black87),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Divider(color: Colors.grey.shade300, height: 1),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Final Payable Amount:",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      Text(
+                        orderReviewModel!.continu!.totals!.lastWhere((element) => element.title?.toLowerCase() == 'total', orElse: () => orderReviewModel!.continu!.totals!.last).text ?? '',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Builder(
+                    builder: (context) {
+                      final discountItem = orderReviewModel!.continu!.totals!.where((element) => 
+                        element.title?.toLowerCase().contains('discount') == true ||
+                        element.title?.toLowerCase().contains('coupon') == true
+                      ).firstOrNull;
+                      
+                      if (discountItem != null && discountItem.text != null && discountItem.text!.isNotEmpty) {
+                        return Container(
+                          margin: const EdgeInsets.only(top: 16),
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.green.shade100),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "You will save ${discountItem.text?.replaceAll('-', '')} on this order",
+                              style: TextStyle(
+                                color: Colors.green.shade700,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return const SizedBox();
+                    }
+                  )
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }
-
-  Widget _priceItem(String title, String price, BuildContext context) =>
-      Padding(
-        padding: const EdgeInsets.all(AppSizes.size4),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(title,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontSize: AppSizes.size12, fontWeight: FontWeight.normal)),
-            Text(
-              price,
-              style: const TextStyle(
-                fontWeight: FontWeight.normal,
-              ),
-            )
-          ],
-        ),
-      );
 
   /*
 *

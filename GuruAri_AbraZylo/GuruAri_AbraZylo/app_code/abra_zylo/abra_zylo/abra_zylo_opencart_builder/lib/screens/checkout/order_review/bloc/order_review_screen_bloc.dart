@@ -16,7 +16,9 @@ class OrderReviewScreenBloc
     OrderReviewScreenEvent event,
     Emitter<OrderReviewScreenState> emit,
   ) async {
-    if (event is PaymentMethodEvent) {
+    if (event is LoadingEvent) {
+      emit(OrderReviewLoadingState());
+    } else if (event is PaymentMethodEvent) {
       try {
         var model = await repository?.getPaymentMethods(event.comment);
         if (model != null) {
@@ -27,8 +29,7 @@ class OrderReviewScreenBloc
       } catch (error) {
         emit(OrderReviewScreenError(error.toString()));
       }
-    }
-    if (event is PaymentMethodEventWhileShippingNotRequired) {
+    } else if (event is PaymentMethodEventWhileShippingNotRequired) {
       try {
         var model = await repository?.getPaymentMethodWhenShippingNotRequired();
         if (model != null) {
@@ -51,8 +52,6 @@ class OrderReviewScreenBloc
       } catch (error) {
         emit(OrderReviewScreenError(error.toString()));
       }
-    } else if (event is LoadingEvent) {
-      emit(OrderReviewLoadingState());
     } else if (event is OrderPlaceEvent) {
       try {
         var model = await repository?.placeOrder(event.state, event.paymentId);

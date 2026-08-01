@@ -174,6 +174,20 @@ class CheckoutShippingScreenState extends State<CheckoutShippingScreen> {
                       return;
                     }
 
+                    bool _reqShip = isGuestCheckout == true
+                        ? (checkoutShippingMethodModel?.shippingRequired ?? false)
+                        : (checkoutBillingAddressModel?.shippingRequired ?? true);
+                    
+                    if (_reqShip) {
+                      String _selectedShip = await AppSharedPref.getSelectedShippingId();
+                      if (_selectedShip.isEmpty) {
+                        WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+                          AlertMessage.showWarning("Please select a shipping method", context);
+                        });
+                        return;
+                      }
+                    }
+
                     Navigator.of(context).pushNamed(AppRoute.orderReview,
                         arguments: orderReviewScreenMap(
                             shippingComment ?? "",

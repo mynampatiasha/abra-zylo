@@ -4,12 +4,22 @@ build/
 .kotlin/
 *.salive
 android/app/build/
-ios/build/node_modules/
-build/
-.env
-.kotlin/
-*.salive
-android/app/build/
 ios/build/
 login.php
 customer.php
+
+# Deployment zip files
+*.zip
+
+# Server-side PHP files
+admin/
+catalog/
+image/
+*.php
+*.twig
+*.sql
+*.py
+
+# Temp directories
+temp_*/
+.well-known/

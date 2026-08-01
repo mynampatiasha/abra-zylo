@@ -27,7 +27,7 @@ import '../screens/login_signup/view/signin_screen.dart';
 *
 * */
 void signInSignUpBottomModalSheet(
-    BuildContext context, bool isSignUp, bool? isComingFromCart) {
+    BuildContext context, bool isSignUp, bool? isComingFromCart, {bool isFromProductDetail = false}) {
   showMyModalBottomSheet(
     isScrollControlled: true,
     context: context,
@@ -35,8 +35,8 @@ void signInSignUpBottomModalSheet(
         create: (context) => SigninSignupScreenBloc(
             repository: SigninSignupScreenRepositoryImp()),
         child: (isSignUp)
-            ? CreateAnAccount(isComingFromCart ?? false)
-            : SignInScreen(isComingFromCart ?? false)),
+            ? CreateAnAccount(isComingFromCart ?? false, isFromProductDetail: isFromProductDetail)
+            : SignInScreen(isComingFromCart ?? false, isFromProductDetail: isFromProductDetail)),
   );
 }
 /*

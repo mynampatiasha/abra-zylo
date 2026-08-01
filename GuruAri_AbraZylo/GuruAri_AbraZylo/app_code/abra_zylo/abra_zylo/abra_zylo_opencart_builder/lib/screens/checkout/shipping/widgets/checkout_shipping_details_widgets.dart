@@ -176,10 +176,7 @@ class _ShippingViewState extends State<ShippingView> {
             ),
             ),
             if (widget.shippingRequired == true) ...[
-              Visibility(
-                visible: false, // Flipkart style: auto-select and hide shipping method
-                child: _shippingMethod(),
-              ),
+              _shippingMethod(),
               // TitleSeparatedCard(
               //   (localizations?.translate(AppStringConstant.comment) ?? ""),
               //   Padding(
@@ -212,10 +209,7 @@ class _ShippingViewState extends State<ShippingView> {
             child: Card(child: guestShipping(widget.savedAddress)),
           ),
           if (widget.shippingRequired == true) ...[
-            Visibility(
-              visible: false,
-              child: _shippingMethod(),
-            ),
+            _shippingMethod(),
             TitleSeparatedCard(
               (localizations?.translate(AppStringConstant.shippingComment) ??
                   ""),
@@ -424,14 +418,18 @@ class _ShippingViewState extends State<ShippingView> {
               ),
             ),
             const Divider(height: 0),
-            widget.checkoutShippingMethodModel?.shippingMethods == null
+            (widget.checkoutShippingMethodModel?.shippingMethods == null ||
+             (widget.checkoutShippingMethodModel?.shippingMethods?.shippingMethodList?.isEmpty ?? true))
                 ? Padding(
                     padding: const EdgeInsets.all(AppSizes.size16),
                     child: Text(
                       (localizations
                               ?.translate(AppStringConstant.noShippingMethod) ??
-                          " No Shipping Method available"),
-                      style: Theme.of(context).textTheme.displaySmall,
+                          "No Shipping Method available for this address"),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.red.shade400,
+                        fontWeight: FontWeight.w500,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   )

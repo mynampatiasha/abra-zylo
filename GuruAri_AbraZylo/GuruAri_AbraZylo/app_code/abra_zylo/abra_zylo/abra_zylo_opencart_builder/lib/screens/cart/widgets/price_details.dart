@@ -57,7 +57,10 @@ class PriceDetails extends StatelessWidget {
               if (item == totalItem) return const SizedBox(); // Skip total for now, add it at the bottom
               
               bool isShipping = item.title?.toLowerCase().contains('shipping') ?? false;
-              bool isFree = item.text?.toLowerCase() == 'free' || item.text == '₹0.00' || item.text == '0';
+              bool isFree = item.text?.toLowerCase() == 'free' || item.text == '₹0.00' || item.text == '0' || item.text == '₹0';
+              
+              String title = item.title ?? '';
+              if (title.toLowerCase() == 'sub-total') title = 'Total MRP';
               
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
@@ -65,7 +68,7 @@ class PriceDetails extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      item.title ?? '',
+                      title,
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.grey.shade700,
@@ -77,7 +80,7 @@ class PriceDetails extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: isFree ? FontWeight.w700 : FontWeight.w600,
-                        color: isFree ? Colors.green : Colors.black87,
+                        color: isFree ? Colors.green : (title.toLowerCase().contains('discount') ? Colors.green : Colors.black87),
                       ),
                     ),
                   ],
@@ -99,19 +102,51 @@ class PriceDetails extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black,
+                    color: Colors.black87,
                   ),
                 ),
                 Text(
                   totalItem.text ?? '',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFFC63B10), // Orange/Rust color matching screenshot
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
             ),
+            Builder(
+              builder: (context) {
+                // Try to find a discount or coupon row
+                final discountItem = totals!.where((element) => 
+                  element.title?.toLowerCase().contains('discount') == true ||
+                  element.title?.toLowerCase().contains('coupon') == true
+                ).firstOrNull;
+                
+                if (discountItem != null && discountItem.text != null && discountItem.text!.isNotEmpty) {
+                  return Container(
+                    margin: const EdgeInsets.only(top: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.green.shade100),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "You will save ${discountItem.text?.replaceAll('-', '')} on this order",
+                        style: TextStyle(
+                          color: Colors.green.shade700,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                return const SizedBox();
+              }
+            )
           ],
         ),
       ),

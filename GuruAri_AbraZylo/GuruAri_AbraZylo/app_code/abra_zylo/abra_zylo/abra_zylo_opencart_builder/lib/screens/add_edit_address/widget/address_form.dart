@@ -65,7 +65,8 @@ class _AddressFormState extends State<AddressForm> {
     _zip = TextEditingController(text: "");
     _selectedCountryName = "";
     _selectedZoneName = "";
-    _selectedCountry = null;
+    // For United Kingdom
+    _selectedCountry = "222";
     _default = "0";
 
     _prepareTextFields();
@@ -86,11 +87,19 @@ class _AddressFormState extends State<AddressForm> {
       });
       if (widget.initialLocationData != null) {
         String fullAddress = widget.initialLocationData!['address_string'] ?? "";
-        if (fullAddress.length > 128) {
-          _address1.text = fullAddress.substring(0, 128);
-          _address2.text = fullAddress.substring(128, fullAddress.length > 256 ? 256 : fullAddress.length);
-        } else {
-          _address1.text = fullAddress;
+        // Don't populate fields with GPS error messages
+        final isErrorMessage = fullAddress.contains("Couldn't") ||
+            fullAddress.contains("Location") ||
+            fullAddress.contains("permission") ||
+            fullAddress.contains("disabled") ||
+            fullAddress.isEmpty;
+        if (!isErrorMessage) {
+          if (fullAddress.length > 128) {
+            _address1.text = fullAddress.substring(0, 128);
+            _address2.text = fullAddress.substring(128, fullAddress.length > 256 ? 256 : fullAddress.length);
+          } else {
+            _address1.text = fullAddress;
+          }
         }
 
         if (widget.initialLocationData!['address'] != null) {
@@ -125,9 +134,9 @@ class _AddressFormState extends State<AddressForm> {
         }
       }
 
-      // If we couldn't match a country from the map data, fallback to the store's configured default country
+      // If we couldn't match a country from the map data, fallback to default logic
       if (_selectedCountry == null) {
-        var country = widget.model?.getCountryById(widget.model?.countryId);
+        var country = widget.model?.getCountryById(_selectedCountry);
         if (country != null) {
           _selectedCountry = country.countryId;
           _selectedCountryName = country.name;

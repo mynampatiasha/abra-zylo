@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:oc_demo/helper/push_notifications_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:confetti/confetti.dart';
 
 import '../../../../common_widgets/Tabbar/bottom_tabbar.dart';
 import '../../../../common_widgets/alert_message.dart';
@@ -21,6 +22,20 @@ class OrderComplete extends StatefulWidget {
 
 class _OrderCompleteState extends State<OrderComplete> {
   AppLocalizations? localizations;
+  late ConfettiController _confettiController;
+
+  @override
+  void initState() {
+    super.initState();
+    _confettiController = ConfettiController(duration: const Duration(seconds: 3));
+    _confettiController.play();
+  }
+
+  @override
+  void dispose() {
+    _confettiController.dispose();
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -44,45 +59,47 @@ class _OrderCompleteState extends State<OrderComplete> {
           context,
         ),
         body: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: SizedBox(
-                height: AppSizes.deviceHeight / 1.4,
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Card(
                   color: Theme.of(context).cardColor,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          _successWidget(context),
-                          Padding(
-                            padding: const EdgeInsets.all(AppSizes.size16),
-                            child: Html(
-                              data: widget.data
-                                  ?.trim()
-                                  .replaceAll(r"\\n", "")
-                                  .replaceAll(r"\t", ""),
-                              onAnchorTap: (link, _, ele) async {
-                                if (link != null) {
-                                  if (await canLaunch(link)) {
-                                    launch(link);
-                                  } else {
-                                    AlertMessage.showWarning(
-                                      "Error launching url",
-                                      context,
-                                    );
-                                  }
-                                } else {
-                                  // ignore
-                                }
-                              },
-                            ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              _successWidget(context),
+                              Padding(
+                                padding: const EdgeInsets.all(AppSizes.size16),
+                                child: Html(
+                                  data: widget.data
+                                      ?.trim()
+                                      .replaceAll(r"\\n", "")
+                                      .replaceAll(r"\t", ""),
+                                  onAnchorTap: (link, _, ele) async {
+                                    if (link != null) {
+                                      if (await canLaunch(link)) {
+                                        launch(link);
+                                      } else {
+                                        AlertMessage.showWarning(
+                                          "Error launching url",
+                                          context,
+                                        );
+                                      }
+                                    } else {
+                                      // ignore
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                        mainAxisSize: MainAxisSize.min,
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(AppSizes.size16),
@@ -115,7 +132,22 @@ class _OrderCompleteState extends State<OrderComplete> {
                   ),
                 ),
               ),
-            ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: ConfettiWidget(
+                  confettiController: _confettiController,
+                  blastDirectionality: BlastDirectionality.explosive,
+                  shouldLoop: false,
+                  colors: const [
+                    Colors.green,
+                    Colors.blue,
+                    Colors.pink,
+                    Colors.orange,
+                    Colors.purple
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

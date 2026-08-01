@@ -578,7 +578,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             Visibility(visible: isLoading, child: LoaderUtil.showCoverLoader()),
             Positioned.fill(
               child: Align(
-                alignment: Alignment.center,
+                alignment: Alignment.topCenter,
                 child: ConfettiWidget(
                   confettiController: _confettiController,
                   blastDirectionality: BlastDirectionality.explosive,

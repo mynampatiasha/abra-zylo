@@ -56,16 +56,15 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
                             "${_localizations?.translate(AppStringConstant.loginRequired)}",
                             context,
                             _localizations, onConfirm: () async {
-                          Navigator.of(context).pushNamed(AppRoute.login, arguments: getSignInSignUpPageArgument(false, false));
+                          Navigator.of(context).pushNamed(AppRoute.login, arguments: getSignInSignUpPageArgument(false, false, isFromProductDetail: true));
                         });
                       }
                     },
                     child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.favorite_border, color: AppColors.black, size: 24),
-                        SizedBox(height: 2),
-                        Text('WISHLIST', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                        Icon(Icons.favorite_border, color: AppColors.black, size: 22),
                       ],
                     ),
                   ),
@@ -110,7 +109,7 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
                               "${_localizations?.translate(AppStringConstant.loginRequired)}",
                               context,
                               _localizations, onConfirm: () async {
-                            Navigator.of(context).pushNamed(AppRoute.login, arguments: getSignInSignUpPageArgument(false, false));
+                            Navigator.of(context).pushNamed(AppRoute.login, arguments: getSignInSignUpPageArgument(false, false, isFromProductDetail: true));
                           });
                         }
                       },
@@ -161,7 +160,7 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
                               "${_localizations?.translate(AppStringConstant.loginRequired)}",
                               context,
                               _localizations, onConfirm: () async {
-                            Navigator.of(context).pushNamed(AppRoute.login, arguments: getSignInSignUpPageArgument(false, false));
+                            Navigator.of(context).pushNamed(AppRoute.login, arguments: getSignInSignUpPageArgument(false, false, isFromProductDetail: true));
                           });
                         }
                       },

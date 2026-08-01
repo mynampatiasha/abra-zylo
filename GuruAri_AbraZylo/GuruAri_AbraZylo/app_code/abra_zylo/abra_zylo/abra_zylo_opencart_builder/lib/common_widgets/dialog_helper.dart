@@ -138,16 +138,20 @@ class DialogHelper {
                   }
                 },
                 style: OutlinedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   side: BorderSide(
-                    color: Colors.black, // Set the border color to black
+                    color: Theme.of(context).colorScheme.primary,
                   ),
-                  //  backgroundColor: MobikulTheme.iconColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppSizes.size6),
                   ),
                 ),
                 child: Text(
                   AppStringConstant.ok.localized().toUpperCase(),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(color: Colors.white, fontSize: AppSizes.size10),
                 )),
           )
           //   style: OutlinedButton.styleFrom(

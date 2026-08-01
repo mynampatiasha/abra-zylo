@@ -62,6 +62,12 @@ class AppTheme {
 
   static ThemeData lightTheme = ThemeData(
       useMaterial3: true,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _lightPrimaryColor,
+          foregroundColor: Colors.white,
+        ),
+      ),
       buttonTheme: ButtonThemeData(buttonColor: _lightPrimaryColor),
       secondaryHeaderColor: Colors.white30,
       indicatorColor: _lightOnPrimaryColor,
@@ -109,6 +115,12 @@ class AppTheme {
 
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: darkPrimaryVariantColor,
+        foregroundColor: Colors.white,
+      ),
+    ),
     buttonTheme: ButtonThemeData(buttonColor: darkPrimaryVariantColor),
     secondaryHeaderColor: Colors.white12,
     indicatorColor: darkOnPrimaryColor,

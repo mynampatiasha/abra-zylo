@@ -22,8 +22,9 @@ import '../../../utils/helper.dart';
 import '../../login_signup/bloc/signin_signup_screen_bloc.dart';
 
 class CreateAnAccount extends StatefulWidget {
-  CreateAnAccount(this.isComingFromCartPage, {Key? key}) : super(key: key);
+  CreateAnAccount(this.isComingFromCartPage, {this.isFromProductDetail = false, Key? key}) : super(key: key);
   final bool isComingFromCartPage;
+  final bool isFromProductDetail;
 
   @override
   _CreateAnAccountState createState() => _CreateAnAccountState();
@@ -165,7 +166,9 @@ class _CreateAnAccountState extends State<CreateAnAccount> {
                         AppStringConstant.accountCreatedSuccessfully) ??
                     "success message",
                 context);
-            if (widget.isComingFromCartPage == true) {
+            if (widget.isFromProductDetail) {
+              Navigator.of(context)..pop()..pop();
+            } else if (widget.isComingFromCartPage == true) {
               Navigator.pushNamedAndRemoveUntil(
                   context, AppRoute.cart, (route) => false);
             } else {

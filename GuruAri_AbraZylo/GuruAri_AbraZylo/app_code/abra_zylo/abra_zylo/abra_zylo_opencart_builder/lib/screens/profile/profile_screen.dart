@@ -236,16 +236,10 @@ class _profileState extends State<ProfileScreen> {
                   ? _localizations?.translate(AppStringConstant.signIn) ?? ''
                   : _localizations?.translate(AppStringConstant.signOut) ?? '',
               style: TextStyle(fontSize: 17)),
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(
-                width: AppSizes.size2,
-                color: Theme.of(context).textTheme.titleLarge?.color ??
-                    Colors.black,
-                style: BorderStyle.solid),
-            /* side: BorderSide(
-              color: Theme.of(context).colorScheme.onSecondary,
-            )*/
-            // backgroundColor: Theme.of(context).colorScheme.onPrimary,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             minimumSize: Size(AppSizes.deviceWidth, AppSizes.deviceHeight / 16),
           )),
     );

@@ -74,15 +74,23 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
                   ? "Welcome back, ${model.firstname}! Thanks for signing in."
                   : "Welcome back! Thanks for signing in.",
               context);
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              AppRoute.bottomTabBAr, (route) => false);
+          if (widget.arguments["isFromProductDetailForLogin"] == true) {
+            Navigator.of(context).pop();
+          } else {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRoute.bottomTabBAr, (route) => false);
+          }
         });
       } else if (state is SignupScreenFormSuccess) {
         _loading = false;
         WidgetsBinding.instance?.addPostFrameCallback((_) {
           AlertMessage.showSuccess(state.data.message ?? "", context);
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              AppRoute.bottomTabBAr, (route) => false);
+          if (widget.arguments["isFromProductDetailForLogin"] == true) {
+            Navigator.of(context).pop();
+          } else {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRoute.bottomTabBAr, (route) => false);
+          }
         });
       }
 
@@ -181,7 +189,7 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
             commonButton(
               context,
               () {
-                signInSignUpBottomModalSheet(context, false, false);
+                signInSignUpBottomModalSheet(context, false, false, isFromProductDetail: widget.arguments["isFromProductDetailForLogin"] == true);
               },
               _localizations?.translate(AppStringConstant.signInWithEmail)
                   //.toUpperCase()
@@ -192,7 +200,7 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
             ),
             SizedBox(height: AppSizes.size16),
             commonButton(context, () {
-              signInSignUpBottomModalSheet(context, true, false);
+              signInSignUpBottomModalSheet(context, true, false, isFromProductDetail: widget.arguments["isFromProductDetailForLogin"] == true);
             },
                 _localizations?.translate(AppStringConstant.createAnAccount)
                     //  .toUpperCase()

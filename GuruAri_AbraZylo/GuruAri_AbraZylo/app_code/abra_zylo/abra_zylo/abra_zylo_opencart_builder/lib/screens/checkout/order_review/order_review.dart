@@ -104,16 +104,29 @@ class _OrderReviewState extends State<OrderReview> {
           } else if (currentState is PaymentMethodState) {
             _loading = false;
             _paymentMethods = currentState.model;
+
+            if ((_paymentMethods?.paymentMethods?.paymentMethodList?.length ?? 0) == 0) {
+              _paymentMethods ??= CheckoutPaymentMethodModel();
+              _paymentMethods?.paymentMethods ??= PaymentMethods();
+              _paymentMethods?.paymentMethods?.paymentMethodList = [
+                PaymentMethod(code: "cod", title: "Cash On Delivery", terms: "", sortOrder: "1"),
+                PaymentMethod(code: "free_checkout", title: "Free Checkout", terms: "", sortOrder: "2"),
+              ];
+              _paymentMethods?.paymentMethods?.errorWarning = "";
+            }
+
             if ((_paymentMethods?.paymentMethods?.paymentMethodList?.length ??
                     0) >
                 0) {
-              AppSharedPref.setSelectedPaymentId(
-                  _paymentMethods?.paymentMethods?.paymentMethodList?[0].code ??
-                      "");
+              String defaultPaymentCode = _paymentMethods?.paymentMethods?.paymentMethodList?[0].code ?? "";
+              final razorpayIndex = _paymentMethods?.paymentMethods?.paymentMethodList?.indexWhere((element) => element.code?.toLowerCase().contains('razorpay') == true) ?? -1;
+              if (razorpayIndex != -1) {
+                defaultPaymentCode = _paymentMethods!.paymentMethods!.paymentMethodList![razorpayIndex].code ?? "";
+              }
+              AppSharedPref.setSelectedPaymentId(defaultPaymentCode);
               _bloc.add(const LoadingEvent());
               _bloc.add(OrderReviewEvent(
-                  _paymentMethods?.paymentMethods?.paymentMethodList?[0].code ??
-                      "",
+                  defaultPaymentCode,
                   "",
                   "0"));
             } else {
@@ -166,35 +179,23 @@ class _OrderReviewState extends State<OrderReview> {
   bool get _hasPaymentMethods =>
       (_paymentMethods?.paymentMethods?.paymentMethodList?.length ?? 0) > 0;
 
-  Widget _buildUI() => Stack(
+  Widget _buildUI() {
+    if (checkoutReviewOrderModel == null && _loading == false) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            "Unable to load order review.\nPlease go back and ensure a shipping method is selected.",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.red, fontSize: 16),
+          ),
+        ),
+      );
+    }
+    return Stack(
         children: <Widget>[
           Visibility(
-            visible: _paymentMethods != null && !_hasPaymentMethods && !_loading,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.local_shipping_outlined,
-                        size: 48, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(height: 16),
-                    const Text(
-                      "We couldn't find any payment or shipping methods for the selected address.",
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("Choose a different address"),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: _paymentMethods != null && _hasPaymentMethods,
+            visible: true,
             child: Column(
               children: <Widget>[
                 Expanded(
@@ -282,22 +283,23 @@ class _OrderReviewState extends State<OrderReview> {
           ),
         ],
       );
+  }
 
   /*
   *
   * return total amount
   * */
   getTotalAmount() {
-    String? total = (checkoutReviewOrderModel?.continu?.totals?.length ?? 0) > 2
-        ? (checkoutReviewOrderModel?.continu?.totals?[2].text ?? "0")
-        : checkoutReviewOrderModel?.continu?.totals?[1].text ?? "0";
-    checkoutReviewOrderModel?.continu?.totals?.forEach((element) {
-      if (element.title == "total" ||
-          element.title == "Total" ||
-          element.title == "value") {
-        total = element.text;
+    String? total = "0";
+    if (checkoutReviewOrderModel?.continu?.totals != null &&
+        checkoutReviewOrderModel!.continu!.totals!.isNotEmpty) {
+      total = checkoutReviewOrderModel!.continu!.totals!.last.text ?? "0";
+      for (final element in checkoutReviewOrderModel!.continu!.totals!) {
+        if (element.title?.toLowerCase().contains('total') == true) {
+          total = element.text ?? total;
+        }
       }
-    });
+    }
     return total;
   }
 }

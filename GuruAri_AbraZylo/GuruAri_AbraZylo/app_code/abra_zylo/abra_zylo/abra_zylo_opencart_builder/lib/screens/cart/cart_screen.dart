@@ -271,13 +271,15 @@ class _CartScreenState extends State<CartScreen> {
   * */
   getTotalAmount() {
     String? total = "0";
-    cartModel?.cart?.totals?.forEach((element) {
-      if (element.title == "total" ||
-          element.title == "Total" ||
-          element.title == "الاجمالي النهائي") {
-        total = element.text;
+    // Use the last totals item as fallback, or find the 'total' row
+    if (cartModel?.cart?.totals != null && cartModel!.cart!.totals!.isNotEmpty) {
+      total = cartModel!.cart!.totals!.last.text ?? "0";
+      for (final element in cartModel!.cart!.totals!) {
+        if (element.title?.toLowerCase().contains('total') == true) {
+          total = element.text ?? total;
+        }
       }
-    });
+    }
     return total;
   }
 }

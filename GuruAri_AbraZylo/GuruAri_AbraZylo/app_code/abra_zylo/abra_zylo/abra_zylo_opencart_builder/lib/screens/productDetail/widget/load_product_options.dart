@@ -209,7 +209,7 @@ class _LoadProductCustomOptionsState extends State<LoadProductCustomOptions> {
           );
         },
         shrinkWrap: true,
-        physics: const ScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: widget.options?.length,
       ),
     );

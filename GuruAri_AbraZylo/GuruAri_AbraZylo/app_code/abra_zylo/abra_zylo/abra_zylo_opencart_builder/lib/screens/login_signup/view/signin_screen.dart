@@ -24,8 +24,9 @@ import '../../login_signup/bloc/signin_signup_screen_bloc.dart';
 // import 'google_sign_in_web_button.dart'; // commented out — google_sign_in disabled
 
 class SignInScreen extends StatefulWidget {
-  SignInScreen(this.isComingFromCartPage, {Key? key}) : super(key: key);
+  SignInScreen(this.isComingFromCartPage, {this.isFromProductDetail = false, Key? key}) : super(key: key);
   final bool isComingFromCartPage;
+  final bool isFromProductDetail;
 
   @override
   _SignInScreenState createState() => _SignInScreenState();
@@ -98,7 +99,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     ? "Welcome back, ${model.firstname}! Thanks for signing in."
                     : "Welcome back! Thanks for signing in.",
                 context);
-            if (widget.isComingFromCartPage == true) {
+            if (widget.isFromProductDetail) {
+              Navigator.of(context)..pop()..pop();
+            } else if (widget.isComingFromCartPage == true) {
               loginFromFingerPrint
                   ? Navigator.of(context)
                       .pushNamedAndRemoveUntil(AppRoute.cart, (route) => false)
@@ -319,7 +322,9 @@ class _SignInScreenState extends State<SignInScreen> {
   void checkFingerprint() {
     // local_auth uses platform channels — not supported on web
     if (kIsWeb) {
-      if (widget.isComingFromCartPage == true) {
+      if (widget.isFromProductDetail) {
+        Navigator.of(context)..pop()..pop();
+      } else if (widget.isComingFromCartPage == true) {
         Navigator.of(context)
             .pushNamedAndRemoveUntil(AppRoute.cart, (route) => false);
       } else {
@@ -332,15 +337,15 @@ class _SignInScreenState extends State<SignInScreen> {
       if (value) {
         showFingerprintDialog();
       } else {
-        if (widget.isComingFromCartPage == true) {
+        if (widget.isFromProductDetail) {
+          Navigator.of(context)..pop()..pop();
+        } else if (widget.isComingFromCartPage == true) {
           Navigator.of(context)
               .pushNamedAndRemoveUntil(AppRoute.cart, (route) => false);
         } else {
           Navigator.of(context)
               .pushNamedAndRemoveUntil(AppRoute.bottomTabBAr, (route) => false);
         }
-        /* Navigator.of(context)
-            .pushNamedAndRemoveUntil(AppRoute.bottomTabBAr, (route) => false);*/
       }
     });
   }

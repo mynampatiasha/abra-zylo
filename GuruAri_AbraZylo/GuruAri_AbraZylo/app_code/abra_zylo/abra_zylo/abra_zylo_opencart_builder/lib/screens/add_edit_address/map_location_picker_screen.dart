@@ -92,14 +92,14 @@ class _MapLocationPickerScreenState extends State<MapLocationPickerScreen> {
       } else {
         setState(() {
           _isLoading = false;
-          _address = "Couldn't get a precise location. Move the map or search for your address below.";
+          _address = "Search for your address below or drag the map to drop a pin.";
           _currentPosition = const LatLng(12.9716, 77.5946); // Bangalore
         });
       }
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _address = "Couldn't get your location. Move the map or search for your address below.";
+        _address = "Search for your address below or drag the map to drop a pin.";
         // Default to a central location if GPS fails
         _currentPosition = const LatLng(12.9716, 77.5946); // Bangalore
       });

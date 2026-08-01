@@ -147,11 +147,14 @@ Map<String, dynamic> getCmsPageArguments(String pageId, String pageTitle) {
 * Sing_in/sign up
 * */
 
+const isFromProductDetailForLogin = "isFromProductDetailForLogin";
+
 Map<String, dynamic> getSignInSignUpPageArgument(
-    bool isLoginCall, bool isRegisterCall) {
+    bool isLoginCall, bool isRegisterCall, {bool isFromProductDetail = false}) {
   Map<String, dynamic> args = {};
   args[isFromCartForLogin] = isLoginCall;
   args[isFromCartForSignup] = isRegisterCall;
+  args[isFromProductDetailForLogin] = isFromProductDetail;
   return args;
 }
 /*
