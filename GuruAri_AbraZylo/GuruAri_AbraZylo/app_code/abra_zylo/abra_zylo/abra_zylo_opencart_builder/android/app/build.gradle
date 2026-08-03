@@ -64,7 +64,7 @@ android {
 
     defaultConfig {
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion 35
+        targetSdkVersion 36
         multiDexEnabled true
         signingConfig signingConfigs.debug
         ndk {
@@ -104,8 +104,8 @@ android {
                     appIcon: "@mipmap/ic_launcher_round",
                     host:"oc.webkul.in/mobikul/Network/",
             ]
-            versionCode 9
-            versionName '2.9.1'
+            versionCode 10
+            versionName '2.9.2'
             signingConfig signingConfigs.ocBuilderConfig
         }
         }
