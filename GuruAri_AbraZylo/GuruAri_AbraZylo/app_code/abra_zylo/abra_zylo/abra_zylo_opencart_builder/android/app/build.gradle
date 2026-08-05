@@ -104,7 +104,7 @@ android {
                     appIcon: "@mipmap/ic_launcher_round",
                     host:"oc.webkul.in/mobikul/Network/",
             ]
-            versionCode 10
+            versionCode 11
             versionName '2.9.2'
             signingConfig signingConfigs.ocBuilderConfig
         }
