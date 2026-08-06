@@ -119,7 +119,8 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildUI() {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).cardColor,
+          backgroundColor: const Color(0xFFc8abec), // var(--lavender)
+          elevation: 0,
           leading: IconButton(
             onPressed: () {
               Helper.hideSoftKeyBoard();
@@ -127,86 +128,96 @@ class _SearchScreenState extends State<SearchScreen> {
             },
             icon: const Icon(
               Icons.arrow_back,
+              color: Color(0xFF5232a8), // var(--violet-900)
             ),
           ),
-          title: TextField(
-            readOnly: _isListening,
-            controller: textEditingController,
-            onChanged: (searchKey) {
-              isLoading = true;
-              if (_debounce?.isActive ?? false) _debounce!.cancel();
-              _debounce = Timer(Duration(seconds: 1), () {
-                searchScreenBloc?.add(SearchSuggestionEvent(searchKey));
-              });
-              print("Search key ---> " + searchKey);
-            },
-            onSubmitted: (searchKey) {
-              if (searchKey.trim().isNotEmpty) {
-                Helper.hideSoftKeyBoard();
-                Navigator.of(context).pushNamed(
-                  AppRoute.catalog,
-                  arguments: categoryMap(searchKey, searchKey, AppStringConstant.search),
-                );
-              }
-            },
-            textInputAction: TextInputAction.search,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText:
-                  _localizations?.translate(AppStringConstant.search) ?? '',
-              hintStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.normal,
-                  ),
+          titleSpacing: 0,
+          title: Container(
+            height: 40,
+            margin: const EdgeInsets.only(right: 18),
+            decoration: BoxDecoration(
+              color: const Color(0xFFfffdf9), // var(--paper)
+              borderRadius: BorderRadius.circular(13),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color.fromRGBO(47, 16, 101, 0.35),
+                  blurRadius: 14,
+                  offset: Offset(0, 6),
+                  spreadRadius: -8,
+                )
+              ],
             ),
-            style: Theme.of(context).textTheme.bodyLarge,
-            cursorColor: Theme.of(context).colorScheme.onPrimary,
+            child: TextField(
+              readOnly: _isListening,
+              controller: textEditingController,
+              onChanged: (searchKey) {
+                isLoading = true;
+                if (_debounce?.isActive ?? false) _debounce!.cancel();
+                _debounce = Timer(const Duration(seconds: 1), () {
+                  searchScreenBloc?.add(SearchSuggestionEvent(searchKey));
+                });
+                print("Search key ---> " + searchKey);
+              },
+              onSubmitted: (searchKey) {
+                if (searchKey.trim().isNotEmpty) {
+                  Helper.hideSoftKeyBoard();
+                  Navigator.of(context).pushNamed(
+                    AppRoute.catalog,
+                    arguments: categoryMap(searchKey, searchKey, AppStringConstant.search),
+                  );
+                }
+              },
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                isDense: true,
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: Color(0xFF8f889c),
+                  size: 20,
+                ),
+                suffixIcon: textEditingController.text.isNotEmpty
+                    ? IconButton(
+                        onPressed: () {
+                          Helper.hideSoftKeyBoard();
+                          textEditingController.text = "";
+                          searchScreenBloc?.add(InitialSearchSuggestionEvent());
+                          setState(() {});
+                        },
+                        icon: const Icon(
+                          Icons.close,
+                          color: Color(0xFF8f889c),
+                          size: 18,
+                        ),
+                      )
+                    : IconButton(
+                        onPressed: _speechToText.isNotListening
+                                ? _startListening
+                                : _stopListening,
+                        icon: Icon(
+                          (_isListening) ? Icons.hearing_sharp : Icons.mic,
+                          color: const Color(0xFF8f889c),
+                          size: 18,
+                        ),
+                      ),
+                hintText: _localizations?.translate(AppStringConstant.search) ?? '',
+                hintStyle: const TextStyle(
+                  fontFamily: 'Karla',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14.5,
+                  color: Color(0xFF8f889c),
+                ),
+              ),
+              style: const TextStyle(
+                fontFamily: 'Karla',
+                fontWeight: FontWeight.w600,
+                fontSize: 14.5,
+                color: Color(0xFF2b2540), // var(--ink)
+              ),
+              cursorColor: const Color(0xFF5232a8),
+            ),
           ),
-          actions: [
-            (_isListening)
-                ? Center(
-                    child: Text(
-                        _localizations
-                                ?.translate(AppStringConstant.listening) ??
-                            '',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall
-                            ?.copyWith(fontWeight: FontWeight.normal)))
-                : IconButton(
-                    onPressed: () {
-                      DialogHelper.searchDialog(context, _localizations, () {
-                        startImageRecognition(searchImage);
-                      }, () {
-                        startImageRecognition(searchText);
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.camera_alt,
-                    ),
-                  ),
-            textEditingController.text.isNotEmpty
-                ? IconButton(
-                    onPressed: () {
-                      Helper.hideSoftKeyBoard();
-                      textEditingController.text = "";
-                      searchScreenBloc?.add(InitialSearchSuggestionEvent());
-                      setState(() {});
-                    },
-                    icon: const Icon(
-                      Icons.close,
-                    ),
-                  )
-                : IconButton(
-                    onPressed:
-                        // If not yet listening for speech start, otherwise stop
-                        _speechToText.isNotListening
-                            ? _startListening
-                            : _stopListening,
-                    icon: Icon(
-                      (_isListening) ? Icons.hearing_sharp : Icons.mic,
-                    ),
-                  )
-          ],
         ),
         body: SingleChildScrollView(
           child: Column(

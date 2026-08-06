@@ -17,10 +17,7 @@ class ProfileDetailScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFFc8abec), // --lavender
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF5232a8), size: 19),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: const BackButton(color: Color(0xFF5232a8)),
         title: Text(
           title,
           style: const TextStyle(
@@ -64,7 +61,8 @@ class ProfileDetailScreen extends StatelessWidget {
                     ],
                   ),
                   child: const Center(
-                    child: Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 19),
+                    child: Icon(Icons.shopping_bag_outlined,
+                        color: Colors.white, size: 19),
                   ),
                 ),
                 const SizedBox(width: 10),

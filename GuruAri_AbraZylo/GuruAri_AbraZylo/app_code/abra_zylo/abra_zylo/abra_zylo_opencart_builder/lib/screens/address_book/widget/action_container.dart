@@ -30,17 +30,20 @@ class ActionContainer extends StatelessWidget {
                 children: <Widget>[
                   Icon(
                     iconLeft ?? Icons.edit,
-                    size: AppSizes.size20,
+                    size: 18,
+                    color: const Color(0xFF5232a8), // violet-700
                   ),
                   const SizedBox(
                     width: AppSizes.size4,
                   ),
                   Text(
                     titleLeft.toUpperCase(),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.titleLarge?.color,
-                        ),
+                    style: const TextStyle(
+                      fontFamily: 'Karla',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      color: Color(0xFF5232a8), // violet-700
+                    ),
                   ),
                 ],
               ),
@@ -56,18 +59,21 @@ class ActionContainer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Icon(
-                    iconRight ?? Icons.add,
-                    size: AppSizes.size20,
+                    iconRight ?? Icons.delete, // default to delete instead of add
+                    size: 18,
+                    color: const Color(0xFFff6b6b), // coral
                   ),
                   const SizedBox(
                     width: AppSizes.size4,
                   ),
                   Text(
                     titleRight.toUpperCase(),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.titleLarge?.color,
-                        ),
+                    style: const TextStyle(
+                      fontFamily: 'Karla',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      color: Color(0xFFff6b6b), // coral
+                    ),
                   )
                 ],
               ),

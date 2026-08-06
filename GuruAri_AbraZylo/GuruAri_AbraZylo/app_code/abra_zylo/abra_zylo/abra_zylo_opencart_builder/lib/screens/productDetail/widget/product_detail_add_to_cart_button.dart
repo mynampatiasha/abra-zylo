@@ -27,9 +27,11 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
   List<Option>? productOptions;
   bool isAddedToCart;
 
+  int? maxQuantity;
+
   ProductDetailAddToCartButtonWidget(this.productPageBloc, this.productId,
       this.quantity, this.selectedProductOptions, this.productOptions,
-      {this.isAddedToCart = false, Key? key});
+      {this.isAddedToCart = false, this.maxQuantity, Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +87,10 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
                       onPressed: () async {
                         if (isAddedToCart) {
                           Navigator.pushNamed(context, AppRoute.cart);
+                          return;
+                        }
+                        if (maxQuantity != null && quantity > maxQuantity!) {
+                          GenericMethods.showErrorAlertMessages(context, "Only $maxQuantity products available");
                           return;
                         }
                         if (await AppSharedPref.isLogin() == true) {
@@ -144,6 +150,10 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
                         elevation: 0,
                       ),
                       onPressed: () async {
+                        if (maxQuantity != null && quantity > maxQuantity!) {
+                          GenericMethods.showErrorAlertMessages(context, "Only $maxQuantity products available");
+                          return;
+                        }
                         if (await AppSharedPref.isLogin() == true) {
                           if (await checkForRequiredCustomField()) {
                             productPageBloc?.add(BuyNowEvent(
@@ -203,7 +213,7 @@ class ProductDetailAddToCartButtonWidget extends StatelessWidget {
         productOptions?.forEach((element) {
           if ((element.required == "1") &&
               (selectedProductOptions?.keys
-                      .contains(element.productOptionId)) ==
+                      .contains(element.productOptionId?.toString())) ==
                   false) {
             requiredOptionFilled =
                 false; //value not exists return false - mean this option is not selected yet.

@@ -296,59 +296,77 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                         ],
                       ),
                     const SizedBox(height: AppSizes.size10),
-                    commonButton(
-                      context,
-                      () async {
-                        if (_formKey.currentState?.validate() == true) {
-                          var wkToken = await AppSharedPref.getWkToken();
-                          _accountInfoBloc?.add(SaveAccountInfoEvent(
-                              wkToken,
-                              firstNameController.text,
-                              lastNameController.text,
-                              changeEmail
-                                  ? emailController.text
-                                  : userDefaultData!.email ?? "",
-                              telephoneController.text,
-                              faxController.text,
-                              changePassword,
-                              changePassword ? passwordController.text : null));
-                        }
-                      },
-                      _localizations
-                              ?.translate(AppStringConstant.save)
-                              .toUpperCase() ??
-                          '',
+                    // Save Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF5232a8), // violet-700
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          elevation: 0,
+                        ),
+                        onPressed: () async {
+                          if (_formKey.currentState?.validate() == true) {
+                            var wkToken = await AppSharedPref.getWkToken();
+                            _accountInfoBloc?.add(SaveAccountInfoEvent(
+                                wkToken,
+                                firstNameController.text,
+                                lastNameController.text,
+                                changeEmail
+                                    ? emailController.text
+                                    : userDefaultData!.email ?? "",
+                                telephoneController.text,
+                                faxController.text,
+                                changePassword,
+                                changePassword ? passwordController.text : null));
+                          }
+                        },
+                        child: Text(
+                          _localizations?.translate(AppStringConstant.save).toUpperCase() ?? 'SAVE',
+                          style: const TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 16),
+                        ),
+                      ),
                     ),
                     //Delete Button
                     const SizedBox(height: AppSizes.size16),
-                    commonButton(context, () async {
-                      if (userEmail.isEmpty) {
-                        return;
-                      }
-                      if (userEmail.isNotEmpty == true &&
-                          userEmail != "demo@webkul.com") {
-                        DialogHelper.confirmationDialog(
-                            AppStringConstant.areYouSureToDeleteAccount,
-                            context,
-                            _localizations, onConfirm: () async {
-                          displayPasswordAuthenticationDialog(context);
-                        });
-                      } else {
-                        AlertMessage.showError(
-                            _localizations?.translate(AppStringConstant
-                                    .youAreNotAuthriseToDeleteAccount) ??
-                                "",
-                            context);
-                        // show authrosize warnign message
-                      }
-                    },
-                        _localizations
-                                ?.translate(AppStringConstant.deleteAccount)
-                                .toUpperCase() ??
-                            '',
-                        // backgroundColor: AppColors.red,
-                        textColor: AppColors.red,
-                        borderSideColor: AppColors.white),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFff6b6b).withOpacity(0.1), // coral 10%
+                          foregroundColor: const Color(0xFFff6b6b), // coral
+                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          elevation: 0,
+                        ),
+                        onPressed: () async {
+                          if (userEmail.isEmpty) {
+                            return;
+                          }
+                          if (userEmail.isNotEmpty == true &&
+                              userEmail != "demo@webkul.com") {
+                            DialogHelper.confirmationDialog(
+                                AppStringConstant.areYouSureToDeleteAccount,
+                                context,
+                                _localizations, onConfirm: () async {
+                              displayPasswordAuthenticationDialog(context);
+                            });
+                          } else {
+                            AlertMessage.showError(
+                                _localizations?.translate(AppStringConstant
+                                        .youAreNotAuthriseToDeleteAccount) ??
+                                    "",
+                                context);
+                          }
+                        },
+                        child: Text(
+                          _localizations?.translate(AppStringConstant.deleteAccount).toUpperCase() ?? 'DELETE ACCOUNT',
+                          style: const TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 16),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

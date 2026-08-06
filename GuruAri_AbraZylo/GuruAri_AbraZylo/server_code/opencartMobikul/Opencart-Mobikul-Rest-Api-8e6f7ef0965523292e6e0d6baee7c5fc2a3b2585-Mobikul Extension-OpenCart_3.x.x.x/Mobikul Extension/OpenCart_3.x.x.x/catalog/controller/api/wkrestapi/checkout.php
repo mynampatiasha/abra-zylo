@@ -3153,6 +3153,9 @@ class ControllerApiWkrestapiCheckout extends Controller {
 
 				$this->load->model('wkrestapi/catalog');
 				$dominant_color = $this->model_wkrestapi_catalog->getDominantColor($dc_image);
+				
+				$query = $this->db->query("SELECT price FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$product['product_id'] . "'");
+				$original_price = $query->row['price'];
 
 				$order_data['products'][] = array(
 					'product_id' => $product['product_id'],
@@ -3170,6 +3173,8 @@ class ControllerApiWkrestapiCheckout extends Controller {
 					'reward'     => $product['reward'],
 					'dominant_color' => $dominant_color,
 					'image'			 => $this->model_tool_image->resize($product['image'], 100, 100),
+					'original_price' => $this->currency->format($original_price, $this->session->data['currency']),
+					'original_total' => $this->currency->format($original_price * $product['quantity'], $this->session->data['currency']),
 				);
 			}
 

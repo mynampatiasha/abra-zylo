@@ -12,13 +12,23 @@ class ApiConstant {
   static const String apiKey = 'abra';
   static const String apiPassword = '79218a25c2a07a92155aeb3c2b95d340';
 
-  /// Rewrites image URLs to go through the CORS proxy on web.
-  /// On mobile, returns the URL unchanged.
+  /// Ensures image URL is always absolute. If the URL is relative,
+  /// prepends the baseUrl automatically.
   static String imageUrl(String? url) {
     if (url == null || url.isEmpty) return '';
     try {
-      return Uri.encodeFull(Uri.decodeFull(url));
+      // Decode first (in case it's double-encoded), then re-encode safely
+      String decoded = Uri.decodeFull(url);
+      // If it's a relative URL (doesn't start with http/https), prepend baseUrl
+      if (!decoded.startsWith('http://') && !decoded.startsWith('https://')) {
+        // Remove leading slash to avoid double slash
+        decoded = baseUrl + decoded.replaceFirst(RegExp(r'^/+'), '');
+      }
+      return Uri.encodeFull(decoded);
     } catch (e) {
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        return Uri.encodeFull(baseUrl + url.replaceFirst(RegExp(r'^/+'), ''));
+      }
       return Uri.encodeFull(url);
     }
   }

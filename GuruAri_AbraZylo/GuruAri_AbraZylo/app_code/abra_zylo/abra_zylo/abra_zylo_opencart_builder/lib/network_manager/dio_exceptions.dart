@@ -98,6 +98,9 @@ class DioCustomError implements DioError {
   late DioErrorType type;
 
   @override
+  DioExceptionReadableStringBuilder? stringBuilder;
+
+  @override
   DioException copyWith(
       {RequestOptions? requestOptions,
       Response? response,

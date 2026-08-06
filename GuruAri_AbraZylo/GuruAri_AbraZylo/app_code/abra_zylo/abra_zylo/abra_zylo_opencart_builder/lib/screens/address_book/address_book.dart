@@ -139,6 +139,14 @@ class _AddressBookState extends State<AddressBook> {
       padding: const EdgeInsets.only(
           top: AppSizes.size14, left: AppSizes.size14, right: AppSizes.size14),
       child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF673AB7), // Standard purple
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          elevation: 0,
+        ),
         onPressed: () {
           Navigator.of(context)
               .pushNamed(AppRoute.addEditAddress)

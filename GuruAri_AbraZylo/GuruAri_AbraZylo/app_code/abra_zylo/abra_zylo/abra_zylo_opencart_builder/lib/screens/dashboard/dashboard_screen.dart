@@ -96,25 +96,18 @@ class _DashboardScreenState extends State<DashboardScreen>
                     Expanded(child: orderScreen),
                     Container(
                         width: AppSizes.deviceWidth,
-                        // color: Theme.of(context).cardColor,
-                        // margin: const EdgeInsets.only(top: AppSizes.imageRadius),
-                        padding: const EdgeInsets.all(AppSizes.size8),
+                        padding: const EdgeInsets.symmetric(horizontal: 22.0, vertical: 6.0),
+                        margin: const EdgeInsets.only(bottom: 20.0),
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            // background
-                            // foreground
-                            side: BorderSide(
-                              width: 1.0,
-                              color:
-                                  (MediaQuery.of(context).platformBrightness ==
-                                          Brightness.light
-                                      ? AppColors.black
-                                      : AppColors.white),
+                            backgroundColor: const Color(0xFF5232a8),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14.0),
                             ),
-                            shape: const RoundedRectangleBorder(),
+                            elevation: 0,
                           ),
-
-                          // style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).textTheme.headlineMedium?.color),
                           onPressed: () {
                             Navigator.of(context).pushNamed(AppRoute.orderList,
                                 arguments: false);
@@ -123,9 +116,13 @@ class _DashboardScreenState extends State<DashboardScreen>
                             _localizations
                                     ?.translate(AppStringConstant.viewAll)
                                     .toUpperCase() ??
-                                '',
-
-                            // style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).cardColor)
+                                'VIEW ALL',
+                            style: const TextStyle(
+                              fontFamily: 'Karla',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13.5,
+                              letterSpacing: 0.3,
+                            ),
                           ),
                         ))
                   ],
@@ -136,23 +133,24 @@ class _DashboardScreenState extends State<DashboardScreen>
           Visibility(visible: isLoading, child: const Loader())
         ]),
         tabBar: TabBar(
-          //isScrollable: true,
-
-          indicatorColor: AppColors.black,
-          indicatorPadding: const EdgeInsets.only(
-              left: AppSizes.size18, right: AppSizes.size18),
-          unselectedLabelColor: Colors.grey,
-          dividerColor: Theme.of(context).cardColor,
-
-          unselectedLabelStyle:
-              const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
-          // Color of unselected tab labels
-          labelColor: AppColors.black,
-          labelStyle:
-              const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-
+          indicatorColor: const Color(0xFF5232a8), // violet-700
+          indicatorWeight: 2.5,
+          indicatorPadding: EdgeInsets.zero,
+          unselectedLabelColor: const Color(0xFF8f889c), // ink-soft
+          dividerColor: const Color(0xFFece7f3), // line
+          unselectedLabelStyle: const TextStyle(
+            fontFamily: 'Karla',
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+          labelColor: const Color(0xFF2b2540), // ink
+          labelStyle: const TextStyle(
+            fontFamily: 'Karla',
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
           controller: _tabController,
-          labelPadding: const EdgeInsets.all(0.0),
+          labelPadding: EdgeInsets.zero,
 
           tabs: [
             _getTab(_localizations?.translate(AppStringConstant.recentOrders) ??
@@ -165,26 +163,15 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
-  Tab _getTab(
-    title,
-  ) {
+  Tab _getTab(String title) {
     return Tab(
       child: Container(
         width: AppSizes.deviceWidth / 2,
-        // height: AppSizes.deviceHeight / 20,
-        padding: const EdgeInsets.symmetric(horizontal: AppSizes.size16),
-        color: Theme.of(context).cardColor,
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 4.0),
+        color: Colors.transparent,
         child: Center(
-            child: Text(
-          title,
-          // style: TextStyle(
-          //
-          //     color: (SchedulerBinding.instance!.window.platformBrightness == Brightness.dark
-          //         ? AppColors.white
-          //         : AppColors.black)
-          // )
-          // ),
-        )),
+          child: Text(title),
+        ),
       ),
     );
   }

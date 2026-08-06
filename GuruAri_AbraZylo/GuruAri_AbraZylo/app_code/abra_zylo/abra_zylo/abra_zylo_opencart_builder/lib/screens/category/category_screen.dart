@@ -115,7 +115,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> with RouteAware {
     isLoading = true;
     if (!(_categoriesBloc?.isClosed ?? true)) {
       _categoriesBloc?.add(FetchCategoriesEvent(
-          GlobalData.rootCategories?.elementAt(widget.selectedIndex).path));
+          _selectedCategoryId ?? GlobalData.rootCategories?.elementAt(widget.selectedIndex).path));
     }
   }
 

@@ -91,10 +91,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
       cartCount = int.parse(value);
       TabbarController.countController.sink.add(cartCount ?? 0);
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      routeObserver.subscribe(this, ModalRoute.of(context)!);
-    });
-
     AppSharedPref.isLogin().then((value) {
       if (value) {
         setState(() {
@@ -107,7 +103,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     //call product detail api
     productPageBloc?.add(GetProductDetailEvent(widget.arguments[productIdKey]));
     _scrollController = ScrollController()..addListener(_scrollListener);
-    _confettiController = ConfettiController(duration: const Duration(seconds: 1));
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 1));
     super.initState();
   }
 
@@ -123,11 +120,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     super.didPopNext();
     productPageBloc?.add(GetProductDetailEvent(widget.arguments[productIdKey]));
     _scrollController = ScrollController()..addListener(_scrollListener);
+    setState(() {
+      isAddedToCart = false;
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute);
     _localizations = AppLocalizations.of(context);
   }
 
@@ -326,6 +327,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             selectedProductOptions,
             productPageData?.options,
             isAddedToCart: isAddedToCart,
+            maxQuantity:
+                int.tryParse(productPageData?.quantity?.toString() ?? ""),
           ),
         ),
       ),
@@ -402,24 +405,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                               Stack(
                                 children: [
                                   Padding(
-                                    padding:
-                                        const EdgeInsets.only(top: AppSizes.size12),
-                                    child: Builder(
-                                      builder: (context) {
-                                        List<Images> combinedImages = [];
-                                        if (productPageData?.popup != null || productPageData?.thumb != null) {
-                                          combinedImages.add(Images(
-                                            popup: productPageData?.popup,
-                                            thumb: productPageData?.thumb,
-                                            dominantColor: productPageData?.dominantColor,
-                                          ));
-                                        }
-                                        if (productPageData?.images != null) {
-                                          combinedImages.addAll(productPageData!.images!);
-                                        }
-                                        return ProductDetailsImageWidget(combinedImages);
+                                    padding: const EdgeInsets.only(
+                                        top: AppSizes.size12),
+                                    child: Builder(builder: (context) {
+                                      List<Images> combinedImages = [];
+                                      if (productPageData?.popup != null ||
+                                          productPageData?.thumb != null) {
+                                        combinedImages.add(Images(
+                                          popup: productPageData?.popup,
+                                          thumb: productPageData?.thumb,
+                                          dominantColor:
+                                              productPageData?.dominantColor,
+                                        ));
                                       }
-                                    ),
+                                      if (productPageData?.images != null) {
+                                        combinedImages
+                                            .addAll(productPageData!.images!);
+                                      }
+                                      bool isOutOfStock =
+                                          (productPageData?.stock ?? "")
+                                              .toLowerCase()
+                                              .contains("out of stock");
+                                      return ProductDetailsImageWidget(
+                                          combinedImages,
+                                          isOutOfStock: isOutOfStock);
+                                    }),
                                   ),
                                   if (getArStatus())
                                     InkWell(
@@ -473,6 +483,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                             },
                             counter: quantityCounter,
                             minimum: minimumeCount,
+                            maximum: int.tryParse(
+                                productPageData?.quantity?.toString() ?? ""),
                           ),
                           widgetSpace(0, AppSizes.size8),
                           /*
@@ -531,6 +543,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                                 selectedProductOptions,
                                 productPageData?.options,
                                 isAddedToCart: isAddedToCart,
+                                maxQuantity: int.tryParse(
+                                    productPageData?.quantity?.toString() ??
+                                        ""),
                               )),
                           //  ),
 
@@ -674,11 +689,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
   }
 
   bool getArStatus() {
-    if (!kIsWeb && Platform.isAndroid &&
+    if (!kIsWeb &&
+        Platform.isAndroid &&
         (productPageData?.isAr == true) &&
         (productPageData?.android_ar ?? "").isNotEmpty) {
       return true;
-    } else if (!kIsWeb && Platform.isIOS &&
+    } else if (!kIsWeb &&
+        Platform.isIOS &&
         (productPageData?.isAr == true) &&
         (productPageData?.ios_ar ?? "").isNotEmpty) {
       return true;

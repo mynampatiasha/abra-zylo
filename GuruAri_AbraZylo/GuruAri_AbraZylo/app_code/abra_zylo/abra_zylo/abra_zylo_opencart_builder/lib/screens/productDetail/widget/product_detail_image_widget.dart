@@ -10,7 +10,8 @@ import 'imaze_zoom_view.dart';
 
 class ProductDetailsImageWidget extends StatefulWidget {
   List<Images> productImages;
-  ProductDetailsImageWidget(this.productImages, {Key? key}) : super(key: key);
+  final bool isOutOfStock;
+  ProductDetailsImageWidget(this.productImages, {this.isOutOfStock = false, Key? key}) : super(key: key);
   @override
   _ProductDetailsImageWidgetState createState() =>
       _ProductDetailsImageWidgetState();
@@ -43,23 +44,49 @@ class _ProductDetailsImageWidgetState extends State<ProductDetailsImageWidget> {
           SizedBox(
             height: AppSizes.deviceWidth,
             width: AppSizes.deviceWidth,
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: widget.productImages.length,
-              itemBuilder: (BuildContext context, int index) {
-                return InteractiveViewer(
-                  panEnabled: true,
-                  minScale: 1,
-                  maxScale: 4,
-                  child: ImageView(
-                    url: widget.productImages[index].popup,
-                    fit: BoxFit.contain,
+            child: Stack(
+              children: [
+                PageView.builder(
+                  controller: _pageController,
+                  itemCount: widget.productImages.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return InteractiveViewer(
+                      panEnabled: true,
+                      minScale: 1,
+                      maxScale: 4,
+                      child: ImageView(
+                        url: widget.productImages[index].popup,
+                        fit: BoxFit.contain,
+                      ),
+                    );
+                  },
+                  onPageChanged: (int index) {
+                    _currentPageNotifier.value = index;
+                  },
+                ),
+                if (widget.isOutOfStock)
+                  Container(
+                    color: Colors.white.withOpacity(0.5),
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          "OUT OF STOCK",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                );
-              },
-              onPageChanged: (int index) {
-                _currentPageNotifier.value = index;
-              },
+              ],
             ),
           ),
           Container(

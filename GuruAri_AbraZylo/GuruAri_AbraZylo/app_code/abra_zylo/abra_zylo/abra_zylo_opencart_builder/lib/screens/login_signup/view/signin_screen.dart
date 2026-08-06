@@ -24,7 +24,9 @@ import '../../login_signup/bloc/signin_signup_screen_bloc.dart';
 // import 'google_sign_in_web_button.dart'; // commented out — google_sign_in disabled
 
 class SignInScreen extends StatefulWidget {
-  SignInScreen(this.isComingFromCartPage, {this.isFromProductDetail = false, Key? key}) : super(key: key);
+  SignInScreen(this.isComingFromCartPage,
+      {this.isFromProductDetail = false, Key? key})
+      : super(key: key);
   final bool isComingFromCartPage;
   final bool isFromProductDetail;
 
@@ -100,7 +102,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     : "Welcome back! Thanks for signing in.",
                 context);
             if (widget.isFromProductDetail) {
-              Navigator.of(context)..pop()..pop();
+              Navigator.of(context)
+                ..pop()
+                ..pop();
             } else if (widget.isComingFromCartPage == true) {
               loginFromFingerPrint
                   ? Navigator.of(context)
@@ -147,24 +151,11 @@ class _SignInScreenState extends State<SignInScreen> {
           ),
           child: Row(
             children: [
-              InkWell(
-                onTap: () => Navigator.pop(context),
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: const BoxDecoration(
-                    color: Colors.transparent,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.arrow_back_ios_new, size: 19, color: Color(0xFF5232a8)),
-                  ),
-                ),
-              ),
+              const BackButton(color: Color(0xFF5232a8)),
               const SizedBox(width: 12),
               Text(
-                _localizations?.translate(AppStringConstant.signIn) ?? "Sign in",
+                _localizations?.translate(AppStringConstant.signIn) ??
+                    "Sign in",
                 style: const TextStyle(
                   fontFamily: 'Baloo 2',
                   fontWeight: FontWeight.w700,
@@ -217,7 +208,8 @@ class _SignInScreenState extends State<SignInScreen> {
                           ],
                         ),
                         child: const Center(
-                          child: Icon(Icons.person, color: Colors.white, size: 30),
+                          child:
+                              Icon(Icons.person, color: Colors.white, size: 30),
                         ),
                       ),
                       const Text(
@@ -243,23 +235,34 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   const SizedBox(height: 30),
                   // Email Field
-                  const Text("Email", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 12.5, color: Color(0xFF2b2540))),
+                  const Text("Email",
+                      style: TextStyle(
+                          fontFamily: 'Karla',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12.5,
+                          color: Color(0xFF2b2540))),
                   const SizedBox(height: 7),
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(13),
-                      border: Border.all(color: const Color(0xFFece7f3), width: 1.5),
+                      border: Border.all(
+                          color: const Color(0xFFece7f3), width: 1.5),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                     child: Row(
                       children: [
-                        const Icon(Icons.email_outlined, size: 17, color: Color(0xFF8f889c)),
+                        const Icon(Icons.email_outlined,
+                            size: 17, color: Color(0xFF8f889c)),
                         const SizedBox(width: 10),
                         Expanded(
                           child: TextFormField(
                             controller: _emailController,
-                            style: const TextStyle(fontFamily: 'Karla', fontSize: 14, color: Color(0xFF2b2540)),
+                            style: const TextStyle(
+                                fontFamily: 'Karla',
+                                fontSize: 14,
+                                color: Color(0xFF2b2540)),
                             decoration: const InputDecoration(
                               hintText: "you@example.com",
                               hintStyle: TextStyle(color: Color(0xFFc2bccf)),
@@ -267,7 +270,8 @@ class _SignInScreenState extends State<SignInScreen> {
                               isDense: true,
                             ),
                             validator: (value) {
-                              if (value == null || value.isEmpty) return 'Enter your email';
+                              if (value == null || value.isEmpty)
+                                return 'Enter your email';
                               return null;
                             },
                           ),
@@ -277,24 +281,35 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   const SizedBox(height: 16),
                   // Password Field
-                  const Text("Password", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 12.5, color: Color(0xFF2b2540))),
+                  const Text("Password",
+                      style: TextStyle(
+                          fontFamily: 'Karla',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12.5,
+                          color: Color(0xFF2b2540))),
                   const SizedBox(height: 7),
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(13),
-                      border: Border.all(color: const Color(0xFFece7f3), width: 1.5),
+                      border: Border.all(
+                          color: const Color(0xFFece7f3), width: 1.5),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                     child: Row(
                       children: [
-                        const Icon(Icons.lock_outline, size: 17, color: Color(0xFF8f889c)),
+                        const Icon(Icons.lock_outline,
+                            size: 17, color: Color(0xFF8f889c)),
                         const SizedBox(width: 10),
                         Expanded(
                           child: TextFormField(
                             controller: _passwordController,
                             obscureText: true,
-                            style: const TextStyle(fontFamily: 'Karla', fontSize: 14, color: Color(0xFF2b2540)),
+                            style: const TextStyle(
+                                fontFamily: 'Karla',
+                                fontSize: 14,
+                                color: Color(0xFF2b2540)),
                             decoration: const InputDecoration(
                               hintText: "••••••••",
                               hintStyle: TextStyle(color: Color(0xFFc2bccf)),
@@ -302,7 +317,8 @@ class _SignInScreenState extends State<SignInScreen> {
                               isDense: true,
                             ),
                             validator: (value) {
-                              if (value == null || value.isEmpty) return 'Enter your password';
+                              if (value == null || value.isEmpty)
+                                return 'Enter your password';
                               return null;
                             },
                           ),
@@ -316,19 +332,26 @@ class _SignInScreenState extends State<SignInScreen> {
                     alignment: Alignment.centerRight,
                     child: GestureDetector(
                       onTap: () {
-                          DialogHelper.forgotPasswordDialog(
-                              context,
-                              _localizations,
-                              _localizations?.translate(AppStringConstant.forgotPassword) ?? '',
-                              _localizations?.translate(AppStringConstant.forgotPasswordMessage) ?? '',
-                              onConfirm: (email) async {
-                                bloc?.emit(LoadingState());
-                                var wkToken = await AppSharedPref.getWkToken();
-                                bloc?.add(ForgotPasswordEvent(email, wkToken));
-                              },
-                              email: _emailController.text);
+                        DialogHelper.forgotPasswordDialog(
+                            context,
+                            _localizations,
+                            _localizations?.translate(
+                                    AppStringConstant.forgotPassword) ??
+                                '',
+                            _localizations?.translate(
+                                    AppStringConstant.forgotPasswordMessage) ??
+                                '', onConfirm: (email) async {
+                          bloc?.emit(LoadingState());
+                          var wkToken = await AppSharedPref.getWkToken();
+                          bloc?.add(ForgotPasswordEvent(email, wkToken));
+                        }, email: _emailController.text);
                       },
-                      child: const Text("Forgot password?", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 12.5, color: Color(0xFF5232a8))),
+                      child: const Text("Forgot password?",
+                          style: TextStyle(
+                              fontFamily: 'Karla',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12.5,
+                              color: Color(0xFF5232a8))),
                     ),
                   ),
                   const SizedBox(height: 22),
@@ -337,8 +360,13 @@ class _SignInScreenState extends State<SignInScreen> {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: _validateForm,
-                      icon: const Icon(Icons.login, size: 17, color: Colors.white),
-                      label: const Text("Sign in", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 14.5)),
+                      icon: const Icon(Icons.login,
+                          size: 17, color: Colors.white),
+                      label: const Text("Sign in",
+                          style: TextStyle(
+                              fontFamily: 'Karla',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14.5)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF5232a8),
                         foregroundColor: Colors.white,
@@ -354,12 +382,22 @@ class _SignInScreenState extends State<SignInScreen> {
                   // Divider
                   Row(
                     children: const [
-                      Expanded(child: Divider(color: Color(0xFFece7f3), thickness: 1)),
+                      Expanded(
+                          child:
+                              Divider(color: Color(0xFFece7f3), thickness: 1)),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: Text("OR CONTINUE WITH", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 11.5, letterSpacing: 1.1, color: Color(0xFF8f889c))),
+                        child: Text("OR CONTINUE WITH",
+                            style: TextStyle(
+                                fontFamily: 'Karla',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 11.5,
+                                letterSpacing: 1.1,
+                                color: Color(0xFF8f889c))),
                       ),
-                      Expanded(child: Divider(color: Color(0xFFece7f3), thickness: 1)),
+                      Expanded(
+                          child:
+                              Divider(color: Color(0xFFece7f3), thickness: 1)),
                     ],
                   ),
                   const SizedBox(height: 26),
@@ -369,8 +407,15 @@ class _SignInScreenState extends State<SignInScreen> {
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: _signInWithGoogle,
-                          icon: const Icon(Icons.g_mobiledata, size: 17, color: Color(0xFF2b2540)), // Placeholder icon for Google
-                          label: const Text("Google", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 13)),
+                          icon: const Icon(Icons.g_mobiledata,
+                              size: 17,
+                              color: Color(
+                                  0xFF2b2540)), // Placeholder icon for Google
+                          label: const Text("Google",
+                              style: TextStyle(
+                                  fontFamily: 'Karla',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: const Color(0xFF2b2540),
@@ -378,7 +423,8 @@ class _SignInScreenState extends State<SignInScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 11),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(13),
-                              side: const BorderSide(color: Color(0xFFece7f3), width: 1.5),
+                              side: const BorderSide(
+                                  color: Color(0xFFece7f3), width: 1.5),
                             ),
                           ),
                         ),
@@ -387,8 +433,13 @@ class _SignInScreenState extends State<SignInScreen> {
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: _signInWithApple,
-                          icon: const Icon(Icons.apple, size: 17, color: Color(0xFF2b2540)),
-                          label: const Text("Apple", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 13)),
+                          icon: const Icon(Icons.apple,
+                              size: 17, color: Color(0xFF2b2540)),
+                          label: const Text("Apple",
+                              style: TextStyle(
+                                  fontFamily: 'Karla',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: const Color(0xFF2b2540),
@@ -396,7 +447,8 @@ class _SignInScreenState extends State<SignInScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 11),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(13),
-                              side: const BorderSide(color: Color(0xFFece7f3), width: 1.5),
+                              side: const BorderSide(
+                                  color: Color(0xFFece7f3), width: 1.5),
                             ),
                           ),
                         ),
@@ -409,7 +461,11 @@ class _SignInScreenState extends State<SignInScreen> {
                     Center(
                       child: InkWell(
                         onTap: () => startAuthentication(false),
-                        child: Lottie.asset(AppImages.fingerPrintLottie, width: 60, height: 60, fit: BoxFit.fill, repeat: true),
+                        child: Lottie.asset(AppImages.fingerPrintLottie,
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.fill,
+                            repeat: true),
                       ),
                     ),
                   const SizedBox(height: 16),
@@ -423,9 +479,16 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: RichText(
                         text: const TextSpan(
                           text: "New here? ",
-                          style: TextStyle(fontFamily: 'Karla', fontSize: 13.5, color: Color(0xFF8f889c)),
+                          style: TextStyle(
+                              fontFamily: 'Karla',
+                              fontSize: 13.5,
+                              color: Color(0xFF8f889c)),
                           children: [
-                            TextSpan(text: "Create an account", style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
+                            TextSpan(
+                                text: "Create an account",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF5232a8))),
                           ],
                         ),
                       ),
@@ -467,7 +530,9 @@ class _SignInScreenState extends State<SignInScreen> {
     // local_auth uses platform channels — not supported on web
     if (kIsWeb) {
       if (widget.isFromProductDetail) {
-        Navigator.of(context)..pop()..pop();
+        Navigator.of(context)
+          ..pop()
+          ..pop();
       } else if (widget.isComingFromCartPage == true) {
         Navigator.of(context)
             .pushNamedAndRemoveUntil(AppRoute.cart, (route) => false);
@@ -482,7 +547,9 @@ class _SignInScreenState extends State<SignInScreen> {
         showFingerprintDialog();
       } else {
         if (widget.isFromProductDetail) {
-          Navigator.of(context)..pop()..pop();
+          Navigator.of(context)
+            ..pop()
+            ..pop();
         } else if (widget.isComingFromCartPage == true) {
           Navigator.of(context)
               .pushNamedAndRemoveUntil(AppRoute.cart, (route) => false);

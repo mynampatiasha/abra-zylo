@@ -74,11 +74,14 @@ class _CommonTextFieldState extends State<CommonTextField> {
           Row(
             children: [
               Text(
-                  (widget.labelText ??
-                      '') /*+
-                    ((widget.isRequired ?? false) ? "*" : ""*/
-                  ,
-                  style: TextStyle(color: AppColors.darkGray)),
+                  (widget.labelText ?? '').toUpperCase(),
+                  style: const TextStyle(
+                    fontFamily: 'Karla',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                    letterSpacing: 0.5,
+                    color: Color(0xFF8f889c), // ink-soft
+                  )),
               if (widget.isRequired == true)
                 const Text(
                   "*",
@@ -100,8 +103,11 @@ class _CommonTextFieldState extends State<CommonTextField> {
             obscureText: _obscureText,
             keyboardType: widget.inputType,
             controller: widget.controller,
-            style:
-                Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 14),
+            style: const TextStyle(
+                fontFamily: 'Karla',
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: Color(0xFF2b2540)), // ink
             onChanged: widget.onChange,
             onEditingComplete: widget.onEditingComplete,
             decoration: formFieldDecoration(
@@ -177,27 +183,33 @@ InputDecoration formFieldDecoration(
         .textTheme
         .bodyMedium
         ?.copyWith(fontWeight: FontWeight.normal, color: AppColors.darkGray),
-    fillColor: MobikulTheme.primaryColor,
+    fillColor: Colors.white,
+    filled: true,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
     suffixIcon: suffix,
-    border: OutlineInputBorder(
-        // borderRadius: BorderRadius.all(Radius.circular(20)),
+    border: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(13)),
         borderSide: BorderSide(
-      color: AppColors.darkGray,
+      color: Color(0xFFece7f3),
+      width: 1.5,
     )),
-    focusedBorder: OutlineInputBorder(
-        //   borderRadius: BorderRadius.all(Radius.circular(20)),
+    focusedBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(13)),
         borderSide: BorderSide(
-      color: AppColors.darkGray,
+      color: Color(0xFF5232a8),
+      width: 1.5,
     )),
-    disabledBorder: OutlineInputBorder(
-        // borderRadius: BorderRadius.all(Radius.circular(20)),
+    disabledBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(13)),
         borderSide: BorderSide(
-      color: AppColors.darkGray,
+      color: Color(0xFFece7f3),
+      width: 1.5,
     )),
-    enabledBorder: OutlineInputBorder(
-        //  borderRadius: BorderRadius.all(Radius.circular(20)),
+    enabledBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(13)),
         borderSide: BorderSide(
-      color: AppColors.darkGray,
+      color: Color(0xFFece7f3),
+      width: 1.5,
     )),
   );
 }

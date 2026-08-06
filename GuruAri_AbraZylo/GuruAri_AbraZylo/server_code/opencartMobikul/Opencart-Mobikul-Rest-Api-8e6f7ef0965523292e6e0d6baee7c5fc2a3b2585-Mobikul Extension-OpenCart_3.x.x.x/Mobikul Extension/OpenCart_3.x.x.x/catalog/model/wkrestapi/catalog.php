@@ -4319,11 +4319,12 @@ AND pd.language_id = '" . $this->config->get('config_language_id') . "'";
 
 
 		$this->load->model('catalog/product');
+		$this->load->model('tool/image');
 
 		if (isset($search['search']) && $search['search']) {
 
 			$products = $this->db->query("
-                 SELECT DISTINCT pd.product_id, pd.name 
+                 SELECT DISTINCT pd.product_id, pd.name, p.image
                   FROM " . DB_PREFIX . "product p 
                   LEFT JOIN " . DB_PREFIX . "product_description pd 
                   ON (p.product_id = pd.product_id) 
@@ -4336,6 +4337,14 @@ AND pd.language_id = '" . $this->config->get('config_language_id') . "'";
 				foreach ($products as $key => $value) {
 					if (isset($products[$key]['name']))
 						$products[$key]['name'] = html_entity_decode($products[$key]['name'], ENT_QUOTES, 'UTF-8');
+					
+					// Generate thumb URL
+					if (!empty($products[$key]['image'])) {
+						$products[$key]['thumb'] = HTTP_SERVER . 'image/' . $products[$key]['image'];
+					} else {
+						$products[$key]['thumb'] = '';
+					}
+					$products[$key]['image'] = $products[$key]['thumb'];
 				}
 				return array('search_data' => $products);
 			} else {

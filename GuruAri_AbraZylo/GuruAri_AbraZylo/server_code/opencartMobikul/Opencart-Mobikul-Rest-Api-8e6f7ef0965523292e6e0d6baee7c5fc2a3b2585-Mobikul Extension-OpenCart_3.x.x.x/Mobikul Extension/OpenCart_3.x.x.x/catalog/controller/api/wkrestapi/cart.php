@@ -761,6 +761,9 @@ class ControllerApiWkrestapiCart extends Controller {
 						}
 					}
 
+					$query = $this->db->query("SELECT price FROM " . DB_PREFIX . "product WHERE product_id = '" . (int)$product['product_id'] . "'");
+					$original_price = $query->row['price'];
+
 					if (version_compare(VERSION,'2.1.0.0','>=')) {
 						$cart['products'][] = array(
 							'key'       => $product['cart_id'],
@@ -777,7 +780,9 @@ class ControllerApiWkrestapiCart extends Controller {
 							'price'     => $price,
 							'total'     => $total,
 							'product_id'=> $product['product_id'],
-							'wishlist_status' => $already_status
+							'wishlist_status' => $already_status,
+							'original_price' => $this->currency->format($original_price, $this->session->data['currency']),
+							'original_total' => $this->currency->format($original_price * $product['quantity'], $this->session->data['currency'])
 						);
 					} else {
 						$cart['products'][] = array(
@@ -795,7 +800,9 @@ class ControllerApiWkrestapiCart extends Controller {
 							'price'     => $price,
 							'total'     => $total,
 							'product_id'=> $product['product_id'],
-							'wishlist_status' => $already_status
+							'wishlist_status' => $already_status,
+							'original_price' => $this->currency->format($original_price, $this->session->data['currency']),
+							'original_total' => $this->currency->format($original_price * $product['quantity'], $this->session->data['currency'])
 						);
 					}
 				}

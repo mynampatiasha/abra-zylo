@@ -269,14 +269,76 @@ class OrderReviewView extends StatelessWidget {
                   const SizedBox(height: 12),
                   Divider(color: Colors.grey.shade200),
                   const SizedBox(height: 12),
-                  ...List.generate(orderReviewModel!.continu!.totals!.length, (index) {
+                  Builder(builder: (context) {
+                    final products = orderReviewModel?.continu?.orderDetails?.products;
+                    final double originalSum = products?.fold<double>(0.0, (double prev, p) {
+                      final orig = double.tryParse(p.originalTotal?.replaceAll(RegExp(r'[^0-9.]'), '') ?? '0') ?? 0;
+                      return prev + orig;
+                    }) ?? 0.0;
+
+                    final double displayedSubtotal = orderReviewModel?.continu?.totals?.firstWhere(
+                          (t) => t.title?.toLowerCase().replaceAll('-', '') == 'subtotal',
+                          orElse: () => Totals())
+                      ?.text != null
+                      ? double.tryParse(orderReviewModel!.continu!.totals!.firstWhere(
+                              (t) => t.title?.toLowerCase().replaceAll('-', '') == 'subtotal')
+                          .text!
+                          .replaceAll(RegExp(r'[^0-9.]'), '') ?? '0') ?? 0.0
+                      : 0.0;
+
+                    if (originalSum > displayedSubtotal) {
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Original Amount/MRP',
+                                  style: TextStyle(fontSize: 13, color: Colors.grey, fontWeight: FontWeight.w500),
+                                ),
+                                Text(
+                                  '₹${originalSum.toStringAsFixed(2)}',
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Discount',
+                                  style: TextStyle(fontSize: 13, color: Colors.grey, fontWeight: FontWeight.w500),
+                                ),
+                                Text(
+                                  '-₹${(originalSum - displayedSubtotal).toStringAsFixed(2)}',
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.green),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                    return const SizedBox();
+                  }),
+                  ...List.generate((orderReviewModel?.continu?.totals?.length ?? 0) - 1, (index) {
                     final item = orderReviewModel!.continu!.totals![index];
-                    final isTotal = item.title?.toLowerCase() == 'total';
-                    if (isTotal) return const SizedBox(); // Skip total for now
                     
+                    // Hide shipping
+                    if (item.title?.toLowerCase().contains('shipping') ?? false) {
+                      return const SizedBox();
+                    }
+
                     bool isFree = item.text?.toLowerCase() == 'free' || item.text == '₹0.00' || item.text == '0' || item.text == '₹0';
                     String title = item.title ?? '';
-                    if (title.toLowerCase() == 'sub-total') title = 'Total MRP';
+                    if (title.toLowerCase().replaceAll('-', '') == 'subtotal') {
+                      title = 'Item(s) Total';
+                    }
                     
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12.0),
@@ -311,7 +373,7 @@ class OrderReviewView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        "Final Payable Amount:",
+                        "Total Amount",
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,

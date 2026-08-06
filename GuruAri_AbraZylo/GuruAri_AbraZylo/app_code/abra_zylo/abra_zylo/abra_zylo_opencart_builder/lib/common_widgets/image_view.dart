@@ -9,7 +9,7 @@ class ImageView extends StatelessWidget {
   BoxFit fit;
 
   ImageView(
-      {this.url, this.width = 0.0, this.height = 0.0, this.fit = BoxFit.fill});
+      {this.url, this.width = 0.0, this.height = 0.0, this.fit = BoxFit.contain});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +19,10 @@ class ImageView extends StatelessWidget {
       height: height != 0.0 ? height : null,
       child: CachedNetworkImage(
           imageUrl: imageUrl,
-          fit: BoxFit.contain,
+          fit: fit,
           errorWidget: (context, url, error) {
             return Image.asset('assets/images/placeholder.png',
-                fit: BoxFit.contain);
+                fit: fit);
           }),
     );
   }

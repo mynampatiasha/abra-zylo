@@ -17,12 +17,25 @@ class _CommonSwitchButtonState extends State<CommonSwitchButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).cardColor,
+      padding: const EdgeInsets.symmetric(vertical: 18),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFFece7f3))), // var(--line)
+      ),
       child: Row(
-        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Text(widget.title,
+              style: const TextStyle(
+                fontFamily: 'Karla',
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: Color(0xFF2b2540), // var(--ink)
+              )),
           Switch(
-            activeColor: MobikulTheme.accentColor,
+            activeColor: Colors.white,
+            activeTrackColor: const Color(0xFF5232a8), // violet-700
+            inactiveThumbColor: Colors.white,
+            inactiveTrackColor: const Color(0xFFece7f3), // line
             value: widget.isOn,
             onChanged: (value) {
               setState(() {
@@ -30,14 +43,6 @@ class _CommonSwitchButtonState extends State<CommonSwitchButton> {
                 widget.callback(widget.isOn);
               });
             },
-          ),
-          Padding(
-            padding: const EdgeInsets.all(AppSizes.size8),
-            child: Text(widget.title,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontWeight: FontWeight.normal)),
           ),
         ],
       ),

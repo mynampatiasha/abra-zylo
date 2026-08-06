@@ -21,8 +21,10 @@ class SearchData {
   @JsonKey(name: "product_id")
   String? productId;
   String? name;
+  String? image;
+  String? thumb;
 
-  SearchData({this.productId, this.name});
+  SearchData({this.productId, this.name, this.image, this.thumb});
 
   factory SearchData.fromJson(Map<String, dynamic> json) =>
       _$SearchDataFromJson(json);

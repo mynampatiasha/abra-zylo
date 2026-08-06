@@ -215,6 +215,8 @@ Products _$ProductsFromJson(Map<String, dynamic> json) => Products(
       reward: json['reward'],
       dominantColor: json['dominant_color'] as String?,
       image: json['image'] as String?,
+      originalPrice: json['original_price'] as String?,
+      originalTotal: json['original_total'] as String?,
     );
 
 Map<String, dynamic> _$ProductsToJson(Products instance) => <String, dynamic>{
@@ -233,6 +235,8 @@ Map<String, dynamic> _$ProductsToJson(Products instance) => <String, dynamic>{
       'reward': instance.reward,
       'dominant_color': instance.dominantColor,
       'image': instance.image,
+      'original_price': instance.originalPrice,
+      'original_total': instance.originalTotal,
     };
 
 Option _$OptionFromJson(Map<String, dynamic> json) => Option(

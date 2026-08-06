@@ -63,8 +63,7 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
         WidgetsBinding.instance?.addPostFrameCallback((_) {
           AlertMessage.showError(state.message ?? "", context);
         });
-      }
-      else if (state is LoginState) {
+      } else if (state is LoginState) {
         _loading = false;
         var model = state.data;
         AppSharedPref.setLoginUserData(model);
@@ -123,27 +122,16 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
             children: <Widget>[
               Container(
                 color: const Color(0xFFc8abec),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 child: Row(
                   children: [
-                    InkWell(
-                      onTap: () => Navigator.pop(context),
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        width: 30,
-                        height: 30,
-                        decoration: const BoxDecoration(
-                          color: Colors.transparent,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Center(
-                          child: Icon(Icons.arrow_back_ios_new, size: 19, color: Color(0xFF5232a8)),
-                        ),
-                      ),
-                    ),
+                    const BackButton(color: Color(0xFF5232a8)),
                     const SizedBox(width: 12),
                     Text(
-                      _localizations?.translate(AppStringConstant.signInRegister) ?? "Sign in or register",
+                      _localizations
+                              ?.translate(AppStringConstant.signInRegister) ??
+                          "Sign in or register",
                       style: const TextStyle(
                         fontFamily: 'Baloo 2',
                         fontWeight: FontWeight.w700,
@@ -159,7 +147,8 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
                   padding: const EdgeInsets.all(26),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      minHeight: MediaQuery.of(context).size.height - 180, // Approximate height minus appbar to center content if possible
+                      minHeight: MediaQuery.of(context).size.height -
+                          180, // Approximate height minus appbar to center content if possible
                     ),
                     child: IntrinsicHeight(
                       child: Column(
@@ -167,9 +156,11 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
                           Expanded(
                             child: Center(
                               child: Text(
-                                _localizations?.translate(AppConstant.isMarketPlace
-                                    ? AppStringConstant.appNameMarketplace
-                                    : AppStringConstant.appNameBuilder) ?? "Abra Zylo",
+                                _localizations?.translate(AppConstant
+                                            .isMarketPlace
+                                        ? AppStringConstant.appNameMarketplace
+                                        : AppStringConstant.appNameBuilder) ??
+                                    "Abra Zylo",
                                 style: const TextStyle(
                                   fontFamily: 'Baloo 2',
                                   fontWeight: FontWeight.w700,
@@ -182,7 +173,10 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
                           ),
                           const SizedBox(height: 20),
                           Text(
-                            (_localizations?.translate(AppStringConstant.signInRegister) ?? "SIGN IN OR REGISTER").toUpperCase(),
+                            (_localizations?.translate(
+                                        AppStringConstant.signInRegister) ??
+                                    "SIGN IN OR REGISTER")
+                                .toUpperCase(),
                             style: const TextStyle(
                               fontFamily: 'Karla',
                               fontWeight: FontWeight.w700,
@@ -200,16 +194,26 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
                               width: double.infinity,
                               child: ElevatedButton.icon(
                                 onPressed: _signInWithGoogle,
-                                icon: const Icon(Icons.g_mobiledata, size: 24, color: Color(0xFF2b2540)), // Placeholder icon
-                                label: const FittedBox(child: Text("Sign in with Google", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 14))),
+                                icon: const Icon(Icons.g_mobiledata,
+                                    size: 24,
+                                    color:
+                                        Color(0xFF2b2540)), // Placeholder icon
+                                label: const FittedBox(
+                                    child: Text("Sign in with Google",
+                                        style: TextStyle(
+                                            fontFamily: 'Karla',
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 14))),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   foregroundColor: const Color(0xFF2b2540),
                                   elevation: 0,
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(13),
-                                    side: const BorderSide(color: Color(0xFFece7f3), width: 1.5),
+                                    side: const BorderSide(
+                                        color: Color(0xFFece7f3), width: 1.5),
                                   ),
                                 ),
                               ),
@@ -221,13 +225,20 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
                             width: double.infinity,
                             child: ElevatedButton.icon(
                               onPressed: _signInWithApple,
-                              icon: const Icon(Icons.apple, size: 21, color: Colors.white),
-                              label: const FittedBox(child: Text("Sign in with Apple", style: TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 14))),
+                              icon: const Icon(Icons.apple,
+                                  size: 21, color: Colors.white),
+                              label: const FittedBox(
+                                  child: Text("Sign in with Apple",
+                                      style: TextStyle(
+                                          fontFamily: 'Karla',
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 14))),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black,
                                 foregroundColor: Colors.white,
                                 elevation: 0,
-                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(13),
                                 ),
@@ -235,27 +246,42 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          Text(_localizations?.translate(AppStringConstant.or) ?? "Or", 
-                            style: const TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF8f889c))
-                          ),
+                          Text(
+                              _localizations?.translate(AppStringConstant.or) ??
+                                  "Or",
+                              style: const TextStyle(
+                                  fontFamily: 'Karla',
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13,
+                                  color: Color(0xFF8f889c))),
                           const SizedBox(height: 16),
                           // Email Button
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
-                                signInSignUpBottomModalSheet(context, false, false, isFromProductDetail: widget.arguments["isFromProductDetailForLogin"] == true);
+                                signInSignUpBottomModalSheet(
+                                    context, false, false,
+                                    isFromProductDetail: widget.arguments[
+                                            "isFromProductDetailForLogin"] ==
+                                        true);
                               },
                               child: FittedBox(
-                                child: Text(_localizations?.translate(AppStringConstant.signInWithEmail) ?? "Sign in with email", 
-                                  style: const TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 14)
-                                ),
+                                child: Text(
+                                    _localizations?.translate(AppStringConstant
+                                            .signInWithEmail) ??
+                                        "Sign in with email",
+                                    style: const TextStyle(
+                                        fontFamily: 'Karla',
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14)),
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF5232a8),
                                 foregroundColor: Colors.white,
                                 elevation: 0,
-                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(13),
                                 ),
@@ -268,21 +294,32 @@ class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () {
-                                signInSignUpBottomModalSheet(context, true, false, isFromProductDetail: widget.arguments["isFromProductDetailForLogin"] == true);
+                                signInSignUpBottomModalSheet(
+                                    context, true, false,
+                                    isFromProductDetail: widget.arguments[
+                                            "isFromProductDetailForLogin"] ==
+                                        true);
                               },
                               child: FittedBox(
-                                child: Text(_localizations?.translate(AppStringConstant.createAnAccount) ?? "Create an account", 
-                                  style: const TextStyle(fontFamily: 'Karla', fontWeight: FontWeight.w700, fontSize: 14)
-                                ),
+                                child: Text(
+                                    _localizations?.translate(AppStringConstant
+                                            .createAnAccount) ??
+                                        "Create an account",
+                                    style: const TextStyle(
+                                        fontFamily: 'Karla',
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14)),
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 foregroundColor: const Color(0xFF2b2540),
                                 elevation: 0,
-                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(13),
-                                  side: const BorderSide(color: Color(0xFF2b2540), width: 1.5),
+                                  side: const BorderSide(
+                                      color: Color(0xFF2b2540), width: 1.5),
                                 ),
                               ),
                             ),

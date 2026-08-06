@@ -17,13 +17,13 @@ class AddressItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(AppSizes.size4),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 22.0, vertical: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16.0),
+          border: Border.all(color: const Color(0xFFece7f3), width: 1.5),
         ),
-        color: Theme.of(context).cardColor,
-        margin: const EdgeInsets.only(top: AppSizes.size8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -40,10 +40,10 @@ class AddressItemCard extends StatelessWidget {
                         data: address,
                         style: {
                           "body": Style(
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall
-                                  ?.color)
+                              fontFamily: 'Karla',
+                              fontSize: FontSize(14.0),
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF8f889c)) // ink-soft
                         },
                       ),
                     ),
@@ -58,8 +58,9 @@ class AddressItemCard extends StatelessWidget {
               ),
             ),
             const Divider(
-              thickness: 0.5,
-              height: 0.5,
+              color: Color(0xFFece7f3),
+              thickness: 1.0,
+              height: 1.0,
             ),
             if (actions != null) actions!,
           ],

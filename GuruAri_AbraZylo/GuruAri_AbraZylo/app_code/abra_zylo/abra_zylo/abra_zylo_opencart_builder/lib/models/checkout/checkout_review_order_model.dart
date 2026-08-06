@@ -255,6 +255,10 @@ class Products {
   @JsonKey(name: "dominant_color")
   String? dominantColor;
   String? image;
+  @JsonKey(name: "original_price")
+  String? originalPrice;
+  @JsonKey(name: "original_total")
+  String? originalTotal;
 
   Products(
       {this.productId,
@@ -271,7 +275,9 @@ class Products {
       this.tax,
       this.reward,
       this.dominantColor,
-      this.image});
+      this.image,
+      this.originalPrice,
+      this.originalTotal});
 
   factory Products.fromJson(Map<String, dynamic> json) =>
       _$ProductsFromJson(json);

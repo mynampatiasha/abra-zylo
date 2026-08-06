@@ -90,6 +90,8 @@ Products _$ProductsFromJson(Map<String, dynamic> json) => Products(
       total: json['total'] as String?,
       productId: json['product_id'] as String?,
       wishlistStatus: json['wishlist_status'] as bool?,
+      originalPrice: json['original_price'] as String?,
+      originalTotal: json['original_total'] as String?,
     );
 
 Map<String, dynamic> _$ProductsToJson(Products instance) => <String, dynamic>{
@@ -108,6 +110,8 @@ Map<String, dynamic> _$ProductsToJson(Products instance) => <String, dynamic>{
       'total': instance.total,
       'product_id': instance.productId,
       'wishlist_status': instance.wishlistStatus,
+      'original_price': instance.originalPrice,
+      'original_total': instance.originalTotal,
     };
 
 Option _$OptionFromJson(Map<String, dynamic> json) => Option(

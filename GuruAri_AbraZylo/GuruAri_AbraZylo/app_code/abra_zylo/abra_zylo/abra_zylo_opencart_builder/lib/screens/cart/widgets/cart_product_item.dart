@@ -108,14 +108,66 @@ class CartProductItem extends StatelessWidget {
                             ),
                           ),
                         const SizedBox(height: 8),
-                        Text(
-                          product?.price ?? "0.00",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                            color: Colors.black,
-                          ),
-                        ),
+                          // Price display with original price and discount badge
+                          if ((product?.originalPrice?.isNotEmpty ?? false) &&
+                              product?.originalPrice != product?.price) ...[
+                            Row(
+                              children: [
+                                // Original price (strikethrough)
+                                Text(
+                                  product?.originalPrice ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                // Discounted price
+                                Text(
+                                  product?.price ?? '',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                // Discount percentage badge
+                                Builder(builder: (context) {
+                                  final original = double.tryParse(product?.originalPrice?.replaceAll(RegExp(r'[^0-9.]'), '') ?? '0') ?? 0;
+                                  final current = double.tryParse(product?.price?.replaceAll(RegExp(r'[^0-9.]'), '') ?? '0') ?? 0;
+                                  if (original <= 0 || current >= original) return const SizedBox.shrink();
+                                  final percent = ((original - current) / original) * 100;
+                                  return Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.redAccent.withOpacity(0.15),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      '-${percent.toStringAsFixed(0)}%',
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.redAccent,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ] else ...[
+                            // No original price – just show normal price
+                            Text(
+                              product?.price ?? "0.00",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
                         const SizedBox(height: 6),
                         
                         // In Stock Badge

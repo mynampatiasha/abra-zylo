@@ -121,7 +121,8 @@ class _profileState extends State<ProfileScreen> {
 
   Widget buildUI() {
     return Scaffold(
-      backgroundColor: Colors.transparent, // Background will be handled by a container
+      backgroundColor:
+          Colors.transparent, // Background will be handled by a container
       body: Container(
         decoration: const BoxDecoration(
           color: Color(0xFFf4f0fb), // Fallback
@@ -144,26 +145,10 @@ class _profileState extends State<ProfileScreen> {
                 ),
                 child: Row(
                   children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        width: 30,
-                        height: 30,
-                        decoration: const BoxDecoration(
-                          color: Colors.transparent,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.arrow_back_ios_new,
-                          color: Color(0xFF5232a8), // Violet 900
-                          size: 19,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        _localizations?.translate(AppStringConstant.profile) ?? "Profile",
+                        _localizations?.translate(AppStringConstant.profile) ??
+                            "Profile",
                         style: const TextStyle(
                           fontFamily: 'Baloo 2',
                           fontWeight: FontWeight.w700,
@@ -193,15 +178,20 @@ class _profileState extends State<ProfileScreen> {
                             widgetSpace(),
                             if (isUserLogin)
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
                                 child: ElevatedButton.icon(
                                   onPressed: () async {
-                                    var wkToken = await AppSharedPref.getWkToken();
+                                    var wkToken =
+                                        await AppSharedPref.getWkToken();
                                     await ApiClient().logoutUser(wkToken);
-                                    HiveService.getHive().deleteBox(HiveConstant.getAddress);
+                                    HiveService.getHive()
+                                        .deleteBox(HiveConstant.getAddress);
                                     await AppSharedPref.logoutUser();
-                                    Navigator.of(context).pushNamedAndRemoveUntil(
-                                        AppRoute.bottomTabBAr, (route) => false);
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                            AppRoute.bottomTabBAr,
+                                            (route) => false);
                                   },
                                   icon: Container(
                                     padding: const EdgeInsets.all(8),
@@ -209,7 +199,8 @@ class _profileState extends State<ProfileScreen> {
                                       color: const Color(0xFFffe6ea),
                                       borderRadius: BorderRadius.circular(11),
                                     ),
-                                    child: const Icon(Icons.logout, size: 19, color: Color(0xFFe0405f)),
+                                    child: const Icon(Icons.logout,
+                                        size: 19, color: Color(0xFFe0405f)),
                                   ),
                                   label: const Text(
                                     'Log out',
@@ -225,20 +216,28 @@ class _profileState extends State<ProfileScreen> {
                                     foregroundColor: const Color(0xFFe0405f),
                                     shadowColor: Colors.transparent,
                                     alignment: Alignment.centerLeft,
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 8),
                                   ),
                                 ),
                               ),
                             if (!isUserLogin)
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 20),
                                 child: ElevatedButton.icon(
                                   onPressed: () async {
-                                    Navigator.of(context).pushNamed(AppRoute.login, arguments: getSignInSignUpPageArgument(false, false));
+                                    Navigator.of(context).pushNamed(
+                                        AppRoute.login,
+                                        arguments: getSignInSignUpPageArgument(
+                                            false, false));
                                   },
-                                  icon: const Icon(Icons.login, size: 17, color: Colors.white),
+                                  icon: const Icon(Icons.login,
+                                      size: 17, color: Colors.white),
                                   label: Text(
-                                    _localizations?.translate(AppStringConstant.signIn) ?? 'Sign in',
+                                    _localizations?.translate(
+                                            AppStringConstant.signIn) ??
+                                        'Sign in',
                                     style: const TextStyle(
                                       fontFamily: 'Karla',
                                       fontWeight: FontWeight.w700,
@@ -249,9 +248,13 @@ class _profileState extends State<ProfileScreen> {
                                     backgroundColor: const Color(0xFF5232a8),
                                     foregroundColor: Colors.white,
                                     elevation: 0,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                    minimumSize: const Size(double.infinity, 50),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 14),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(14)),
+                                    minimumSize:
+                                        const Size(double.infinity, 50),
                                   ),
                                 ),
                               ),

@@ -156,13 +156,15 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   }
 
   void getPolyPoints() async {
-    PolylinePoints polylinePoints = PolylinePoints();
+    PolylinePoints polylinePoints = PolylinePoints(apiKey: "AIzaSyB749j5lDJ5hPNHzZd59TfHqi2SRKfgghs");
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      "AIzaSyB749j5lDJ5hPNHzZd59TfHqi2SRKfgghs",
-      PointLatLng(
-          sourceLocation?.latitude ?? 0, sourceLocation?.longitude ?? 0),
-      PointLatLng(destination?.latitude ?? 0, destination?.longitude ?? 0),
-      travelMode: TravelMode.driving,
+      request: PolylineRequest(
+        origin: PointLatLng(
+            sourceLocation?.latitude ?? 0, sourceLocation?.longitude ?? 0),
+        destination:
+            PointLatLng(destination?.latitude ?? 0, destination?.longitude ?? 0),
+        mode: TravelMode.driving,
+      ),
     );
     if (result.points.isNotEmpty) {
       result.points.forEach(

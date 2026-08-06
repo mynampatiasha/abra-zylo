@@ -139,6 +139,10 @@ class Products {
   String? productId;
   @JsonKey(name: "wishlist_status")
   bool? wishlistStatus;
+  @JsonKey(name: "original_price")
+  String? originalPrice;
+  @JsonKey(name: "original_total")
+  String? originalTotal;
 
   Products(
       {this.key,
@@ -155,7 +159,9 @@ class Products {
       this.price,
       this.total,
       this.productId,
-      this.wishlistStatus});
+      this.wishlistStatus,
+      this.originalPrice,
+      this.originalTotal});
   factory Products.fromJson(Map<String, dynamic> json) =>
       _$ProductsFromJson(json);
 /*  Products.fromJson(Map<String, dynamic> json) {

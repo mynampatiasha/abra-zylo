@@ -114,198 +114,177 @@ class _CommonBannerViewState extends State<CommonBannerView> {
       String email,
       VoidCallback? changeBannerImage,
       VoidCallback changeProfileImage) {
+    String initial = name.isNotEmpty ? name[0].toUpperCase() : "";
     return Stack(
       fit: StackFit.expand,
       children: [
-        SizedBox(
-          height: AppSizes.deviceHeight / 3,
+        Container(
           width: AppSizes.deviceWidth,
-          child: Card(
-              margin: EdgeInsets.zero,
-              elevation: 0,
-              child: Stack(
-                children: [
-                  CachedNetworkImage(
-                    imageUrl: ApiConstant.imageUrl(bannerImage ?? ''),
-                    fit: BoxFit.cover,
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    placeholder: (context, url) => Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(0),
-                        image: const DecorationImage(
-                            image: AssetImage(
-                              AppImages.dashboardImage, // AppImages.bgImage,
-                            ),
-                            fit: BoxFit.fill),
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(0),
-                        image: const DecorationImage(
-                            image: AssetImage(
-                              AppImages.dashboardImage, // AppImages.bgImage,
-                            ),
-                            fit: BoxFit.fill),
-                      ),
+          padding: const EdgeInsets.only(top: 30, bottom: 26, left: 22, right: 22),
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFc8abec), // lavender
+                Color(0xFF5232a8), // violet-700
+                Color(0xFF5232a8), // violet-900 (same hex in mockup)
+              ],
+            ),
+          ),
+          child: Stack(
+            children: [
+              // Optional Background Banner Image layer
+              if (bannerImage != null && bannerImage.isNotEmpty)
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: 0.5,
+                    child: CachedNetworkImage(
+                      imageUrl: ApiConstant.imageUrl(bannerImage),
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const SizedBox.shrink(),
+                      errorWidget: (context, url, error) => const SizedBox.shrink(),
                     ),
                   ),
-                  Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                ),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Avatar Wrap
+                    Stack(
+                      clipBehavior: Clip.none,
                       children: [
-                        Stack(
-                          children: [
-                            Container(
-                                height: 100,
-                                width: 100,
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      // Flutter 3.38 requires named Border.all args; zero width keeps old no-border UI.
-                                      width: 0.0,
-                                    )),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(100.0),
-                                  child: CachedNetworkImage(
-                                    imageUrl: ApiConstant.imageUrl(profileImage ?? ''),
+                        Container(
+                          width: 84,
+                          height: 84,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withOpacity(0.18),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.55),
+                              width: 2.5,
+                            ),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(100.0),
+                            child: (profileImage != null && profileImage.isNotEmpty)
+                                ? CachedNetworkImage(
+                                    imageUrl: ApiConstant.imageUrl(profileImage),
                                     fit: BoxFit.cover,
-                                    width: MediaQuery.of(context).size.width,
-                                    placeholder: (context, url) => Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(0),
-                                        image: const DecorationImage(
-                                            image: AssetImage(
-                                          AppImages.avtar,
-                                        )),
-                                      ),
+                                    placeholder: (context, url) => Center(
+                                      child: Text(initial, style: const TextStyle(fontFamily: 'Baloo 2', fontWeight: FontWeight.w700, fontSize: 30, color: Colors.white)),
                                     ),
-                                    errorWidget: (context, url, error) =>
-                                        Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(0),
-                                        image: const DecorationImage(
-                                            fit: BoxFit.fill,
-                                            image: AssetImage(
-                                              AppImages.avtar,
-                                            )),
-                                      ),
+                                    errorWidget: (context, url, error) => Center(
+                                      child: Text(initial, style: const TextStyle(fontFamily: 'Baloo 2', fontWeight: FontWeight.w700, fontSize: 30, color: Colors.white)),
                                     ),
+                                  )
+                                : Center(
+                                    child: Text(initial, style: const TextStyle(fontFamily: 'Baloo 2', fontWeight: FontWeight.w700, fontSize: 30, color: Colors.white)),
                                   ),
-                                )),
-                            Positioned(
-                                right: 2.0,
-                                child: GestureDetector(
-                                  onTap: changeProfileImage,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).cardColor,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    height: 28,
-                                    width: 28,
-                                    child: const Icon(
-                                      Icons.edit,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ))
-                          ],
+                          ),
                         ),
-                        Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: AppSizes.size8),
-                            child: Column(
-                              children: [
-                                Text(
-                                  name,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(
-                                          fontSize: AppSizes.size14,
-                                          color: Colors.white),
-                                ),
-                                const SizedBox(
-                                  height: AppSizes.size4,
-                                ),
-                                Text(
-                                  email,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                          fontSize: AppSizes.size14,
-                                          color: Colors.white),
-                                ),
-                                const SizedBox(
-                                  height: AppSizes.size8,
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .pushNamed(AppRoute.accountInfo);
-                                  },
-                                  child: Container(
-                                      width: MediaQuery.of(context).size.width /
-                                          4.4,
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: Colors.white, // Border color
-                                            width: 2, // Border width
-                                          ),
-                                          color:
-                                              AppColors.transparentBackground,
-                                          shape: BoxShape.rectangle,
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(
-                                                  20.0))), // height: 25, // width: 25,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: AppSizes.size6,
-                                          horizontal: AppSizes.size6,
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            "${_localizations?.translate(AppStringConstant.editInfo)}",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.copyWith(
-                                                    fontSize: AppSizes.size16,
-                                                    color: Colors.white),
-                                          ),
-                                        ),
-                                      )),
-                                ),
-                              ],
-                            ))
+                        // Avatar Edit Button
+                        Positioned(
+                          right: -2,
+                          bottom: -2,
+                          child: GestureDetector(
+                            onTap: changeProfileImage,
+                            child: Container(
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF2f1065).withOpacity(0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  )
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.edit,
+                                size: 14,
+                                color: Color(0xFF5232a8),
+                              ),
+                            ),
+                          ),
+                        )
                       ],
                     ),
-                  ),
-                  Positioned(
-                    bottom: 20.0,
-                    right: 10.0,
-                    child: GestureDetector(
-                      onTap: changeBannerImage,
+                    const SizedBox(height: 14),
+                    // Name
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        fontFamily: 'Baloo 2',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    // Edit Info Button
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(AppRoute.accountInfo);
+                      },
                       child: Container(
-                        height: 28.0,
-                        width: 28.0,
+                        padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 20),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          shape: BoxShape.circle,
+                          color: Colors.white.withOpacity(0.14),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.6),
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(999),
                         ),
-                        child: const Icon(
-                          Icons.edit,
-                          size: 18,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.edit, size: 13, color: Colors.white),
+                            const SizedBox(width: 6),
+                            Text(
+                              _localizations?.translate(AppStringConstant.editInfo) ?? "Edit Info",
+                              style: const TextStyle(
+                                fontFamily: 'Karla',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
+                  ],
+                ),
+              ),
+              // Optional Banner Edit button at the bottom right, kept just in case user wants to change the background image
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: changeBannerImage,
+                  child: Container(
+                    height: 28.0,
+                    width: 28.0,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.image,
+                      size: 16,
+                      color: Color(0xFF5232a8),
+                    ),
                   ),
-                ],
-              )),
+                ),
+              ),
+            ],
+          ),
         ),
         Visibility(
             visible: isLoading,

@@ -113,14 +113,18 @@ class ProductPageBasicDetailsWidgetState
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Icon(Icons.check_circle, color: AppColors.green, size: 20),
+                  Icon(
+                    (widget.product?.stock ?? "In Stock").toLowerCase().contains("out of stock") ? Icons.cancel : Icons.check_circle, 
+                    color: (widget.product?.stock ?? "In Stock").toLowerCase().contains("out of stock") ? Colors.red : AppColors.green, 
+                    size: 20
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     (widget.product?.stock ?? "").isNotEmpty ? widget.product!.stock! : 'In Stock',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.green,
+                      color: (widget.product?.stock ?? "In Stock").toLowerCase().contains("out of stock") ? Colors.red : AppColors.green,
                     ),
                   ),
                 ],

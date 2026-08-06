@@ -32,10 +32,14 @@ Map<String, dynamic> _$SearchModelToJson(SearchModel instance) =>
 SearchData _$SearchDataFromJson(Map<String, dynamic> json) => SearchData(
       productId: json['product_id'] as String?,
       name: json['name'] as String?,
+      image: json['image'] as String?,
+      thumb: json['thumb'] as String?,
     );
 
 Map<String, dynamic> _$SearchDataToJson(SearchData instance) =>
     <String, dynamic>{
       'product_id': instance.productId,
       'name': instance.name,
+      'image': instance.image,
+      'thumb': instance.thumb,
     };

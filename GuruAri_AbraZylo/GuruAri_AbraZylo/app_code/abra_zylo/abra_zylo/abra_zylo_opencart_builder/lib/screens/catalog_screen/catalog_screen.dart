@@ -149,7 +149,10 @@ class _CatalogScreenState extends State<CatalogScreen> with RouteAware {
       } else if (_productCategoryType == GlobalData.custom_collection) {
         _bloc?.add(FetchCustomCollection(_request));
       } */
-      if (_productCategoryType == GlobalData.home_page_carousel) {
+      if (_productCategoryType == AppStringConstant.search) {
+        showFilterOption = false;
+        _bloc?.add(GetSearchResultEvent(catalogId, "", catalogId));
+      } else if (_productCategoryType == GlobalData.home_page_carousel) {
         showFilterOption = false;
         _bloc?.add(FetchCarouselsEvent(_request));
       } else {
@@ -286,6 +289,7 @@ class _CatalogScreenState extends State<CatalogScreen> with RouteAware {
                   currentState.wishListModel.message ?? '', context);
             });
           } else if (currentState is GetSearchStateSuccess) {
+            _loading = false;
             _model = currentState.model;
             print("Rishabh product List:- ${_model?.products?.length}");
             _products.clear();

@@ -637,14 +637,27 @@ void callBack(
             title: 'About Us',
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text("Who we are", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
-                SizedBox(height: 8),
-                Text("Abra Zylo started as a two-person operation packing orders on a kitchen table, and grew into a store that ships across the country without losing that same attention to detail. We pick every product we sell, not just what sells fastest.", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
-                SizedBox(height: 20),
-                Text("What we care about", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
-                SizedBox(height: 8),
-                Text("• Honest pricing — the price you see on the product page is the price you pay.\n• Quality checked before it leaves our warehouse, not after you complain.\n• Real people answering support messages, not a bot loop.", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
+              children: [
+                const Text("Who we are", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
+                const SizedBox(height: 8),
+                const Text("Abra Zylo started as a two-person operation packing orders on a kitchen table, and grew into a store that ships across the country without losing that same attention to detail. We handpick every product we sell to ensure it meets our strict quality standards.", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF5232a8).withOpacity(0.05),
+                    border: const Border(left: BorderSide(color: Color(0xFF5232a8), width: 4)),
+                    borderRadius: const BorderRadius.only(topRight: Radius.circular(8), bottomRight: Radius.circular(8)),
+                  ),
+                  child: const Text(
+                    "\"We are committed to providing you with premium quality products at lower, unbeatable prices.\"",
+                    style: TextStyle(fontFamily: 'Karla', fontSize: 14.5, fontStyle: FontStyle.italic, fontWeight: FontWeight.w600, color: Color(0xFF5232a8), height: 1.5),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text("What we care about", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
+                const SizedBox(height: 8),
+                const Text("• Honest pricing — the price you see on the product page is the price you pay.\n• Uncompromising Quality — providing top-tier products at affordable prices.\n• Quality checked before it leaves our warehouse, not after you complain.\n• Real people answering support messages, not a bot loop.", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
               ]
             )
           )
@@ -663,7 +676,7 @@ void callBack(
                 SizedBox(height: 20),
                 Text("Shipping charges", style: TextStyle(fontFamily: 'Baloo 2', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF5232a8))),
                 SizedBox(height: 8),
-                Text("Orders above ₹499 ship free. Orders below that carry a flat ₹49 delivery fee, shown at checkout before you pay.", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
+                Text("Enjoy free shipping on qualifying orders! A flat delivery fee applies to all other orders. Exact charges will be calculated and shown at checkout before you pay. We strive to process and dispatch all orders as quickly as possible so your items reach you safely and on time.", style: TextStyle(fontFamily: 'Karla', fontSize: 13.8, height: 1.65, color: Color(0xFF2b2540))),
               ]
             )
           )

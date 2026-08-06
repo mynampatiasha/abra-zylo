@@ -241,6 +241,7 @@ class CartMainView extends StatelessWidget {
         //Price details view
         PriceDetails(
           totals: model?.cart?.totals,
+          products: model?.cart?.products,
           localizations: localizations,
         ),
       ],
