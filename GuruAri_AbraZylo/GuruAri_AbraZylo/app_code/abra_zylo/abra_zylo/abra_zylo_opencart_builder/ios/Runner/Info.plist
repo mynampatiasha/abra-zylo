@@ -52,7 +52,7 @@
 		<key>NSSpeechRecognitionUsageDescription</key>
 		<string>We need access to the microphone for searching product.</string>
 		<key>NSUserTrackingUsageDescription</key>
-		<string>This identifier will be used to deliver personalized ads to you.</string>
+		<string>Abra Zylo uses this data to track your activity across other apps and websites in order to deliver personalized ads and improve your shopping experience.</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UIBackgroundModes</key>
